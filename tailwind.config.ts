@@ -61,6 +61,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				guardai: {
+					red: '#ea384c',
+					gray: '#8E9196',
+					darkgray: '#222222',
+					lightgray: '#F1F0FB',
+					offwhite: '#EEEEEE'
 				}
 			},
 			borderRadius: {

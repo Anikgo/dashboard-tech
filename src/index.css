@@ -99,3 +99,55 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateY(10px); }
+  20%, 80% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromRight {
+  0% { transform: translateX(20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInFromLeft {
+  0% { transform: translateX(-20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@layer utilities {
+  .placeholder-animation {
+    animation: fadeInOut 4s infinite;
+  }
+  
+  .chat-bubble-user {
+    @apply bg-guardai-red text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl p-3 max-w-[80%] ml-auto;
+    animation: slideInFromRight 0.3s ease-out;
+  }
+  
+  .chat-bubble-ai {
+    @apply bg-guardai-lightgray text-guardai-darkgray rounded-tl-xl rounded-tr-xl rounded-br-xl p-3 max-w-[80%] mr-auto;
+    animation: slideInFromLeft 0.3s ease-out;
+  }
+  
+  .highlighted-text {
+    @apply text-guardai-red font-medium;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .slide-in-right {
+    animation: slideInFromRight 0.3s ease-out;
+  }
+  
+  .slide-in-left {
+    animation: slideInFromLeft 0.3s ease-out;
+  }
+}
