@@ -1,37 +1,37 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
-import {
-  MessageCircle, BarChart2, Video, FolderDot, FileText, 
-  Bell, Camera, Users, Settings, MapPin
+import { Button } from "@/components/ui/button";
+import { 
+  MessageCircle, BarChart2, Video, Folder, FileText, 
+  Bell, Camera, Users, Settings, ChevronLeft, ChevronRight, Menu
 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarItem {
   name: string;
   icon: React.ElementType;
   route: string;
-  description: string;
 }
 
 const sidebarItems: SidebarItem[] = [
-  { name: "Guard.AI Chat", icon: MessageCircle, route: "/", description: "Natural language interface to query camera footage" },
-  { name: "Insights", icon: BarChart2, route: "/insights", description: "AI-powered analytics and summaries" },
-  { name: "Live View", icon: Video, route: "/live-view", description: "Real-time camera feeds" },
-  { name: "My Projects", icon: MapPin, route: "/projects", description: "Monitored locations and sites" },
-  { name: "Reports", icon: FileText, route: "/reports", description: "Generated activity reports" },
-  { name: "Alerts & Flags", icon: Bell, route: "/alerts", description: "Security and motion alerts" },
-  { name: "Manage Cameras", icon: Camera, route: "/cameras", description: "Camera configuration" },
-  { name: "Manage Users", icon: Users, route: "/users", description: "Access control and roles" },
-  { name: "Settings", icon: Settings, route: "/settings", description: "System configuration" },
+  { name: "Guard.AI Chat", icon: MessageCircle, route: "/" },
+  { name: "Insights", icon: BarChart2, route: "/insights" },
+  { name: "Live View", icon: Video, route: "/live-view" },
+  { name: "My Projects", icon: Folder, route: "/projects" },
+  { name: "Reports", icon: FileText, route: "/reports" },
+  { name: "Alerts & Flags", icon: Bell, route: "/alerts" },
+  { name: "Manage Cameras", icon: Camera, route: "/cameras" },
+  { name: "Manage Users", icon: Users, route: "/users" },
+  { name: "Settings", icon: Settings, route: "/settings" },
 ];
 
 export function Sidebar() {
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   
   // Set active item based on current route
   const getActiveItemFromPath = (path: string) => {
@@ -54,54 +54,98 @@ export function Sidebar() {
     setActiveItem(getActiveItemFromPath(location.pathname));
   }, [location.pathname]);
   
-  // Auto-hide on mobile
+  // Auto-collapse on mobile
   useEffect(() => {
     if (isMobile) {
+      setCollapsed(true);
       setMobileOpen(false);
+    } else {
+      setCollapsed(false);
     }
   }, [isMobile]);
+  
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      setCollapsed(!collapsed);
+    }
+  };
 
   return (
-    <div className={cn(
-      "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300",
-      !mobileOpen && isMobile && "-translate-x-full"
-    )}>
-      <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-semibold text-guardai-darkgray">Guard.AI</h1>
+    <>
+      {/* Mobile overlay */}
+      {isMobile && mobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+      
+      {/* Mobile menu button */}
+      {isMobile && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-4 left-4 z-50 lg:hidden"
+          onClick={toggleSidebar}
+        >
+          <Menu size={24} />
+        </Button>
+      )}
+      
+      <div 
+        className={cn(
+          "bg-white h-screen border-r border-gray-200 transition-all duration-300 flex flex-col z-50",
+          isMobile 
+            ? mobileOpen 
+              ? "fixed left-0 w-[240px]" 
+              : "fixed -left-[240px] w-[240px]" 
+            : collapsed 
+              ? "w-[70px]" 
+              : "w-[240px]"
+        )}
+      >
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          {!collapsed && (
+            <h1 className="text-xl font-semibold text-guardai-darkgray">Guard.AI</h1>
+          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="ml-auto" 
+            onClick={toggleSidebar}
+          >
+            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </Button>
         </div>
-        
-        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-          {sidebarItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.route}
-              className="relative block"
-              onMouseEnter={() => setHoveredItem(item.name)}
-              onMouseLeave={() => setHoveredItem(null)}
-            >
-              <div className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
-                location.pathname === item.route 
-                  ? "bg-guardai-lightgray text-guardai-red" 
-                  : "text-gray-600 hover:bg-gray-100"
-              )}>
+        <div className="flex-grow py-4 overflow-y-auto">
+          <nav className="px-2 space-y-1">
+            {sidebarItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.route}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+                  activeItem === item.name 
+                    ? "bg-guardai-lightgray text-guardai-red" 
+                    : "text-gray-600 hover:bg-gray-100"
+                )}
+                onClick={() => {
+                  setActiveItem(item.name);
+                  if (isMobile) setMobileOpen(false);
+                }}
+              >
                 <item.icon 
                   size={20} 
-                  className={cn(
-                    "transition-colors",
-                    location.pathname === item.route 
-                      ? "text-guardai-red" 
-                      : "text-gray-500 group-hover:text-guardai-red",
-                    hoveredItem === item.name && "text-guardai-red"
-                  )} 
+                  className={activeItem === item.name ? "text-guardai-red" : "text-gray-500"} 
                 />
-                <span>{item.name}</span>
-              </div>
-            </Link>
-          ))}
-        </nav>
+                {!collapsed && <span>{item.name}</span>}
+              </Link>
+            ))}
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
