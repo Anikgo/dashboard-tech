@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { 
   MessageCircle, BarChart2, Video, Folder, FileText, 
-  Bell, Camera, Users, Settings, ChevronLeft, ChevronRight, Menu
+  Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu, Shield
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -23,7 +23,6 @@ const sidebarItems: SidebarItem[] = [
   { name: "Reports", icon: FileText, route: "/reports" },
   { name: "Alerts & Flags", icon: Bell, route: "/alerts" },
   { name: "Manage Cameras", icon: Camera, route: "/cameras" },
-  { name: "Manage Users", icon: Users, route: "/users" },
   { name: "Settings", icon: Settings, route: "/settings" },
 ];
 
@@ -42,7 +41,6 @@ export function Sidebar() {
     if (path === "/reports") return "Reports";
     if (path === "/alerts") return "Alerts & Flags";
     if (path === "/cameras") return "Manage Cameras";
-    if (path === "/users") return "Manage Users";
     if (path === "/settings") return "Settings";
     return "Guard.AI Chat";
   };
@@ -108,7 +106,13 @@ export function Sidebar() {
       >
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           {!collapsed && (
-            <h1 className="text-xl font-semibold text-guardai-darkgray">Guard.AI</h1>
+            <div className="flex items-center gap-2">
+              <Shield className="text-guardai-red" size={24} />
+              <h1 className="text-xl font-semibold text-guardai-darkgray">Guard.AI</h1>
+            </div>
+          )}
+          {collapsed && (
+            <Shield className="text-guardai-red mx-auto" size={24} />
           )}
           <Button 
             variant="ghost" 

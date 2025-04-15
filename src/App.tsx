@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,7 +27,6 @@ const App = () => (
             <Route path="/reports" element={<div className="p-6"><h1 className="text-2xl font-semibold">Reports</h1><p className="text-guardai-gray">Timeline and downloadable activity reports.</p></div>} />
             <Route path="/alerts" element={<div className="p-6"><h1 className="text-2xl font-semibold">Alerts & Flags</h1><p className="text-guardai-gray">Motion/sound/line-cross alerts from cameras.</p></div>} />
             <Route path="/cameras" element={<div className="p-6"><h1 className="text-2xl font-semibold">Manage Cameras</h1><p className="text-guardai-gray">Add/remove/configure individual cameras.</p></div>} />
-            <Route path="/users" element={<div className="p-6"><h1 className="text-2xl font-semibold">Manage Users</h1><p className="text-guardai-gray">Roles, access levels, staff logs.</p></div>} />
             <Route path="/settings" element={<div className="p-6"><h1 className="text-2xl font-semibold">Settings</h1><p className="text-guardai-gray">Org-level and technical configurations.</p></div>} />
           </Route>
           <Route path="*" element={<NotFound />} />
