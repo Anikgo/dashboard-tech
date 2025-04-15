@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import {
   MessageCircle, BarChart2, Video, FolderDot, FileText, 
-  Bell, Camera, Users, Settings, MapPin
+  Bell, Camera, Users, Settings, MapPin,
+  ChevronRight, ChevronLeft  // Add these imports
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
