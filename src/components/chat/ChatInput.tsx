@@ -14,11 +14,13 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   
   const placeholders = [
-    "What happened near Gate 2 this morning?",
-    "Show me visitor footage from today.",
-    "Generate a report of alerts last week.",
-    "What did Camera 6 record yesterday night?",
-    "List all flagged events from today."
+    "When did the person in red t-shirt enter my office?",
+    "Show me any suspicious activity near loading bay from yesterday",
+    "How many employees accessed restricted area between 8-10 PM?",
+    "Did anyone stay in conference room after hours?",
+    "Generate report of all security breaches this week",
+    "Show me footage of unattended packages in lobby",
+    "List all unauthorized access attempts today"
   ];
 
   useEffect(() => {
@@ -44,19 +46,19 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder={placeholders[placeholderIndex]}
-        className="flex-1 py-3 placeholder:opacity-50 placeholder:text-guardai-gray/70"
+        className="flex-1 py-3 placeholder:opacity-80 placeholder:text-guardai-gray/70 placeholder-animation"
       />
       <Button
         type="button"
         variant="outline"
         size="icon"
-        className="rounded-full"
+        className="rounded-full hover:bg-guardai-lightgray hover:text-guardai-red transition-colors"
       >
         <Mic size={18} />
       </Button>
       <Button 
         type="submit" 
-        className="bg-guardai-red hover:bg-guardai-red/90"
+        className="bg-guardai-red hover:bg-guardai-red/90 transition-colors"
       >
         Send
       </Button>
