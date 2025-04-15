@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import {
   MessageCircle, BarChart2, Video, FolderDot, FileText, 
-  Bell, Camera, Users, Settings, MapPin,
-  ChevronRight, ChevronLeft  // Add these imports
+  Bell, Camera, Settings, MapPin,
+  ChevronRight, ChevronLeft
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -24,7 +23,6 @@ const sidebarItems: SidebarItem[] = [
   { name: "Reports", icon: FileText, route: "/reports", description: "Generated activity reports" },
   { name: "Alerts & Flags", icon: Bell, route: "/alerts", description: "Security and motion alerts" },
   { name: "Manage Cameras", icon: Camera, route: "/cameras", description: "Camera configuration" },
-  { name: "Manage Users", icon: Users, route: "/users", description: "Access control and roles" },
   { name: "Settings", icon: Settings, route: "/settings", description: "System configuration" },
 ];
 
@@ -35,7 +33,6 @@ export function Sidebar() {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Set active item based on current route
   const getActiveItemFromPath = (path: string) => {
     if (path === "/") return "Guard.AI Chat";
     if (path === "/insights") return "Insights";
@@ -44,19 +41,16 @@ export function Sidebar() {
     if (path === "/reports") return "Reports";
     if (path === "/alerts") return "Alerts & Flags";
     if (path === "/cameras") return "Manage Cameras";
-    if (path === "/users") return "Manage Users";
     if (path === "/settings") return "Settings";
     return "Guard.AI Chat";
   };
   
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
   
-  // Update active item when route changes
   useEffect(() => {
     setActiveItem(getActiveItemFromPath(location.pathname));
   }, [location.pathname]);
   
-  // Auto-collapse on mobile
   useEffect(() => {
     if (isMobile) {
       setCollapsed(true);
@@ -120,7 +114,6 @@ export function Sidebar() {
                 {!collapsed && <span>{item.name}</span>}
               </div>
               
-              {/* Tooltip on hover when collapsed */}
               {collapsed && hoveredItem === item.name && (
                 <div className="absolute left-full top-0 ml-2 px-3 py-2 bg-white rounded-lg shadow-lg border z-50 whitespace-nowrap">
                   <p className="font-medium text-guardai-darkgray">{item.name}</p>
