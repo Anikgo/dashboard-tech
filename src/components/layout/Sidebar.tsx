@@ -4,8 +4,7 @@ import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import {
   MessageCircle, BarChart2, Video, FolderDot, FileText, 
-  Bell, Camera, Users, Settings, MapPin,
-  ChevronLeft, ChevronRight  // Add these imports
+  Bell, Camera, Users, Settings, MapPin
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -31,10 +30,9 @@ const sidebarItems: SidebarItem[] = [
 export function Sidebar() {
   const location = useLocation();
   const isMobile = useIsMobile();
-  const [collapsed, setCollapsed] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  
   // Set active item based on current route
   const getActiveItemFromPath = (path: string) => {
     if (path === "/") return "Guard.AI Chat";
@@ -56,39 +54,21 @@ export function Sidebar() {
     setActiveItem(getActiveItemFromPath(location.pathname));
   }, [location.pathname]);
   
-  // Auto-collapse on mobile
+  // Auto-hide on mobile
   useEffect(() => {
     if (isMobile) {
-      setCollapsed(true);
       setMobileOpen(false);
-    } else {
-      setCollapsed(false);
     }
   }, [isMobile]);
-  
-  const toggleSidebar = () => {
-    if (isMobile) {
-      setMobileOpen(!mobileOpen);
-    } else {
-      setCollapsed(!collapsed);
-    }
-  };
 
   return (
     <div className={cn(
       "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300",
-      collapsed && "w-16",
       !mobileOpen && isMobile && "-translate-x-full"
     )}>
       <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          {!collapsed && <h1 className="text-xl font-semibold text-guardai-darkgray">Guard.AI</h1>}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg hover:bg-gray-100"
-          >
-            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
+        <div className="p-4 border-b border-gray-200">
+          <h1 className="text-xl font-semibold text-guardai-darkgray">Guard.AI</h1>
         </div>
         
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
@@ -104,8 +84,7 @@ export function Sidebar() {
                 "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
                 location.pathname === item.route 
                   ? "bg-guardai-lightgray text-guardai-red" 
-                  : "text-gray-600 hover:bg-gray-100",
-                collapsed && "justify-center"
+                  : "text-gray-600 hover:bg-gray-100"
               )}>
                 <item.icon 
                   size={20} 
@@ -117,16 +96,8 @@ export function Sidebar() {
                     hoveredItem === item.name && "text-guardai-red"
                   )} 
                 />
-                {!collapsed && <span>{item.name}</span>}
+                <span>{item.name}</span>
               </div>
-              
-              {/* Tooltip on hover when collapsed */}
-              {collapsed && hoveredItem === item.name && (
-                <div className="absolute left-full top-0 ml-2 px-3 py-2 bg-white rounded-lg shadow-lg border z-50 whitespace-nowrap">
-                  <p className="font-medium text-guardai-darkgray">{item.name}</p>
-                  <p className="text-sm text-guardai-gray">{item.description}</p>
-                </div>
-              )}
             </Link>
           ))}
         </nav>
