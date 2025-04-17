@@ -49,6 +49,10 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --gradient-red-black: linear-gradient(135deg, #ea384c 0%, #000000 100%);
+    --gradient-red-gray: linear-gradient(135deg, #ea384c 0%, #333333 100%);
+    --gradient-black-red: linear-gradient(135deg, #000000 0%, #ea384c 100%);
   }
 
   .dark {
@@ -149,5 +153,36 @@
   
   .slide-in-left {
     animation: slideInFromLeft 0.3s ease-out;
+  }
+  
+  .bg-gradient-red-black {
+    background: var(--gradient-red-black);
+    color: white;
+  }
+  
+  .bg-gradient-red-gray {
+    background: var(--gradient-red-gray);
+    color: white;
+  }
+  
+  .bg-gradient-black-red {
+    background: var(--gradient-black-red);
+    color: white;
+  }
+  
+  .glassy-red {
+    @apply bg-guardai-red/10 backdrop-blur-md border border-guardai-red/20 shadow-lg;
+  }
+  
+  .glassy-black {
+    @apply bg-black/10 backdrop-blur-md border border-black/20 shadow-lg;
+  }
+  
+  .hover-red-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(234,56,76,0.5)] hover:scale-105;
+  }
+  
+  .hover-black-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:scale-105;
   }
 }
