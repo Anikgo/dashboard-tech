@@ -2,20 +2,16 @@ import { useState, useEffect } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { QuickActions } from "./QuickActions";
-import { Shield, Bot, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-
+import { Shield } from "lucide-react";
+import { motion } from "framer-motion";
 interface Message {
   text: string;
   isUser: boolean;
 }
-
 export function ChatCommandCenter() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showEmptyState, setShowEmptyState] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
   const handleSendMessage = (text: string) => {
     setMessages(prev => [...prev, {
       text,
@@ -24,10 +20,12 @@ export function ChatCommandCenter() {
     setShowEmptyState(false);
     setIsLoading(true);
 
+    // Simulate AI response (in a real app, this would be an API call)
     setTimeout(() => {
       setIsLoading(false);
       let response = "I'm processing your request...";
 
+      // Pattern matching for demo purposes
       if (text.toLowerCase().includes("yesterday evening") || text.toLowerCase().includes("unusual")) {
         response = "Detected 3 motion alerts at 'Warehouse B' between 5:30 PM and 8 PM. Want the clips?";
       } else if (text.toLowerCase().includes("camera 6")) {
@@ -51,104 +49,75 @@ export function ChatCommandCenter() {
       }]);
     }, 1500);
   };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col h-full max-w-5xl mx-auto fade-in"
-    >
+  const containerVariants = {
+    hidden: {
+      opacity: 0
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+  const itemVariants = {
+    hidden: {
+      y: 20,
+      opacity: 0
+    },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+  const EmptyState = () => <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center justify-center h-[400px] text-center">
+      <motion.div variants={itemVariants} className="flex items-center gap-2 mb-6">
+        
+        <h2 className="text-2xl font-bold text-guardai-darkgray">Guard.AI Assistant</h2>
+      </motion.div>
+      <div className="max-w-md">
+        <motion.h3 variants={itemVariants} className="text-xl font-medium mb-4 text-guardai-darkgray">Ask anything like:</motion.h3>
+        <motion.ul variants={itemVariants} className="space-y-3 text-guardai-gray">
+          <li className="p-2 bg-guardai-lightgray/50 hover:bg-guardai-lightgray transition-colors cursor-pointer rounded-md">'Show me what happened near the loading dock yesterday'</li>
+          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'When did the person in a red t-shirt enter the office?'</li>
+          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'Were there any suspicious activities after hours?'</li>
+          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'Show me today's visitor log at the front entrance'</li>
+          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'Generate a weekly report of unauthorized access attempts'</li>
+        </motion.ul>
+      </div>
+    </motion.div>;
+  return <motion.div initial={{
+    opacity: 0
+  }} animate={{
+    opacity: 1
+  }} transition={{
+    duration: 0.5
+  }} className="flex flex-col h-full max-w-5xl mx-auto fade-in">
       <div className="p-6">
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex items-center gap-3 mb-1"
-        >
-          <div className="p-2 bg-guardai-red/10 rounded-full pulse-glow">
-            <Shield size={24} className="text-guardai-red" />
-          </div>
-          <h1 className="text-2xl font-semibold text-guardai-darkgray gradient-text-black">Guard.AI Command Center</h1>
-        </motion.div>
-
-        <motion.p
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-guardai-gray mb-6 ml-9"
-        >
+        <div className="flex items-center gap-3 mb-1">
+          
+          <h1 className="text-2xl font-semibold text-guardai-darkgray">Guard.AI Command Center</h1>
+        </div>
+        <p className="text-guardai-gray mb-6 max-w-3xl ml-9">
           Ask anything about your locations, camera events, or reports. I'll help you in seconds.
-        </motion.p>
+        </p>
         
         <QuickActions />
         
-        <Card className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden glass-morphism hover-lift">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
           <div className="p-4 h-[60vh] md:h-[500px] overflow-y-auto">
-            <AnimatePresence mode="wait">
-              {showEmptyState && messages.length === 0 ? (
-                <EmptyState />
-              ) : (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-4"
-                >
-                  {messages.map((msg, index) => (
-                    <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
-                  ))}
-                  {isLoading && (
-                    <div className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-guardai-lightgray rounded-tl-xl rounded-tr-xl rounded-br-xl">
-                      <motion.div
-                        initial={{ scale: 0.8 }}
-                        animate={{ scale: [0.8, 1.2, 0.8] }}
-                        transition={{ repeat: Infinity, duration: 1.5 }}
-                        className="flex items-center gap-3"
-                      >
-                        <Bot size={16} className="text-guardai-gray animate-bounce" />
-                        <div className="flex space-x-2">
-                          <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                          <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                          <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce"></div>
-                        </div>
-                      </motion.div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {showEmptyState && messages.length === 0 ? <EmptyState /> : <div className="space-y-4">
+                {messages.map((msg, index) => <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />)}
+                {isLoading && <div className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-guardai-lightgray rounded-tl-xl rounded-tr-xl rounded-br-xl animate-pulse">
+                    <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce"></div>
+                  </div>}
+              </div>}
           </div>
           <ChatInput onSendMessage={handleSendMessage} />
-        </Card>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-4 p-4 rounded-lg bg-guardai-red/5 border border-guardai-red/10"
-        >
-          <div className="flex items-center gap-2 text-sm text-guardai-gray">
-            <AlertCircle size={16} className="text-guardai-red" />
-            <span>AI-powered security monitoring active. System is analyzing all feeds in real-time.</span>
-          </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
-  );
+    </motion.div>;
 }
-
-const EmptyState = () => <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center justify-center h-[400px] text-center">
-  <motion.div variants={itemVariants} className="flex items-center gap-2 mb-6">
-    <h2 className="text-2xl font-bold text-guardai-darkgray">Guard.AI Assistant</h2>
-  </motion.div>
-  <div className="max-w-md">
-    <motion.h3 variants={itemVariants} className="text-xl font-medium mb-4 text-guardai-darkgray">Ask anything like:</motion.h3>
-    <motion.ul variants={itemVariants} className="space-y-3 text-guardai-gray">
-      <li className="p-2 bg-guardai-lightgray/50 hover:bg-guardai-lightgray transition-colors cursor-pointer rounded-md">'Show me what happened near the loading dock yesterday'</li>
-      <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'When did the person in a red t-shirt enter the office?'</li>
-      <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'Were there any suspicious activities after hours?'</li>
-      <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'Show me today's visitor log at the front entrance'</li>
-      <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">'Generate a weekly report of unauthorized access attempts'</li>
-    </motion.ul>
-  </div>
-</motion.div>;
