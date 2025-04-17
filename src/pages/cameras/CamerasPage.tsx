@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,66 +25,81 @@ export default function CamerasPage() {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
   };
 
+  const cameraImages = [
+    "/indian-factory-1.jpg", 
+    "/indian-shop-1.jpg", 
+    "/indian-factory-2.jpg", 
+    "/indian-shop-2.jpg", 
+    "/indian-factory-3.jpg", 
+    "/indian-shop-3.jpg"
+  ];
+
   const cameras = [
     {
       id: "cam-01",
-      name: "Warehouse Entrance",
+      name: "Factory Entrance",
       location: "North Building",
       status: "online",
       type: "PTZ Camera",
       ip: "192.168.1.101",
       lastMaintenance: "2 months ago",
-      resolution: "1080p"
+      resolution: "1080p",
+      image: cameraImages[0]
     },
     {
       id: "cam-02",
-      name: "Loading Dock",
+      name: "Shop Floor",
       location: "East Wing",
       status: "online",
       type: "Dome Camera",
       ip: "192.168.1.102",
       lastMaintenance: "3 months ago",
-      resolution: "1080p"
+      resolution: "1080p",
+      image: cameraImages[1]
     },
     {
       id: "cam-03",
-      name: "Parking Gate",
+      name: "Retail Store Entrance",
       location: "South Entrance",
       status: "online",
       type: "Bullet Camera",
       ip: "192.168.1.103",
       lastMaintenance: "1 month ago",
-      resolution: "4K"
+      resolution: "4K",
+      image: cameraImages[2]
     },
     {
       id: "cam-04",
-      name: "Office Front Door",
+      name: "Production Line",
       location: "Main Building",
       status: "online",
       type: "Dome Camera",
       ip: "192.168.1.104",
       lastMaintenance: "5 months ago",
-      resolution: "1080p"
+      resolution: "1080p",
+      image: cameraImages[3]
     },
     {
       id: "cam-05",
-      name: "Inventory Room",
+      name: "Inventory Storage",
       location: "West Wing",
       status: "offline",
       type: "Bullet Camera",
       ip: "192.168.1.105",
       lastMaintenance: "6 months ago",
-      resolution: "1080p"
+      resolution: "1080p",
+      image: cameraImages[4]
     },
     {
       id: "cam-06",
-      name: "Employee Entrance",
+      name: "Shop Counter",
       location: "North Building",
       status: "online",
       type: "PTZ Camera",
       ip: "192.168.1.106",
       lastMaintenance: "4 months ago",
-      resolution: "4K"
+      resolution: "4K",
+      image: cameraImages[5]
     }
   ];
 
@@ -163,7 +177,7 @@ export default function CamerasPage() {
                   <div 
                     className="w-full h-full bg-cover bg-center opacity-80"
                     style={{ 
-                      backgroundImage: `url('https://picsum.photos/id/${parseInt(camera.id.split('-')[1]) + 1070}/500/300')`,
+                      backgroundImage: `url('${camera.image}')`,
                       filter: camera.status === 'offline' ? 'grayscale(1)' : 'none'
                     }}
                   />
