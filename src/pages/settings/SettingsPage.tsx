@@ -30,6 +30,28 @@ export default function SettingsPage() {
     { id: "api", label: "API Access", icon: Key },
   ];
 
+  const getTabIcon = (tabId: string) => {
+    const tab = tabs.find(t => t.id === tabId);
+    if (tab) {
+      const IconComponent = tab.icon;
+      return <IconComponent size={18} className="text-guardai-red" />;
+    }
+    return null;
+  };
+
+  const getTabLabel = (tabId: string) => {
+    return tabs.find(t => t.id === tabId)?.label || "";
+  };
+  
+  const getTabLargeIcon = (tabId: string) => {
+    const tab = tabs.find(t => t.id === tabId);
+    if (tab) {
+      const IconComponent = tab.icon;
+      return <IconComponent size={36} className="text-guardai-red" />;
+    }
+    return null;
+  };
+
   return (
     <motion.div 
       variants={containerVariants}
@@ -321,30 +343,26 @@ export default function SettingsPage() {
             <Card className="border border-gray-200 shadow-sm">
               <CardHeader className="p-4 border-b">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  {tabs.find(tab => tab.id === activeTab)?.icon && (
-                    <tabs.find(tab => tab.id === activeTab)!.icon size={18} className="text-guardai-red" />
-                  )}
-                  <span>{tabs.find(tab => tab.id === activeTab)?.label} Settings</span>
+                  {getTabIcon(activeTab)}
+                  <span>{getTabLabel(activeTab)} Settings</span>
                 </CardTitle>
                 <CardDescription>
-                  Configure your {tabs.find(tab => tab.id === activeTab)?.label.toLowerCase()} settings and preferences
+                  Configure your {getTabLabel(activeTab).toLowerCase()} settings and preferences
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="min-h-[400px] flex items-center justify-center flex-col p-6">
                   <div className="bg-gray-100 p-5 rounded-full mb-4">
-                    {tabs.find(tab => tab.id === activeTab)?.icon && (
-                      <tabs.find(tab => tab.id === activeTab)!.icon size={36} className="text-guardai-red" />
-                    )}
+                    {getTabLargeIcon(activeTab)}
                   </div>
                   <h3 className="text-lg font-medium text-guardai-darkgray mb-2">
-                    {tabs.find(tab => tab.id === activeTab)?.label} Settings
+                    {getTabLabel(activeTab)} Settings
                   </h3>
                   <p className="text-guardai-gray text-center max-w-md mb-6">
-                    This section allows you to customize your {tabs.find(tab => tab.id === activeTab)?.label.toLowerCase()} preferences and settings.
+                    This section allows you to customize your {getTabLabel(activeTab).toLowerCase()} preferences and settings.
                   </p>
                   <Button className="bg-guardai-red hover:bg-guardai-red/90 text-white">
-                    Configure {tabs.find(tab => tab.id === activeTab)?.label}
+                    Configure {getTabLabel(activeTab)}
                   </Button>
                 </div>
               </CardContent>
