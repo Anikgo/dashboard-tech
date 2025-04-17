@@ -18,6 +18,7 @@ export default {
       },
     },
     extend: {
+      
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -37,6 +38,7 @@ export default {
           700: "hsl(350, 84%, 24%)",
           800: "hsl(350, 84%, 14%)",
           900: "hsl(350, 84%, 4%)",
+          950: "hsl(350, 84%, 2%)",
         },
         
         black: {
@@ -51,6 +53,7 @@ export default {
           700: "hsl(0, 0%, 30%)",
           800: "hsl(0, 0%, 20%)",
           900: "hsl(0, 0%, 10%)",
+          950: "hsl(0, 0%, 5%)",
         },
         
         primary: {
@@ -94,7 +97,8 @@ export default {
             600: "#a01030",
             700: "#7a0c27",
             800: "#55061e",
-            900: "#300215"
+            900: "#300215",
+            950: "#1a0108"
           },
           black: {
             DEFAULT: "#000000",
@@ -136,6 +140,16 @@ export default {
             900: "#1a1a1a"
           }
         }
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-shine': 'linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 50%, transparent 50%, transparent 75%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1))',
+      },
+      boxShadow: {
+        'glow-red': '0 0 20px rgba(234, 56, 76, 0.5)',
+        'glow-black': '0 0 20px rgba(0, 0, 0, 0.3)',
+        'inner-glow': 'inset 0 0 10px rgba(255, 255, 255, 0.2)',
       },
       borderRadius: {
         lg: "var(--radius)",

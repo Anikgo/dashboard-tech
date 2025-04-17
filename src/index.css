@@ -92,6 +92,21 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 15px rgba(234, 56, 76, 0.4); }
+    50% { box-shadow: 0 0 25px rgba(234, 56, 76, 0.7); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 }
 
 @layer base {
@@ -184,5 +199,57 @@
   
   .hover-black-glow {
     @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:scale-105;
+  }
+
+  .shimmer {
+    background-size: 200% 100%;
+    background-image: var(--gradient-shine);
+    animation: shimmer 3s linear infinite;
+  }
+
+  .floating {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .glass-morphism {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  .glass-morphism-dark {
+    @apply backdrop-blur-md bg-black/10 border border-black/20;
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .gradient-text-red {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-guardai-red-400 to-guardai-red-600;
+  }
+
+  .gradient-text-black {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-guardai-black-700 to-guardai-black-900;
+  }
+
+  .gradient-border {
+    @apply border-2 border-transparent bg-gradient-to-r from-guardai-red to-guardai-black;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .hover-scale-subtle {
+    @apply transition-transform duration-300 hover:scale-[1.02];
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .card-neo {
+    @apply bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300;
+  }
+
+  .card-glass {
+    @apply glass-morphism rounded-xl p-6 hover:bg-white/20 transition-colors duration-300;
   }
 }
