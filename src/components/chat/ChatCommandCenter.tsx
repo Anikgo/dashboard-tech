@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -11,28 +10,6 @@ interface Message {
   text: string;
   isUser: boolean;
 }
-
-// Define the animation variants that were missing
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3
-    }
-  }
-};
 
 export function ChatCommandCenter() {
   const [messages, setMessages] = useState<Message[]>([]);
