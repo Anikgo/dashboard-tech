@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -10,6 +11,20 @@ interface Message {
   text: string;
   isUser: boolean;
 }
+
+// Define animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+};
 
 export function ChatCommandCenter() {
   const [messages, setMessages] = useState<Message[]>([]);
