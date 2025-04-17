@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,12 +24,12 @@ export default function LiveViewPage() {
   };
 
   const cameras = [
-    { id: "cam-1", name: "Warehouse Entrance", status: "Active", alert: false },
-    { id: "cam-2", name: "Loading Dock", status: "Active", alert: true },
-    { id: "cam-3", name: "Parking Gate", status: "Active", alert: false },
-    { id: "cam-4", name: "Office Front Door", status: "Active", alert: false },
-    { id: "cam-5", name: "Inventory Room", status: "Offline", alert: false },
-    { id: "cam-6", name: "Employee Entrance", status: "Active", alert: false }
+    { id: "cam-1", name: "Indian Factory Entrance", status: "Active", alert: false, image: "/indian-factory-1.jpg" },
+    { id: "cam-2", name: "Shop Floor", status: "Active", alert: true, image: "/indian-shop-1.jpg" },
+    { id: "cam-3", name: "Indian Shop Entrance", status: "Active", alert: false, image: "/indian-factory-2.jpg" },
+    { id: "cam-4", name: "Production Line", status: "Active", alert: false, image: "/indian-shop-2.jpg" },
+    { id: "cam-5", name: "Warehouse", status: "Offline", alert: false, image: "/indian-factory-3.jpg" },
+    { id: "cam-6", name: "Shop Counter", status: "Active", alert: false, image: "/indian-shop-3.jpg" }
   ];
 
   return (
@@ -81,12 +80,11 @@ export default function LiveViewPage() {
               <div 
                 className="w-full h-full bg-cover bg-center" 
                 style={{
-                  backgroundImage: `url('https://picsum.photos/id/${selectedCamera === 'cam-2' ? '1073' : '1071'}/1200/700')`,
+                  backgroundImage: `url('${cameras.find(cam => cam.id === selectedCamera)?.image || ''}')`,
                   filter: isPaused ? 'grayscale(0.5)' : 'none'
                 }}
               />
               
-              {/* Camera controls overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <Button 
