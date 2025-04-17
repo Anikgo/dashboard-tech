@@ -1,5 +1,7 @@
 
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { User, Bot } from "lucide-react";
 
 interface ChatMessageProps {
   message: string;
@@ -38,14 +40,34 @@ export function ChatMessage({ message, isUser }: ChatMessageProps) {
   };
 
   return (
-    <div className={cn("mb-4", isUser ? "flex justify-end" : "flex justify-start")}>
-      <div className={isUser ? "chat-bubble-user" : "chat-bubble-ai"}>
-        {isUser ? (
-          <p>{message}</p>
-        ) : (
-          <p dangerouslySetInnerHTML={highlightKeywords(message)} />
+    <motion.div
+      initial={{ opacity: 0, x: isUser ? 20 : -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3 }}
+      className={cn("mb-4", isUser ? "flex justify-end" : "flex justify-start")}
+    >
+      <div className="flex items-start gap-2">
+        {!isUser && (
+          <div className="mt-2 p-1.5 rounded-full bg-guardai-red/10">
+            <Bot size={16} className="text-guardai-red" />
+          </div>
+        )}
+        <div className={cn(
+          "relative",
+          isUser ? "chat-bubble-user shimmer" : "chat-bubble-ai glass-morphism"
+        )}>
+          {isUser ? (
+            <p>{message}</p>
+          ) : (
+            <p dangerouslySetInnerHTML={highlightKeywords(message)} />
+          )}
+        </div>
+        {isUser && (
+          <div className="mt-2 p-1.5 rounded-full bg-guardai-black/10">
+            <User size={16} className="text-guardai-black" />
+          </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
