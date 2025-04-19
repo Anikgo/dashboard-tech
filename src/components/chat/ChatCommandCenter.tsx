@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -54,11 +53,8 @@ export function ChatCommandCenter() {
     }, 1500);
   };
 
-  // Define animation variants
   const containerVariants = {
-    hidden: {
-      opacity: 0
-    },
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
@@ -69,46 +65,45 @@ export function ChatCommandCenter() {
   };
 
   const itemVariants = {
-    hidden: {
-      y: 20,
-      opacity: 0
-    },
-    visible: {
-      y: 0,
-      opacity: 1
-    }
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
   };
 
   const EmptyState = () => (
     <motion.div 
-      variants={containerVariants} 
-      initial="hidden" 
-      animate="visible" 
-      className="flex flex-col items-center justify-center h-[400px] text-center"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col items-center justify-center h-[400px] text-center bg-gradient-to-b from-black/5 to-transparent rounded-lg p-8"
     >
-      <motion.div variants={itemVariants} className="flex items-center gap-2 mb-6">
-        <h2 className="text-2xl font-bold text-guardai-darkgray">Guard.AI Assistant</h2>
+      <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
+        <Shield className="w-8 h-8 text-guardai-red" />
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-guardai-red to-black bg-clip-text text-transparent">
+          Guard.AI Assistant
+        </h2>
       </motion.div>
       <div className="max-w-md">
-        <motion.h3 variants={itemVariants} className="text-xl font-medium mb-4 text-guardai-darkgray">
+        <motion.h3 
+          variants={itemVariants} 
+          className="text-xl font-medium mb-4 text-guardai-darkgray"
+        >
           Ask anything like:
         </motion.h3>
-        <motion.ul variants={itemVariants} className="space-y-3 text-guardai-gray">
-          <li className="p-2 bg-guardai-lightgray/50 hover:bg-guardai-lightgray transition-colors cursor-pointer rounded-md">
-            'Show me what happened near the loading dock yesterday'
-          </li>
-          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">
-            'When did the person in a red t-shirt enter the office?'
-          </li>
-          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">
-            'Were there any suspicious activities after hours?'
-          </li>
-          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">
-            'Show me today's visitor log at the front entrance'
-          </li>
-          <li className="p-2 bg-guardai-lightgray/50 rounded-md hover:bg-guardai-lightgray transition-colors cursor-pointer">
+        <motion.ul variants={itemVariants} className="space-y-3">
+          {[
+            'Show me what happened near the loading dock yesterday',
+            'When did the person in a red t-shirt enter the office?',
+            'Were there any suspicious activities after hours?',
+            "Show me today's visitor log at the front entrance",
             'Generate a weekly report of unauthorized access attempts'
-          </li>
+          ].map((suggestion, index) => (
+            <li 
+              key={index}
+              className="p-3 bg-gradient-to-r from-black/5 to-transparent hover:from-guardai-red/10 hover:to-transparent transition-all duration-300 cursor-pointer rounded-lg text-guardai-darkgray hover:text-guardai-red border border-transparent hover:border-guardai-red/20"
+            >
+              {suggestion}
+            </li>
+          ))}
         </motion.ul>
       </div>
     </motion.div>
@@ -116,29 +111,26 @@ export function ChatCommandCenter() {
 
   return (
     <motion.div
-      initial={{
-        opacity: 0
-      }}
-      animate={{
-        opacity: 1
-      }}
-      transition={{
-        duration: 0.5
-      }}
-      className="flex flex-col h-full max-w-5xl mx-auto fade-in"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col h-full max-w-5xl mx-auto"
     >
       <div className="p-6">
         <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-2xl font-semibold text-guardai-darkgray">Guard.AI Command Center</h1>
+          <Shield className="w-8 h-8 text-guardai-red" />
+          <h1 className="text-2xl font-semibold bg-gradient-to-r from-guardai-red to-black bg-clip-text text-transparent">
+            Guard.AI Command Center
+          </h1>
         </div>
-        <p className="text-guardai-gray mb-6 max-w-3xl ml-9">
+        <p className="text-guardai-gray mb-6 ml-11">
           Ask anything about your locations, camera events, or reports. I'll help you in seconds.
         </p>
         
         <QuickActions />
         
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 h-[60vh] md:h-[500px] overflow-y-auto">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden hover:border-guardai-red/20 transition-colors duration-300">
+          <div className="p-4 h-[60vh] md:h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-guardai-red/20 scrollbar-track-transparent">
             {showEmptyState && messages.length === 0 ? (
               <EmptyState />
             ) : (
@@ -147,10 +139,10 @@ export function ChatCommandCenter() {
                   <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
                 ))}
                 {isLoading && (
-                  <div className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-guardai-lightgray rounded-tl-xl rounded-tr-xl rounded-br-xl animate-pulse">
-                    <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                    <div className="h-3 w-3 bg-guardai-gray/40 rounded-full animate-bounce"></div>
+                  <div className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-gradient-to-r from-black/5 to-transparent rounded-lg animate-pulse">
+                    <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce"></div>
                   </div>
                 )}
               </div>
