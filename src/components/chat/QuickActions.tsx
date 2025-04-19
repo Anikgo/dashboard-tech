@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { FileText, Video, Bell, Calendar, BarChart2, Shield, Clock, Map, UserCheck, AlertTriangle } from "lucide-react";
+import { FileText, Video, Bell, BarChart2, AlertTriangle, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function QuickActions() {
@@ -8,11 +8,8 @@ export function QuickActions() {
     { icon: FileText, text: "Download Last 24h Report" },
     { icon: Video, text: "Live Feed from All Cameras" },
     { icon: Bell, text: "View Recent Alerts" },
-    { icon: Calendar, text: "Schedule Security Patrols" },
     { icon: BarChart2, text: "Security Analytics" },
     { icon: Clock, text: "Access History" },
-    { icon: Map, text: "Location Overview" },
-    { icon: UserCheck, text: "Staff Check-in" },
     { icon: AlertTriangle, text: "Critical Events" },
   ];
 
