@@ -7,7 +7,6 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, isUser }: ChatMessageProps) {
-  // Function to highlight keywords in AI responses
   const highlightKeywords = (text: string) => {
     // Examples of keywords to highlight (camera names, times, locations)
     const keywords = ['Warehouse', 'Camera', 'Gate', 'PM', 'AM', 'motion', 'alerts'];
@@ -39,7 +38,14 @@ export function ChatMessage({ message, isUser }: ChatMessageProps) {
 
   return (
     <div className={cn("mb-4", isUser ? "flex justify-end" : "flex justify-start")}>
-      <div className={isUser ? "chat-bubble-user" : "chat-bubble-ai"}>
+      <div 
+        className={cn(
+          "p-4 max-w-[80%] shadow-sm",
+          isUser 
+            ? "chat-bubble-user bg-gradient-to-r from-guardai-red to-guardai-red-600 text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl" 
+            : "chat-bubble-ai bg-gradient-to-r from-guardai-lightgray/50 to-guardai-lightgray/30 text-guardai-darkgray rounded-tl-xl rounded-tr-xl rounded-br-xl"
+        )}
+      >
         {isUser ? (
           <p>{message}</p>
         ) : (

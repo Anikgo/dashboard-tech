@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mic, Send } from "lucide-react";
+import { Mic, Send, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatInputProps {
@@ -43,31 +43,31 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 p-4 border-t bg-white">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 p-4 border-t border-guardai-gray/10 bg-gradient-to-r from-white to-guardai-lightgray/20">
       <Input
         ref={inputRef}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder={placeholders[placeholderIndex]}
-        className="flex-1 py-3 placeholder:opacity-50 placeholder:text-guardai-gray/70 focus-visible:ring-guardai-red/30"
+        className="flex-1 py-3 bg-white/50 backdrop-blur-sm border-guardai-gray/20 hover:border-guardai-red/20 focus-visible:ring-guardai-red/20 placeholder:text-guardai-gray/50 rounded-lg transition-colors duration-300"
       />
       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button
           type="button"
           variant="outline"
           size="icon"
-          className="rounded-full border-guardai-gray/30 hover:bg-guardai-lightgray hover:border-guardai-red/30"
+          className="rounded-full border-guardai-gray/20 hover:bg-guardai-red/5 hover:border-guardai-red/30 transition-colors duration-300"
         >
-          <Mic size={18} className="text-guardai-gray hover:text-guardai-red" />
+          <Mic size={18} className="text-guardai-gray hover:text-guardai-red transition-colors" />
         </Button>
       </motion.div>
       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button 
           type="submit" 
-          className="bg-guardai-red hover:bg-guardai-red/90 gap-2"
+          className="bg-gradient-to-r from-guardai-red to-guardai-red-600 hover:from-guardai-red-600 hover:to-guardai-red-700 text-white gap-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
         >
-          <Send size={16} />
           <span>Send</span>
+          <ChevronRight size={16} className="text-white/80" />
         </Button>
       </motion.div>
     </form>
