@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -6,6 +7,7 @@ import { Shield, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+
 interface Message {
   text: string;
   isUser: boolean;
@@ -24,6 +26,7 @@ const containerVariants = {
     }
   }
 };
+
 const itemVariants = {
   hidden: {
     y: 20,
@@ -34,13 +37,13 @@ const itemVariants = {
     opacity: 1
   }
 };
+
 export function ChatCommandCenter() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showEmptyState, setShowEmptyState] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   const handleSendMessage = (text: string) => {
     setMessages(prev => [...prev, {
       text,
@@ -60,7 +63,7 @@ export function ChatCommandCenter() {
         toast({
           title: "Alert Detected",
           description: "Found 3 motion alerts in specified timeframe",
-          variant: "default"
+          variant: "default",
         });
       } else if (text.toLowerCase().includes("camera 6")) {
         response = "Camera 6 recorded normal activity yesterday night. There were 2 authorized personnel entries at 11:45 PM and 2:30 AM.";
@@ -77,16 +80,24 @@ export function ChatCommandCenter() {
       } else if (text.toLowerCase().includes("after hours") || text.toLowerCase().includes("night")) {
         response = "After-hours activity (8 PM - 6 AM): 3 authorized staff entries using keycards, 1 scheduled cleaning crew at 11 PM, and 1 security patrol at 2 AM. No unauthorized access detected.";
       }
+
       setMessages(prev => [...prev, {
         text: response,
         isUser: false
       }]);
     }, 1500);
   };
-  const EmptyState = () => <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center justify-center h-[400px] text-center px-4 bg-gradient-to-br from-guardai-black-900/5 to-guardai-red-900/5 rounded-lg">
+
+  const EmptyState = () => (
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col items-center justify-center h-[400px] text-center px-4 bg-gradient-to-br from-guardai-black-900/5 to-guardai-red-900/5 rounded-lg"
+    >
       <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
         <Shield className="w-10 h-10 text-guardai-red" />
-        <h2 className="text-3xl font-bold bg-r-guardai-black bg-clip-text text-transparent">Guard.AI Assistant</h2>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guard.AI Assistant</h2>
       </motion.div>
       <motion.div variants={itemVariants} className="max-w-md">
         <h3 className="text-xl font-medium mb-6 text-guardai-darkgray">
@@ -95,26 +106,31 @@ export function ChatCommandCenter() {
         <div className="space-y-4">
           <p className="text-guardai-gray mb-4">Ask anything like:</p>
           <motion.ul variants={containerVariants} className="space-y-3">
-            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 hover:from-guardai-red/10 hover:to-guardai-black/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
+            <motion.li variants={itemVariants} 
+              className="p-4 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 hover:from-guardai-red/10 hover:to-guardai-black/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
               "Show me what happened near the loading dock yesterday"
             </motion.li>
-            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-guardai-black/5 to-guardai-red/5 hover:from-guardai-black/10 hover:to-guardai-red/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
+            <motion.li variants={itemVariants}
+              className="p-4 bg-gradient-to-r from-guardai-black/5 to-guardai-red/5 hover:from-guardai-black/10 hover:to-guardai-red/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
               "When did the person in a red t-shirt enter the office?"
             </motion.li>
-            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 hover:from-guardai-red/10 hover:to-guardai-black/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
+            <motion.li variants={itemVariants}
+              className="p-4 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 hover:from-guardai-red/10 hover:to-guardai-black/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
               "Were there any suspicious activities after hours?"
             </motion.li>
           </motion.ul>
         </div>
       </motion.div>
-    </motion.div>;
-  return <motion.div initial={{
-    opacity: 0
-  }} animate={{
-    opacity: 1
-  }} transition={{
-    duration: 0.5
-  }} className="flex flex-col h-full max-w-5xl mx-auto fade-in p-4">
+    </motion.div>
+  );
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col h-full max-w-5xl mx-auto fade-in p-4"
+    >
       <div className="space-y-6">
         <div className="flex items-center gap-3 mb-2 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 p-4 rounded-lg border border-guardai-red/10">
           <Shield className="w-8 h-8 text-guardai-red" />
@@ -130,19 +146,39 @@ export function ChatCommandCenter() {
         
         <div className="bg-white border border-guardai-gray/20 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm">
           <ScrollArea className="h-[60vh] md:h-[500px] p-4 scrollbar-thin scrollbar-thumb-guardai-red/20 scrollbar-track-guardai-lightgray/20">
-            {showEmptyState && messages.length === 0 ? <EmptyState /> : <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
-                {messages.map((msg, index) => <motion.div key={index} variants={itemVariants}>
+            {showEmptyState && messages.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-4"
+              >
+                {messages.map((msg, index) => (
+                  <motion.div 
+                    key={index}
+                    variants={itemVariants}
+                  >
                     <ChatMessage message={msg.text} isUser={msg.isUser} />
-                  </motion.div>)}
-                {isLoading && <motion.div variants={itemVariants} className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-gradient-to-r from-guardai-lightgray/50 to-guardai-lightgray/30 rounded-tl-xl rounded-tr-xl rounded-br-xl">
+                  </motion.div>
+                ))}
+                {isLoading && (
+                  <motion.div 
+                    variants={itemVariants}
+                    className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-gradient-to-r from-guardai-lightgray/50 to-guardai-lightgray/30 rounded-tl-xl rounded-tr-xl rounded-br-xl"
+                  >
                     <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
                     <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                     <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce"></div>
-                  </motion.div>}
-              </motion.div>}
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
           </ScrollArea>
           <ChatInput onSendMessage={handleSendMessage} />
         </div>
       </div>
-    </motion.div>;
+    </motion.div>
+  );
 }
