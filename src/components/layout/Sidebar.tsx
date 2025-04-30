@@ -1,17 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, BarChart2, Video, Folder, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-
 interface SidebarItem {
   name: string;
   icon: React.ElementType;
   route: string;
 }
-
 const sidebarItems: SidebarItem[] = [{
   name: "Guardex.ai Chat",
   icon: MessageCircle,
@@ -45,7 +42,6 @@ const sidebarItems: SidebarItem[] = [{
   icon: Settings,
   route: "/settings"
 }];
-
 export function Sidebar() {
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -64,7 +60,6 @@ export function Sidebar() {
     if (path === "/settings") return "Settings";
     return "Guardex.ai Chat";
   };
-  
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
 
   // Update active item when route changes
@@ -81,7 +76,6 @@ export function Sidebar() {
       setCollapsed(false);
     }
   }, [isMobile]);
-  
   const toggleSidebar = () => {
     if (isMobile) {
       setMobileOpen(!mobileOpen);
@@ -89,7 +83,6 @@ export function Sidebar() {
       setCollapsed(!collapsed);
     }
   };
-  
   return <>
       {/* Mobile overlay */}
       {isMobile && mobileOpen && <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setMobileOpen(false)} />}
@@ -102,7 +95,7 @@ export function Sidebar() {
       <div className={cn("bg-white h-screen border-r border-gray-200 transition-all duration-300 flex flex-col z-50", isMobile ? mobileOpen ? "fixed left-0 w-[240px]" : "fixed -left-[240px] w-[240px]" : collapsed ? "w-[70px]" : "w-[240px]")}>
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           {!collapsed && <div className="flex items-center gap-2">
-              <img src="/lovable-uploads/4ff77d27-629e-47b3-9ba9-be3f5429c1bd.png" alt="Guardex.ai" className="h-8" />
+              <img alt="Guardex.ai" className="h-8 object-fill" src="/lovable-uploads/437edfc7-1c0a-4d56-abeb-a358613a0a2f.png" />
             </div>}
           {collapsed && <img src="/lovable-uploads/4ff77d27-629e-47b3-9ba9-be3f5429c1bd.png" alt="Guardex.ai" className="h-8 mx-auto" />}
           <Button variant="ghost" size="icon" className="ml-auto" onClick={toggleSidebar}>
