@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -86,7 +87,7 @@ export function ChatCommandCenter() {
   const EmptyState = () => <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center justify-center h-[400px] text-center px-4 bg-gradient-to-br from-guardai-black-900/5 to-guardai-red-900/5 rounded-lg">
       <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
         
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guard.AI Assistant</h2>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guardex.AI Assistant</h2>
       </motion.div>
       <motion.div variants={itemVariants} className="max-w-md">
         <h3 className="text-xl font-medium mb-6 text-guardai-darkgray">
@@ -119,7 +120,7 @@ export function ChatCommandCenter() {
         <div className="flex items-center gap-3 mb-2 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 p-4 rounded-lg border border-guardai-red/10">
           
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guard.AI Command Center</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guardex.AI Command Center</h1>
             <p className="text-guardai-gray text-sm">
               Ask anything about your locations, camera events, or reports. I'll help you in seconds.
             </p>
