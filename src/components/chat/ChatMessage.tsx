@@ -24,7 +24,7 @@ export function ChatMessage({ message, isUser }: ChatMessageProps) {
         for (let i = 0; i < splitPart.length; i++) {
           newParts.push(splitPart[i]);
           if (i < splitPart.length - 1 && splitPart[i + 1].match(regex)) {
-            newParts.push(`<span class="text-[#7E69AB] font-medium">${splitPart[i + 1]}</span>`);
+            newParts.push(`<span class="text-guardai-red font-medium">${splitPart[i + 1]}</span>`);
             i++;
           }
         }
@@ -42,8 +42,8 @@ export function ChatMessage({ message, isUser }: ChatMessageProps) {
         className={cn(
           "p-4 max-w-[80%] shadow-sm",
           isUser 
-            ? "chat-bubble-user bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl" 
-            : "chat-bubble-ai bg-gradient-to-r from-[#E5DEFF]/70 to-[#E5DEFF]/40 text-[#403E43] rounded-tl-xl rounded-tr-xl rounded-br-xl"
+            ? "chat-bubble-user bg-gradient-to-r from-guardai-red to-guardai-red-600 text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl" 
+            : "chat-bubble-ai bg-gradient-to-r from-guardai-lightgray/50 to-guardai-lightgray/30 text-guardai-darkgray rounded-tl-xl rounded-tr-xl rounded-br-xl"
         )}
       >
         {isUser ? (

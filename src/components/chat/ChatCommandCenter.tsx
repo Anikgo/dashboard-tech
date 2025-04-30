@@ -84,25 +84,25 @@ export function ChatCommandCenter() {
       }]);
     }, 1500);
   };
-  const EmptyState = () => <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center justify-center h-[400px] text-center px-4 bg-gradient-to-br from-[#9b87f5]/10 to-[#7E69AB]/10 rounded-lg">
+  const EmptyState = () => <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center justify-center h-[400px] text-center px-4 bg-gradient-to-br from-guardai-black-900/5 to-guardai-red-900/5 rounded-lg">
       <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
         
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] bg-clip-text text-transparent">Guardex.AI Assistant</h2>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guardex.AI Assistant</h2>
       </motion.div>
       <motion.div variants={itemVariants} className="max-w-md">
-        <h3 className="text-xl font-medium mb-6 text-[#403E43]">
+        <h3 className="text-xl font-medium mb-6 text-guardai-darkgray">
           Your intelligent security companion
         </h3>
         <div className="space-y-4">
-          <p className="text-[#aaadb0] mb-4">Ask anything like:</p>
+          <p className="text-guardai-gray mb-4">Ask anything like:</p>
           <motion.ul variants={containerVariants} className="space-y-3">
-            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-[#E5DEFF]/30 to-[#9b87f5]/20 hover:from-[#E5DEFF]/50 hover:to-[#9b87f5]/30 transition-all duration-300 cursor-pointer rounded-lg border border-[#9b87f5]/20 hover:border-[#9b87f5]/30 shadow-sm hover:shadow-md">
+            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 hover:from-guardai-red/10 hover:to-guardai-black/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
               "Show me what happened near the loading dock yesterday"
             </motion.li>
-            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-[#9b87f5]/20 to-[#E5DEFF]/30 hover:from-[#9b87f5]/30 hover:to-[#E5DEFF]/50 transition-all duration-300 cursor-pointer rounded-lg border border-[#9b87f5]/20 hover:border-[#9b87f5]/30 shadow-sm hover:shadow-md">
+            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-guardai-black/5 to-guardai-red/5 hover:from-guardai-black/10 hover:to-guardai-red/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
               "When did the person in a red t-shirt enter the office?"
             </motion.li>
-            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-[#E5DEFF]/30 to-[#9b87f5]/20 hover:from-[#E5DEFF]/50 hover:to-[#9b87f5]/30 transition-all duration-300 cursor-pointer rounded-lg border border-[#9b87f5]/20 hover:border-[#9b87f5]/30 shadow-sm hover:shadow-md">
+            <motion.li variants={itemVariants} className="p-4 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 hover:from-guardai-red/10 hover:to-guardai-black/10 transition-all duration-300 cursor-pointer rounded-lg border border-guardai-red/10 hover:border-guardai-red/20 shadow-sm hover:shadow-md">
               "Were there any suspicious activities after hours?"
             </motion.li>
           </motion.ul>
@@ -117,11 +117,11 @@ export function ChatCommandCenter() {
     duration: 0.5
   }} className="flex flex-col h-full max-w-5xl mx-auto fade-in p-4">
       <div className="space-y-6">
-        <div className="flex items-center gap-3 mb-2 bg-gradient-to-r from-[#9b87f5]/10 to-[#7E69AB]/10 p-4 rounded-lg border border-[#9b87f5]/20">
+        <div className="flex items-center gap-3 mb-2 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 p-4 rounded-lg border border-guardai-red/10">
           
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] bg-clip-text text-transparent">Guardex.AI Command Center</h1>
-            <p className="text-[#aaadb0] text-sm">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guardex.AI Command Center</h1>
+            <p className="text-guardai-gray text-sm">
               Ask anything about your locations, camera events, or reports. I'll help you in seconds.
             </p>
           </div>
@@ -129,16 +129,16 @@ export function ChatCommandCenter() {
         
         <QuickActions />
         
-        <div className="bg-white border border-[#D6BCFA]/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm">
-          <ScrollArea className="h-[60vh] md:h-[500px] p-4 scrollbar-thin scrollbar-thumb-[#9b87f5]/30 scrollbar-track-[#E5DEFF]/30">
+        <div className="bg-white border border-guardai-gray/20 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm">
+          <ScrollArea className="h-[60vh] md:h-[500px] p-4 scrollbar-thin scrollbar-thumb-guardai-red/20 scrollbar-track-guardai-lightgray/20">
             {showEmptyState && messages.length === 0 ? <EmptyState /> : <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4">
                 {messages.map((msg, index) => <motion.div key={index} variants={itemVariants}>
                     <ChatMessage message={msg.text} isUser={msg.isUser} />
                   </motion.div>)}
-                {isLoading && <motion.div variants={itemVariants} className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-gradient-to-r from-[#E5DEFF]/70 to-[#E5DEFF]/50 rounded-tl-xl rounded-tr-xl rounded-br-xl">
-                    <div className="h-3 w-3 bg-[#9b87f5]/60 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    <div className="h-3 w-3 bg-[#9b87f5]/60 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                    <div className="h-3 w-3 bg-[#9b87f5]/60 rounded-full animate-bounce"></div>
+                {isLoading && <motion.div variants={itemVariants} className="flex space-x-2 p-3 max-w-[80%] mr-auto bg-gradient-to-r from-guardai-lightgray/50 to-guardai-lightgray/30 rounded-tl-xl rounded-tr-xl rounded-br-xl">
+                    <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="h-3 w-3 bg-guardai-red/40 rounded-full animate-bounce"></div>
                   </motion.div>}
               </motion.div>}
           </ScrollArea>
