@@ -95,9 +95,9 @@ export function Sidebar() {
       <div className={cn("bg-white h-screen border-r border-gray-200 transition-all duration-300 flex flex-col z-50", isMobile ? mobileOpen ? "fixed left-0 w-[240px]" : "fixed -left-[240px] w-[240px]" : collapsed ? "w-[70px]" : "w-[240px]")}>
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           {!collapsed && <div className="flex items-center gap-2">
-              <img alt="Guardex.ai" className="h-8 object-fill" src="/lovable-uploads/437edfc7-1c0a-4d56-abeb-a358613a0a2f.png" />
+              <img alt="Guardex.ai" className="h-10 object-contain" src="/lovable-uploads/437edfc7-1c0a-4d56-abeb-a358613a0a2f.png" />
             </div>}
-          {collapsed && <img src="/lovable-uploads/4ff77d27-629e-47b3-9ba9-be3f5429c1bd.png" alt="Guardex.ai" className="h-8 mx-auto" />}
+          {collapsed && <img src="/lovable-uploads/4ff77d27-629e-47b3-9ba9-be3f5429c1bd.png" alt="Guardex.ai" className="h-10 mx-auto" />}
           <Button variant="ghost" size="icon" className="ml-auto" onClick={toggleSidebar}>
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </Button>
