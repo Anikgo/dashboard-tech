@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -94,9 +93,9 @@ export function Sidebar() {
         </Button>}
       
       <div className={cn("bg-white h-screen border-r border-gray-200 transition-all duration-300 flex flex-col z-50", isMobile ? mobileOpen ? "fixed left-0 w-[240px]" : "fixed -left-[240px] w-[240px]" : collapsed ? "w-[70px]" : "w-[240px]")}>
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between py-0 px-0 mx-[8px]">
           {!collapsed && <div className="flex items-center gap-2">
-              <img alt="Guardex" src="/lovable-uploads/51d1dccf-6614-4504-a42f-eda602f10158.png" className="h-40 w-full object-contain" />
+              <img alt="Guardex" src="/lovable-uploads/51d1dccf-6614-4504-a42f-eda602f10158.png" className="h-20 w-full object-contain" />
             </div>}
           {collapsed && <img src="/lovable-uploads/51d1dccf-6614-4504-a42f-eda602f10158.png" alt="Guardex" className="h-10 mx-auto" />}
           <Button variant="ghost" size="icon" className="ml-auto" onClick={toggleSidebar}>
