@@ -117,7 +117,7 @@ export function ChatCommandCenter() {
     duration: 0.5
   }} className="flex flex-col h-full max-w-5xl mx-auto fade-in p-4">
       <div className="space-y-6">
-        <div className="flex items-center gap-3 mb-2 bg-gradient-to-r from-guardai-red/5 to-guardai-black/5 p-4 rounded-lg border border-guardai-red/10">
+        <div className="flex items-center gap-3 mb-2 bg-white p-4 rounded-lg border border-guardai-lightgray">
           
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-guardai-red to-guardai-black bg-clip-text text-transparent">Guardex.AI Command Center</h1>
