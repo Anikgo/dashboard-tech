@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,10 @@ interface SidebarItem {
   route: string;
 }
 const sidebarItems: SidebarItem[] = [{
+  name: "Reports",
+  icon: FileText,
+  route: "/reports"
+}, {
   name: "Insights",
   icon: BarChart2,
   route: "/insights"
@@ -22,10 +25,6 @@ const sidebarItems: SidebarItem[] = [{
   name: "My Projects",
   icon: Folder,
   route: "/projects"
-}, {
-  name: "Reports",
-  icon: FileText,
-  route: "/reports"
 }, {
   name: "Alerts & Flags",
   icon: Bell,
