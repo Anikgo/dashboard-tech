@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, BarChart2, Video, Folder, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { BarChart2, Video, Folder, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 interface SidebarItem {
@@ -10,10 +11,6 @@ interface SidebarItem {
   route: string;
 }
 const sidebarItems: SidebarItem[] = [{
-  name: "Guardex.ai Chat",
-  icon: MessageCircle,
-  route: "/"
-}, {
   name: "Insights",
   icon: BarChart2,
   route: "/insights"
@@ -50,7 +47,6 @@ export function Sidebar() {
 
   // Set active item based on current route
   const getActiveItemFromPath = (path: string) => {
-    if (path === "/") return "Guardex.ai Chat";
     if (path === "/insights") return "Insights";
     if (path === "/live-view") return "Live View";
     if (path === "/projects") return "My Projects";
@@ -58,7 +54,7 @@ export function Sidebar() {
     if (path === "/alerts") return "Alerts & Flags";
     if (path === "/cameras") return "Manage Cameras";
     if (path === "/settings") return "Settings";
-    return "Guardex.ai Chat";
+    return "Insights";
   };
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));
 
