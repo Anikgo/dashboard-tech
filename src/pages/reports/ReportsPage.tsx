@@ -1,10 +1,15 @@
-
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Calendar, Filter, ChevronDown, FileCog, PieChart, BarChart, LineChart } from "lucide-react";
 import { motion } from "framer-motion";
+import { ReportGenerationDialog } from "@/components/reports/ReportGenerationDialog";
+import { DetailedReportView } from "@/components/reports/DetailedReportView";
 
 export default function ReportsPage() {
+  const [showGenerationDialog, setShowGenerationDialog] = useState(false);
+  const [showDetailedReport, setShowDetailedReport] = useState(false);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -16,6 +21,14 @@ export default function ReportsPage() {
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  };
+
+  const handleGenerateReport = (config: any) => {
+    console.log("Generating report with config:", config);
+    // Simulate report generation
+    setTimeout(() => {
+      setShowDetailedReport(true);
+    }, 1000);
   };
 
   const reports = [
@@ -57,6 +70,10 @@ export default function ReportsPage() {
     }
   ];
 
+  if (showDetailedReport) {
+    return <DetailedReportView onClose={() => setShowDetailedReport(false)} />;
+  }
+
   return (
     <motion.div 
       variants={containerVariants}
@@ -86,7 +103,10 @@ export default function ReportsPage() {
           <ChevronDown size={14} />
         </Button>
 
-        <Button className="ml-auto bg-guardai-red hover:bg-guardai-red/90 text-white">
+        <Button 
+          onClick={() => setShowGenerationDialog(true)}
+          className="ml-auto bg-guardai-red hover:bg-guardai-red/90 text-white"
+        >
           <FileText size={16} className="mr-2" />
           Generate New Report
         </Button>
@@ -199,6 +219,12 @@ export default function ReportsPage() {
           </Card>
         </motion.div>
       </motion.div>
+
+      <ReportGenerationDialog
+        open={showGenerationDialog}
+        onOpenChange={setShowGenerationDialog}
+        onGenerateReport={handleGenerateReport}
+      />
     </motion.div>
   );
 }
