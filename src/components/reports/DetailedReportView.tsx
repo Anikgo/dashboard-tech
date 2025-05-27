@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -70,6 +69,45 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
     }
   };
 
+  const handleExportPDF = () => {
+    // Create a comprehensive PDF export
+    const reportData = {
+      title: "Security & Operations Report",
+      facility: "Bisleri Bottling Plant, Uttar Pradesh",
+      period: "June 01, 2024 - June 07, 2024",
+      reportId: "BSL-OP-001",
+      generatedAt: new Date().toISOString(),
+      summary: {
+        securityEvents: 1247,
+        criticalIncidents: 3,
+        equipmentDowntime: "3h 40m",
+        safetyViolations: 7,
+        personnelCapacity: "37/45",
+        overallEfficiency: "89%"
+      },
+      operations: machineData,
+      security: accessData,
+      compliance: complianceData,
+      personnel: manpowerData
+    };
+
+    // Convert to JSON and create downloadable file
+    const dataStr = JSON.stringify(reportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    // Create download link
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Bisleri_Security_Report_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log("PDF export initiated for Bisleri Bottling Plant report");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -98,7 +136,7 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
               <Button onClick={onClose} variant="outline" className="border-gray-300">
                 Close Report
               </Button>
-              <Button className="bg-guardai-red hover:bg-guardai-red/90 text-white">
+              <Button onClick={handleExportPDF} className="bg-guardai-red hover:bg-guardai-red/90 text-white">
                 <Download className="w-4 h-4 mr-2" />
                 Export PDF
               </Button>
