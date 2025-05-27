@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export default function LiveViewPage() {
-  const [selectedCamera, setSelectedCamera] = useState("cam-1");
+  const [selectedCamera, setSelectedCamera] = useState("cam-4");
   const [isPaused, setIsPaused] = useState(false);
 
   // Animation variants
@@ -24,10 +25,10 @@ export default function LiveViewPage() {
   };
 
   const cameras = [
+    { id: "cam-4", name: "Production Line", status: "Active", alert: false, image: "/lovable-uploads/0b1b007b-d9e7-4523-90bd-f2fabfbb8b73.png" },
     { id: "cam-1", name: "Indian Factory Entrance", status: "Active", alert: false, image: "/indian-factory-1.jpg" },
     { id: "cam-2", name: "Shop Floor", status: "Active", alert: true, image: "/indian-shop-1.jpg" },
     { id: "cam-3", name: "Indian Shop Entrance", status: "Active", alert: false, image: "/indian-factory-2.jpg" },
-    { id: "cam-4", name: "Production Line", status: "Active", alert: false, image: "/lovable-uploads/0b1b007b-d9e7-4523-90bd-f2fabfbb8b73.png" },
     { id: "cam-5", name: "Warehouse", status: "Offline", alert: false, image: "/indian-factory-3.jpg" },
     { id: "cam-6", name: "Shop Counter", status: "Active", alert: false, image: "/indian-shop-3.jpg" }
   ];
@@ -174,7 +175,7 @@ export default function LiveViewPage() {
           <CardContent className="p-4">
             <div className="space-y-3">
               <div className="border-l-2 border-guardai-red pl-3 py-1">
-                <div className="text-sm font-medium"><strong>IDLE MACHINERY SINCE 9:30 AM FOR 45 MIN!</strong></div>
+                <div className="text-sm font-medium">Idle machinery since 9:30 AM for 45 min!</div>
                 <div className="text-xs text-gray-500">Today, 9:30 AM</div>
               </div>
               <div className="border-l-2 border-guardai-red pl-3 py-1">
