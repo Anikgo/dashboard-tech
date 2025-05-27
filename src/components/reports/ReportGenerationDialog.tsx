@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ interface ReportGenerationDialogProps {
 export function ReportGenerationDialog({ open, onOpenChange, onGenerateReport }: ReportGenerationDialogProps) {
   const [reportConfig, setReportConfig] = useState({
     period: "TODAY",
-    premises: "Sarabhai Campus Vadodara",
+    premises: "Bisleri Bottling Plant, Uttar Pradesh",
     reportType: "full"
   });
 
