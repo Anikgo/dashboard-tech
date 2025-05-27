@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,33 +11,33 @@ interface DetailedReportViewProps {
 
 export function DetailedReportView({ onClose }: DetailedReportViewProps) {
   const machineData = [
-    { name: "Machine 1", productive: "7h 15m", idle: "45m", workers: 2, loading: 3, unloading: 2 },
-    { name: "Machine 2", productive: "6h 05m", idle: "1h 10m", workers: 1, loading: 2, unloading: 1 },
-    { name: "Line A", productive: "7h 45m", idle: "15m", workers: 3, loading: 5, unloading: 4 },
-    { name: "Line B", productive: "6h 30m", idle: "1h 30m", workers: 2, loading: 1, unloading: 2 }
+    { name: "Production Line 1", productive: "7h 15m", idle: "45m", workers: 2, loading: 3, unloading: 2 },
+    { name: "Production Line 2", productive: "6h 05m", idle: "1h 10m", workers: 1, loading: 2, unloading: 1 },
+    { name: "Bottling Unit A", productive: "7h 45m", idle: "15m", workers: 3, loading: 5, unloading: 4 },
+    { name: "Bottling Unit B", productive: "6h 30m", idle: "1h 30m", workers: 2, loading: 1, unloading: 2 }
   ];
 
   const accessData = [
-    { zone: "Gate A", authorized: 12, unauthorized: 0, times: "9:00–18:00", notes: "-" },
-    { zone: "Office (Post-10 PM)", authorized: 2, unauthorized: 2, times: "10:40 PM", notes: "🚨 Night Breach" },
-    { zone: "Loading Bay", authorized: 5, unauthorized: 1, times: "3:19 PM", notes: "🎥 Suspicious removal" }
+    { zone: "Main Gate", authorized: 12, unauthorized: 0, times: "09:00-18:00", notes: "Normal Operations" },
+    { zone: "Administration Block", authorized: 2, unauthorized: 2, times: "22:40", notes: "After Hours Breach" },
+    { zone: "Loading Bay", authorized: 5, unauthorized: 1, times: "15:19", notes: "Suspicious Activity Detected" }
   ];
 
   const complianceData = [
-    { area: "🧤 PPE Use (Helmets, Gloves)", status: "❌ 4 breaches", remarks: "3 no gloves, 1 no helmet" },
-    { area: "📱 Phone Use Near Machines", status: "⚠️ 2 incidents", remarks: "Linked to productivity drop" },
-    { area: "🧽 Hygiene & Cleanliness", status: "✅ Clean", remarks: "Mopping observed at 10 AM" },
-    { area: "🛑 Unauthorized Zone Presence", status: "❗ 1 incident", remarks: "Forklift in blocked zone" },
-    { area: "📝 SOP Adherence", status: "⚠️ Partial", remarks: "Some workers out of marked paths" }
+    { area: "Personal Protective Equipment", status: "Non-Compliant", remarks: "4 violations detected: 3 missing gloves, 1 missing helmet" },
+    { area: "Mobile Device Usage", status: "Caution Required", remarks: "2 incidents near machinery affecting productivity" },
+    { area: "Hygiene Standards", status: "Compliant", remarks: "Cleaning protocols followed, sanitization at 10:00 AM" },
+    { area: "Restricted Area Access", status: "Violation", remarks: "1 incident: Forklift operated in restricted zone" },
+    { area: "Standard Operating Procedures", status: "Partial Compliance", remarks: "Some workers observed outside designated pathways" }
   ];
 
   const manpowerData = [
-    { role: "Total On-Site", count: 37 },
-    { role: "Machine Operators", count: 9 },
-    { role: "Housekeeping", count: 4 },
+    { role: "Total Personnel On-Site", count: 37 },
+    { role: "Production Operators", count: 9 },
+    { role: "Maintenance Staff", count: 4 },
     { role: "Supervisors", count: 3 },
-    { role: "Loaders / Unloaders", count: 5 },
-    { role: "Electricians / Engineers", count: 4 },
+    { role: "Material Handlers", count: 5 },
+    { role: "Technical Staff", count: 4 },
     { role: "Visitors", count: 1 }
   ];
 
@@ -47,15 +48,15 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         <div>
           <div className="flex items-center gap-3">
             <Shield className="text-guardai-red" size={32} />
-            <h1 className="text-2xl font-bold">PROGRESS REPORT</h1>
+            <h1 className="text-2xl font-bold">SECURITY & OPERATIONS REPORT</h1>
           </div>
           <div className="mt-2">
-            <h2 className="text-lg font-semibold">PROJECT: Sarabhai Campus Vadodara</h2>
-            <p className="text-guardai-gray">Period: 01 Jun 24 - 07 Jun 24</p>
+            <h2 className="text-lg font-semibold">Bisleri Bottling Plant, Uttar Pradesh</h2>
+            <p className="text-guardai-gray">Reporting Period: June 01, 2024 - June 07, 2024</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className="bg-gray-100 text-gray-800">JOB ID: PAINT3382</Badge>
+          <Badge className="bg-gray-100 text-gray-800">Report ID: BSL-OP-001</Badge>
           <Button onClick={onClose} variant="outline">Close Report</Button>
           <Button className="bg-guardai-red hover:bg-guardai-red/90">
             <Download size={16} className="mr-2" />
@@ -74,21 +75,35 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold">182</div>
-              <div className="text-sm text-guardai-gray">Total Items</div>
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600">1,247</div>
+              <div className="text-sm text-guardai-gray">Security Events</div>
             </div>
             <div className="text-center p-4 bg-red-50 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">0%</div>
-              <div className="text-sm text-guardai-gray">Period Progress</div>
+              <div className="text-2xl font-bold text-red-600">3</div>
+              <div className="text-sm text-guardai-gray">Unauthorized Incidents</div>
+            </div>
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <div className="text-2xl font-bold text-orange-600">3h 40m</div>
+              <div className="text-sm text-guardai-gray">Total Machine Idle Time</div>
+            </div>
+            <div className="text-center p-4 bg-yellow-50 rounded-lg">
+              <div className="text-2xl font-bold text-yellow-600">7</div>
+              <div className="text-sm text-guardai-gray">Safety Violations</div>
+            </div>
+          </div>
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="text-2xl font-bold text-green-600">37</div>
+              <div className="text-sm text-guardai-gray">Personnel on Site</div>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <div className="text-2xl font-bold text-purple-600">11</div>
+              <div className="text-sm text-guardai-gray">Loading/Unloading Events</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">94.77%</div>
-              <div className="text-sm text-guardai-gray">Overall Progress</div>
-            </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
-              <div className="text-sm font-semibold text-red-600">⏰ Time Status</div>
-              <div className="text-xs text-red-600">Project is 10 days over due</div>
+              <div className="text-lg font-semibold text-green-600">System Operational</div>
+              <div className="text-sm text-guardai-gray">All Cameras Active</div>
             </div>
           </div>
         </CardContent>
@@ -99,21 +114,21 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="text-guardai-red" size={20} />
-            OPERATIONS INSIGHTS
+            PRODUCTION & OPERATIONS ANALYSIS
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
-            <h4 className="font-semibold mb-3">🔧 Machine-wise Performance Table:</h4>
+            <h4 className="font-semibold mb-3">Equipment Performance Overview</h4>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Machine Name</TableHead>
-                  <TableHead>⏱️ Productive Hours</TableHead>
-                  <TableHead>💤 Idle Time</TableHead>
-                  <TableHead>👥 Workers Detected</TableHead>
-                  <TableHead>📦 Loading Events</TableHead>
-                  <TableHead>📤 Unloading Events</TableHead>
+                  <TableHead>Equipment Name</TableHead>
+                  <TableHead>Productive Hours</TableHead>
+                  <TableHead>Idle Time</TableHead>
+                  <TableHead>Workers Present</TableHead>
+                  <TableHead>Loading Operations</TableHead>
+                  <TableHead>Unloading Operations</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -121,7 +136,7 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
                   <TableRow key={index}>
                     <TableCell className="font-medium">{machine.name}</TableCell>
                     <TableCell>{machine.productive}</TableCell>
-                    <TableCell className={machine.idle === "1h 10m" ? "text-red-600 font-semibold" : ""}>{machine.idle}</TableCell>
+                    <TableCell className={machine.idle === "1h 10m" || machine.idle === "1h 30m" ? "text-red-600 font-semibold" : ""}>{machine.idle}</TableCell>
                     <TableCell>{machine.workers}</TableCell>
                     <TableCell>{machine.loading}</TableCell>
                     <TableCell>{machine.unloading}</TableCell>
@@ -131,20 +146,20 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
             </Table>
           </div>
           
-          <div className="space-y-2">
-            <h4 className="font-semibold">📌 Operational Flags:</h4>
+          <div className="space-y-3">
+            <h4 className="font-semibold">Operational Alerts</h4>
             <div className="p-3 border-l-4 border-red-500 bg-red-50">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="text-red-500" size={16} />
-                <span className="font-semibold">[Idle Spike Alert]:</span>
-                <span>Machine 2 idle for 1h 10m — 40% above average</span>
+                <span className="font-semibold">High Idle Time Alert:</span>
+                <span>Production Line 2 idle for 1h 10m - 40% above operational baseline</span>
               </div>
             </div>
             <div className="p-3 border-l-4 border-yellow-500 bg-yellow-50">
-              <span className="font-semibold">📱 Unsafe Use:</span> Worker seen using mobile near Machine 1
+              <span className="font-semibold">Safety Concern:</span> Worker observed using mobile device near Production Line 1
             </div>
             <div className="p-3 border-l-4 border-red-500 bg-red-50">
-              <span className="font-semibold">🤕 Incident:</span> Worker caught foot in conveyor zone (video clip attached)
+              <span className="font-semibold">Safety Incident:</span> Worker safety breach detected in conveyor area (video evidence available)
             </div>
           </div>
         </CardContent>
@@ -155,20 +170,20 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="text-guardai-red" size={20} />
-            SECURITY & ACCESS MONITORING
+            SECURITY & ACCESS CONTROL
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
-            <h4 className="font-semibold mb-3">🚪 Access Log Table:</h4>
+            <h4 className="font-semibold mb-3">Access Control Log</h4>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>🛑 Zone</TableHead>
-                  <TableHead>✅ Authorized Entries</TableHead>
-                  <TableHead>🚫 Unauthorized Attempts</TableHead>
-                  <TableHead>⏰ Access Times</TableHead>
-                  <TableHead>🔍 Notes</TableHead>
+                  <TableHead>Security Zone</TableHead>
+                  <TableHead>Authorized Access</TableHead>
+                  <TableHead>Unauthorized Attempts</TableHead>
+                  <TableHead>Access Times</TableHead>
+                  <TableHead>Remarks</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -185,16 +200,16 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
             </Table>
           </div>
 
-          <div className="space-y-2">
-            <h4 className="font-semibold">🔍 Visual Alerts:</h4>
+          <div className="space-y-3">
+            <h4 className="font-semibold">Security Alerts</h4>
             <div className="p-3 border-l-4 border-red-500 bg-red-50">
-              🔴 Suspicious movement at Loading Dock — clip attached
+              Suspicious movement detected at Loading Dock - video evidence captured
             </div>
             <div className="p-3 border-l-4 border-orange-500 bg-orange-50">
-              🕵️‍♂️ Employee entered restricted store room — after-hours
+              Personnel detected in restricted storage area during after-hours
             </div>
             <div className="p-3 border-l-4 border-yellow-500 bg-yellow-50">
-              🟡 Long-duration stay in back office after shift
+              Extended presence in administrative area beyond shift hours
             </div>
           </div>
         </CardContent>
@@ -205,24 +220,28 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle className="text-guardai-red" size={20} />
-            COMPLIANCE MONITORING
+            SAFETY & COMPLIANCE MONITORING
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h4 className="font-semibold mb-3">✅ Compliance Checklist:</h4>
+          <h4 className="font-semibold mb-3">Compliance Assessment</h4>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Area</TableHead>
+                <TableHead>Compliance Area</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Remarks</TableHead>
+                <TableHead>Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {complianceData.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium">{item.area}</TableCell>
-                  <TableCell>{item.status}</TableCell>
+                  <TableCell>
+                    <Badge variant={item.status === "Compliant" ? "default" : item.status === "Non-Compliant" ? "destructive" : "secondary"}>
+                      {item.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell>{item.remarks}</TableCell>
                 </TableRow>
               ))}
@@ -236,15 +255,15 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="text-guardai-red" size={20} />
-            MANPOWER SUMMARY
+            PERSONNEL SUMMARY
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h4 className="font-semibold mb-3">👷 People Present Today:</h4>
+          <h4 className="font-semibold mb-3">Personnel Distribution</h4>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>👤 Role</TableHead>
+                <TableHead>Role Category</TableHead>
                 <TableHead>Count</TableHead>
               </TableRow>
             </TableHeader>
@@ -260,27 +279,31 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         </CardContent>
       </Card>
 
-      {/* Video Clips */}
+      {/* Video Evidence */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Video className="text-guardai-red" size={20} />
-            ATTACHED VIDEO CLIPS & EVENTS SNAPSHOTS
+            VIDEO EVIDENCE & DOCUMENTATION
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-              🔸 Clip 1: 📦 Theft attempt – Loading Bay – 3:19 PM
+              <div className="font-medium">Security Incident - Loading Bay</div>
+              <div className="text-sm text-guardai-gray">Timestamp: 15:19 | Duration: 2:34</div>
             </div>
             <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-              🔸 Clip 2: 🕐 Nighttime Entry – Office – 10:43 PM
+              <div className="font-medium">After Hours Access - Administration</div>
+              <div className="text-sm text-guardai-gray">Timestamp: 22:43 | Duration: 1:12</div>
             </div>
             <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-              🔸 Clip 3: 👷 Without Gloves – Line B – 9:15 AM
+              <div className="font-medium">PPE Violation - Bottling Unit B</div>
+              <div className="text-sm text-guardai-gray">Timestamp: 09:15 | Duration: 0:45</div>
             </div>
             <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-              🔸 Clip 4: 📱 Unsafe Phone Use – Machine A – 1:05 PM
+              <div className="font-medium">Safety Breach - Production Line 1</div>
+              <div className="text-sm text-guardai-gray">Timestamp: 13:05 | Duration: 1:28</div>
             </div>
           </div>
         </CardContent>
@@ -295,22 +318,26 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="text-green-500" size={16} />
-              <span>Conduct SOP briefing for assembly line staff</span>
+              <span>Conduct comprehensive safety briefing for production staff</span>
             </div>
             <div className="flex items-center gap-2">
               <XCircle className="text-red-500" size={16} />
-              <span>Lock down back office zone post-shift</span>
+              <span>Implement enhanced access controls for administrative areas</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="text-green-500" size={16} />
-              <span>PPE check-in to be enforced at gate</span>
+              <span>Mandatory PPE verification at facility entry points</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="text-blue-500" size={16} />
-              <span>Schedule mid-shift hygiene verification</span>
+              <span>Schedule mid-shift safety and hygiene inspections</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="text-orange-500" size={16} />
+              <span>Review and optimize production line efficiency to reduce idle time</span>
             </div>
           </div>
         </CardContent>
