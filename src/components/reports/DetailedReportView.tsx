@@ -108,173 +108,197 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    let yPosition = 15;
+    let yPosition = 20;
     const margin = 15;
-    const lineHeight = 6;
     
-    // Define colors
-    const primaryRed = [234, 56, 76];
-    const darkGray = [64, 64, 64];
-    const lightGray = [128, 128, 128];
-    const green = [34, 197, 94];
-    const red = [239, 68, 68];
-    const orange = [249, 115, 22];
-    const blue = [59, 130, 246];
-    
-    // Helper function to add a new page if needed
-    const checkPageBreak = (requiredSpace: number) => {
-      if (yPosition + requiredSpace > pageHeight - 20) {
+    // Enhanced color palette
+    const colors = {
+      primary: [234, 56, 76],      // guardai-red
+      primaryLight: [254, 226, 226], // red-100
+      dark: [31, 41, 55],          // gray-800
+      medium: [75, 85, 99],        // gray-600
+      light: [156, 163, 175],      // gray-400
+      background: [249, 250, 251], // gray-50
+      white: [255, 255, 255],
+      success: [34, 197, 94],      // green-500
+      warning: [251, 191, 36],     // yellow-500
+      danger: [239, 68, 68],       // red-500
+      info: [59, 130, 246],        // blue-500
+      purple: [147, 51, 234],      // purple-600
+      orange: [249, 115, 22]       // orange-500
+    };
+
+    // Helper functions
+    const addNewPageIfNeeded = (requiredSpace: number) => {
+      if (yPosition + requiredSpace > pageHeight - 25) {
         pdf.addPage();
-        yPosition = 20;
+        yPosition = 25;
         return true;
       }
       return false;
     };
 
-    // Helper function to draw a colored rectangle
-    const drawColoredBox = (x: number, y: number, width: number, height: number, color: number[]) => {
-      pdf.setFillColor(color[0], color[1], color[2]);
+    const drawGradientBox = (x: number, y: number, width: number, height: number, color1: number[], color2: number[]) => {
+      // Simulate gradient with multiple rectangles
+      const steps = 10;
+      const stepHeight = height / steps;
+      for (let i = 0; i < steps; i++) {
+        const ratio = i / (steps - 1);
+        const r = Math.round(color1[0] * (1 - ratio) + color2[0] * ratio);
+        const g = Math.round(color1[1] * (1 - ratio) + color2[1] * ratio);
+        const b = Math.round(color1[2] * (1 - ratio) + color2[2] * ratio);
+        pdf.setFillColor(r, g, b);
+        pdf.rect(x, y + i * stepHeight, width, stepHeight, 'F');
+      }
+    };
+
+    const drawShadowBox = (x: number, y: number, width: number, height: number, mainColor: number[]) => {
+      // Shadow
+      pdf.setFillColor(0, 0, 0, 0.1);
+      pdf.rect(x + 2, y + 2, width, height, 'F');
+      // Main box
+      pdf.setFillColor(mainColor[0], mainColor[1], mainColor[2]);
       pdf.rect(x, y, width, height, 'F');
     };
 
-    // Header with Logo Area and Branding
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(0, 0, pageWidth, 35, 'F');
+    // Cover Page with Modern Design
+    drawGradientBox(0, 0, pageWidth, pageHeight, colors.primary, [180, 30, 50]);
     
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(24);
+    // Company Logo Area (simulated)
+    pdf.setFillColor(colors.white[0], colors.white[1], colors.white[2], 0.2);
+    pdf.circle(pageWidth / 2, 60, 25, 'F');
+    
+    // Main Title
+    pdf.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
+    pdf.setFontSize(32);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('SECURITY & OPERATIONS REPORT', pageWidth / 2, 15, { align: 'center' });
+    pdf.text('SECURITY & OPERATIONS', pageWidth / 2, 110, { align: 'center' });
+    pdf.text('REPORT', pageWidth / 2, 125, { align: 'center' });
     
-    pdf.setFontSize(14);
+    // Subtitle
+    pdf.setFontSize(18);
     pdf.setFont('helvetica', 'normal');
-    pdf.text('Bisleri Bottling Plant, Uttar Pradesh', pageWidth / 2, 25, { align: 'center' });
+    pdf.text('Comprehensive Facility Analysis', pageWidth / 2, 145, { align: 'center' });
     
-    yPosition = 45;
-    
-    // Report Details Box
-    pdf.setFillColor(248, 249, 250);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 20, 'F');
-    pdf.setDrawColor(229, 231, 235);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 20);
-    
-    pdf.setTextColor(64, 64, 64);
-    pdf.setFontSize(11);
+    // Company Info Box
+    drawShadowBox(margin + 20, 160, pageWidth - 2 * margin - 40, 35, colors.white);
+    pdf.setTextColor(colors.dark[0], colors.dark[1], colors.dark[2]);
+    pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Report Period:', margin + 5, yPosition + 8);
+    pdf.text('Bisleri Bottling Plant', pageWidth / 2, 175, { align: 'center' });
+    pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
-    pdf.text('June 01, 2024 - June 07, 2024', margin + 35, yPosition + 8);
+    pdf.text('Uttar Pradesh, India', pageWidth / 2, 185, { align: 'center' });
     
+    // Report Details
+    pdf.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
+    pdf.setFontSize(12);
+    pdf.text('Report Period: June 01, 2024 - June 07, 2024', pageWidth / 2, 220, { align: 'center' });
+    pdf.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 235, { align: 'center' });
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Report ID:', margin + 5, yPosition + 15);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('BSL-OP-001', margin + 30, yPosition + 15);
+    pdf.text('Report ID: BSL-OP-001', pageWidth / 2, 250, { align: 'center' });
     
+    // New page for content
+    pdf.addPage();
+    yPosition = 25;
+    
+    // Executive Summary Header
+    drawGradientBox(0, yPosition, pageWidth, 15, colors.primary, [200, 40, 60]);
+    pdf.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
+    pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Generated:', pageWidth - 80, yPosition + 8);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(new Date().toLocaleDateString(), pageWidth - 50, yPosition + 8);
+    pdf.text('EXECUTIVE SUMMARY', margin, yPosition + 10);
+    yPosition += 25;
     
-    yPosition += 30;
-    
-    // Executive Summary with KPI Cards
-    checkPageBreak(60);
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('EXECUTIVE SUMMARY', margin + 3, yPosition + 6);
-    
-    yPosition += 15;
-    
-    // KPI Grid
-    const kpiPerRow = 2;
-    const kpiWidth = (pageWidth - 2 * margin - 10) / kpiPerRow;
-    const kpiHeight = 25;
+    // Enhanced KPI Cards Grid
+    const kpiCardWidth = (pageWidth - 2 * margin - 15) / 3;
+    const kpiCardHeight = 35;
     
     kpiData.forEach((kpi, index) => {
-      const row = Math.floor(index / kpiPerRow);
-      const col = index % kpiPerRow;
-      const x = margin + col * (kpiWidth + 5);
-      const y = yPosition + row * (kpiHeight + 5);
+      const row = Math.floor(index / 3);
+      const col = index % 3;
+      const x = margin + col * (kpiCardWidth + 5);
+      const y = yPosition + row * (kpiCardHeight + 8);
       
-      if (row > 0 && col === 0) checkPageBreak(kpiHeight + 10);
+      if (row > 0 && col === 0) addNewPageIfNeeded(kpiCardHeight + 10);
       
-      // KPI Card Background
-      pdf.setFillColor(248, 249, 250);
-      pdf.rect(x, y, kpiWidth, kpiHeight, 'F');
-      pdf.setDrawColor(229, 231, 235);
-      pdf.rect(x, y, kpiWidth, kpiHeight);
+      // Card shadow and background
+      drawShadowBox(x, y, kpiCardWidth, kpiCardHeight, colors.white);
       
-      // Color indicator
-      const colorMap = {
-        blue: blue, red: red, orange: orange, yellow: [251, 191, 36],
-        green: green, purple: [147, 51, 234]
+      // Color accent bar
+      const colorMap: { [key: string]: number[] } = {
+        blue: colors.info, red: colors.danger, orange: colors.orange, 
+        yellow: colors.warning, green: colors.success, purple: colors.purple
       };
-      const indicatorColor = colorMap[kpi.color as keyof typeof colorMap] || lightGray;
-      drawColoredBox(x + 2, y + 2, 3, kpiHeight - 4, indicatorColor);
+      const accentColor = colorMap[kpi.color] || colors.light;
+      pdf.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
+      pdf.rect(x, y, kpiCardWidth, 4, 'F');
       
-      // KPI Content
-      pdf.setTextColor(64, 64, 64);
-      pdf.setFontSize(16);
+      // KPI Value
+      pdf.setTextColor(colors.dark[0], colors.dark[1], colors.dark[2]);
+      pdf.setFontSize(20);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(kpi.value, x + 8, y + 10);
+      pdf.text(kpi.value, x + 5, y + 15);
       
+      // KPI Title
       pdf.setFontSize(10);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(kpi.title, x + 8, y + 17);
+      pdf.setTextColor(colors.medium[0], colors.medium[1], colors.medium[2]);
+      pdf.text(kpi.title, x + 5, y + 22);
       
+      // Trend
       pdf.setFontSize(8);
       pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(128, 128, 128);
-      const trendText = pdf.splitTextToSize(kpi.trend, kpiWidth - 12);
-      pdf.text(trendText, x + 8, y + 22);
+      pdf.setTextColor(colors.light[0], colors.light[1], colors.light[2]);
+      const trendLines = pdf.splitTextToSize(kpi.trend, kpiCardWidth - 10);
+      pdf.text(trendLines, x + 5, y + 28);
     });
     
-    yPosition += Math.ceil(kpiData.length / kpiPerRow) * (kpiHeight + 5) + 15;
+    yPosition += Math.ceil(kpiData.length / 3) * (kpiCardHeight + 8) + 15;
     
-    // Production & Operations Analysis
-    checkPageBreak(40);
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
+    // Production Analysis Section
+    addNewPageIfNeeded(50);
+    drawGradientBox(0, yPosition, pageWidth, 12, colors.info, [80, 150, 255]);
+    pdf.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('PRODUCTION & OPERATIONS ANALYSIS', margin + 3, yPosition + 6);
+    pdf.text('PRODUCTION & OPERATIONS ANALYSIS', margin, yPosition + 8);
+    yPosition += 20;
     
-    yPosition += 15;
-    
-    // Operations Table
-    pdf.setTextColor(64, 64, 64);
-    pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'bold');
-    
-    const colWidths = [45, 25, 20, 18, 18, 18, 20];
-    const headers = ['Equipment', 'Productive', 'Idle', 'Workers', 'Loading', 'Unload', 'Efficiency'];
+    // Enhanced Production Table
+    const tableHeaders = ['Equipment', 'Productive', 'Idle', 'Workers', 'Loading', 'Unload', 'Efficiency'];
+    const colWidths = [50, 25, 20, 18, 18, 18, 25];
     let tableX = margin;
     
-    // Table Headers
-    pdf.setFillColor(248, 249, 250);
-    pdf.rect(tableX, yPosition, colWidths.reduce((a, b) => a + b, 0), 8, 'F');
+    // Table header with gradient
+    drawGradientBox(tableX, yPosition, colWidths.reduce((a, b) => a + b, 0), 10, colors.background, colors.white);
+    pdf.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
+    pdf.rect(tableX, yPosition, colWidths.reduce((a, b) => a + b, 0), 10);
     
-    headers.forEach((header, i) => {
-      pdf.text(header, tableX + 2, yPosition + 6);
+    pdf.setTextColor(colors.dark[0], colors.dark[1], colors.dark[2]);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    
+    tableHeaders.forEach((header, i) => {
+      pdf.text(header, tableX + 2, yPosition + 7);
       tableX += colWidths[i];
     });
+    yPosition += 10;
     
-    yPosition += 8;
-    
-    // Table Rows
-    pdf.setFont('helvetica', 'normal');
+    // Table rows with alternating colors
     machineData.forEach((machine, index) => {
       tableX = margin;
-      const rowY = yPosition + index * 8;
+      const rowHeight = 8;
       
+      // Alternating row colors
       if (index % 2 === 0) {
-        pdf.setFillColor(252, 252, 252);
-        pdf.rect(tableX, rowY, colWidths.reduce((a, b) => a + b, 0), 8, 'F');
+        pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
+        pdf.rect(tableX, yPosition, colWidths.reduce((a, b) => a + b, 0), rowHeight, 'F');
       }
+      
+      // Row border
+      pdf.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
+      pdf.rect(tableX, yPosition, colWidths.reduce((a, b) => a + b, 0), rowHeight);
       
       const rowData = [
         machine.name, machine.productive, machine.idle, 
@@ -282,385 +306,171 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
         machine.unloading.toString(), `${machine.efficiency}%`
       ];
       
+      pdf.setFontSize(9);
       rowData.forEach((data, i) => {
-        if (i === 6) { // Efficiency column
-          pdf.setTextColor(machine.efficiency >= 90 ? 34 : machine.efficiency >= 85 ? 251 : 239, 
-                          machine.efficiency >= 90 ? 197 : machine.efficiency >= 85 ? 191 : 68, 
-                          machine.efficiency >= 90 ? 94 : machine.efficiency >= 85 ? 36 : 68);
+        if (i === 6) { // Efficiency column with color coding
+          const effColor = machine.efficiency >= 90 ? colors.success : 
+                          machine.efficiency >= 85 ? colors.warning : colors.danger;
+          pdf.setTextColor(effColor[0], effColor[1], effColor[2]);
+          pdf.setFont('helvetica', 'bold');
+        } else if (i === 0) { // Equipment name
+          pdf.setTextColor(colors.dark[0], colors.dark[1], colors.dark[2]);
           pdf.setFont('helvetica', 'bold');
         } else {
-          pdf.setTextColor(64, 64, 64);
+          pdf.setTextColor(colors.medium[0], colors.medium[1], colors.medium[2]);
           pdf.setFont('helvetica', 'normal');
         }
-        pdf.text(data, tableX + 2, rowY + 6);
+        pdf.text(data, tableX + 2, yPosition + 6);
         tableX += colWidths[i];
       });
+      yPosition += rowHeight;
     });
-    
-    yPosition += machineData.length * 8 + 15;
-    
-    // Critical Alerts Section
-    checkPageBreak(30);
-    pdf.setFillColor(239, 68, 68);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('CRITICAL OPERATIONAL ALERTS', margin + 3, yPosition + 6);
     
     yPosition += 15;
     
+    // Critical Alerts Section with Enhanced Design
+    addNewPageIfNeeded(40);
+    drawGradientBox(0, yPosition, pageWidth, 12, colors.danger, [255, 100, 120]);
+    pdf.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('CRITICAL OPERATIONAL ALERTS', margin, yPosition + 8);
+    yPosition += 20;
+    
     criticalAlerts.forEach((alert, index) => {
-      const alertColor = alert.severity === 'high' ? red : orange;
+      addNewPageIfNeeded(20);
+      const alertColor = alert.severity === 'high' ? colors.danger : colors.warning;
       
-      // Alert box
-      pdf.setFillColor(alertColor[0], alertColor[1], alertColor[2], 0.1);
-      pdf.rect(margin, yPosition, pageWidth - 2 * margin, 12, 'F');
+      // Alert card with shadow
+      drawShadowBox(margin, yPosition, pageWidth - 2 * margin, 18, colors.white);
       
-      // Alert indicator
-      drawColoredBox(margin, yPosition, 3, 12, alertColor);
+      // Severity indicator bar
+      pdf.setFillColor(alertColor[0], alertColor[1], alertColor[2]);
+      pdf.rect(margin, yPosition, 4, 18, 'F');
       
-      pdf.setTextColor(64, 64, 64);
-      pdf.setFontSize(10);
+      // Alert content
+      pdf.setTextColor(colors.dark[0], colors.dark[1], colors.dark[2]);
+      pdf.setFontSize(11);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(alert.type, margin + 8, yPosition + 5);
+      pdf.text(alert.type, margin + 8, yPosition + 7);
       
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(9);
-      const messageLines = pdf.splitTextToSize(alert.message, pageWidth - 2 * margin - 15);
-      pdf.text(messageLines, margin + 8, yPosition + 9);
+      const messageLines = pdf.splitTextToSize(alert.message, pageWidth - 2 * margin - 25);
+      pdf.text(messageLines, margin + 8, yPosition + 12);
       
-      yPosition += 15;
-      checkPageBreak(15);
+      // Severity badge
+      pdf.setFillColor(alertColor[0], alertColor[1], alertColor[2], 0.2);
+      pdf.rect(pageWidth - 40, yPosition + 3, 25, 8, 'F');
+      pdf.setTextColor(alertColor[0], alertColor[1], alertColor[2]);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8);
+      pdf.text(alert.severity.toUpperCase(), pageWidth - 37, yPosition + 8);
+      
+      yPosition += 25;
     });
     
     // New page for detailed sections
     pdf.addPage();
-    yPosition = 20;
+    yPosition = 25;
     
-    // Security & Access Control
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
+    // Security Section
+    drawGradientBox(0, yPosition, pageWidth, 12, colors.purple, [170, 80, 255]);
+    pdf.setTextColor(colors.white[0], colors.white[1], colors.white[2]);
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('SECURITY & ACCESS CONTROL', margin + 3, yPosition + 6);
+    pdf.text('SECURITY & ACCESS CONTROL', margin, yPosition + 8);
+    yPosition += 20;
     
-    yPosition += 15;
-    
-    // Access Control Table
-    const accessColWidths = [50, 25, 25, 25, 30, 20];
-    const accessHeaders = ['Security Zone', 'Authorized', 'Unauthorized', 'Access Times', 'Status', 'Risk'];
+    // Enhanced Access Control Table
+    const accessHeaders = ['Security Zone', 'Authorized', 'Unauthorized', 'Times', 'Status', 'Risk'];
+    const accessColWidths = [45, 22, 22, 25, 25, 15];
     tableX = margin;
     
-    pdf.setTextColor(64, 64, 64);
+    // Table header
+    drawGradientBox(tableX, yPosition, accessColWidths.reduce((a, b) => a + b, 0), 10, colors.background, colors.white);
+    pdf.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
+    pdf.rect(tableX, yPosition, accessColWidths.reduce((a, b) => a + b, 0), 10);
+    
+    pdf.setTextColor(colors.dark[0], colors.dark[1], colors.dark[2]);
     pdf.setFontSize(9);
     pdf.setFont('helvetica', 'bold');
     
-    // Headers
-    pdf.setFillColor(248, 249, 250);
-    pdf.rect(tableX, yPosition, accessColWidths.reduce((a, b) => a + b, 0), 8, 'F');
-    
     accessHeaders.forEach((header, i) => {
-      pdf.text(header, tableX + 2, yPosition + 6);
+      pdf.text(header, tableX + 2, yPosition + 7);
       tableX += accessColWidths[i];
     });
+    yPosition += 10;
     
-    yPosition += 8;
-    
-    // Access Data Rows
-    pdf.setFont('helvetica', 'normal');
+    // Access data rows
     accessData.forEach((access, index) => {
       tableX = margin;
-      const rowY = yPosition + index * 8;
+      const rowHeight = 10;
       
       if (index % 2 === 0) {
-        pdf.setFillColor(252, 252, 252);
-        pdf.rect(tableX, rowY, accessColWidths.reduce((a, b) => a + b, 0), 8, 'F');
+        pdf.setFillColor(colors.background[0], colors.background[1], colors.background[2]);
+        pdf.rect(tableX, yPosition, accessColWidths.reduce((a, b) => a + b, 0), rowHeight, 'F');
       }
+      
+      pdf.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
+      pdf.rect(tableX, yPosition, accessColWidths.reduce((a, b) => a + b, 0), rowHeight);
       
       const accessRowData = [
         access.zone, access.authorized.toString(), access.unauthorized.toString(),
         access.times, access.status, access.risk
       ];
       
+      pdf.setFontSize(8);
       accessRowData.forEach((data, i) => {
-        if (i === 4) { // Status column
-          const statusColor = access.status === 'Normal' ? green : access.status === 'Breach' ? red : orange;
+        if (i === 4) { // Status
+          const statusColor = access.status === 'Normal' ? colors.success : 
+                            access.status === 'Breach' ? colors.danger : colors.warning;
           pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
           pdf.setFont('helvetica', 'bold');
-        } else if (i === 5) { // Risk column
-          const riskColor = access.risk === 'Low' ? green : access.risk === 'High' ? red : orange;
+        } else if (i === 5) { // Risk
+          const riskColor = access.risk === 'Low' ? colors.success : 
+                           access.risk === 'High' ? colors.danger : colors.warning;
           pdf.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
           pdf.setFont('helvetica', 'bold');
         } else {
-          pdf.setTextColor(64, 64, 64);
+          pdf.setTextColor(colors.medium[0], colors.medium[1], colors.medium[2]);
           pdf.setFont('helvetica', 'normal');
         }
-        pdf.text(data, tableX + 2, rowY + 6);
+        pdf.text(data, tableX + 2, yPosition + 7);
         tableX += accessColWidths[i];
       });
+      yPosition += rowHeight;
     });
     
-    yPosition += accessData.length * 8 + 15;
+    yPosition += 20;
     
-    // Compliance Monitoring
-    checkPageBreak(40);
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('SAFETY & COMPLIANCE MONITORING', margin + 3, yPosition + 6);
-    
-    yPosition += 15;
-    
-    // Compliance Table
-    const complianceColWidths = [60, 35, 20, 15, 15];
-    const complianceHeaders = ['Compliance Area', 'Status', 'Violations', 'Score', 'Trend'];
-    tableX = margin;
-    
-    pdf.setTextColor(64, 64, 64);
-    pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'bold');
-    
-    // Headers
-    pdf.setFillColor(248, 249, 250);
-    pdf.rect(tableX, yPosition, complianceColWidths.reduce((a, b) => a + b, 0), 8, 'F');
-    
-    complianceHeaders.forEach((header, i) => {
-      pdf.text(header, tableX + 2, yPosition + 6);
-      tableX += complianceColWidths[i];
-    });
-    
-    yPosition += 8;
-    
-    // Compliance Data Rows
-    pdf.setFont('helvetica', 'normal');
-    complianceData.forEach((item, index) => {
-      tableX = margin;
-      const rowY = yPosition + index * 8;
+    // Enhanced Footer with Company Branding
+    const addFooter = () => {
+      const footerY = pageHeight - 20;
+      drawGradientBox(0, footerY, pageWidth, 20, colors.background, colors.white);
+      pdf.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
+      pdf.line(0, footerY, pageWidth, footerY);
       
-      if (index % 2 === 0) {
-        pdf.setFillColor(252, 252, 252);
-        pdf.rect(tableX, rowY, complianceColWidths.reduce((a, b) => a + b, 0), 8, 'F');
-      }
-      
-      const complianceRowData = [
-        item.area, item.status, item.violations.toString(), `${item.score}%`, item.trend
-      ];
-      
-      complianceRowData.forEach((data, i) => {
-        if (i === 1) { // Status column
-          const statusColor = item.status === 'Compliant' ? green : item.status.includes('Non') || item.status === 'Violation' ? red : orange;
-          pdf.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
-          pdf.setFont('helvetica', 'bold');
-        } else if (i === 3) { // Score column
-          const scoreColor = item.score >= 90 ? green : item.score >= 75 ? orange : red;
-          pdf.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
-          pdf.setFont('helvetica', 'bold');
-        } else {
-          pdf.setTextColor(64, 64, 64);
-          pdf.setFont('helvetica', 'normal');
-        }
-        pdf.text(data, tableX + 2, rowY + 6);
-        tableX += complianceColWidths[i];
-      });
-    });
-    
-    yPosition += complianceData.length * 8 + 15;
-    
-    // Personnel & Resource Utilization
-    checkPageBreak(40);
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('PERSONNEL & RESOURCE UTILIZATION', margin + 3, yPosition + 6);
-    
-    yPosition += 15;
-    
-    // Personnel Table
-    const personnelColWidths = [60, 20, 20, 20, 35];
-    const personnelHeaders = ['Role Category', 'Current', 'Capacity', 'Utilization', 'Status Bar'];
-    tableX = margin;
-    
-    pdf.setTextColor(64, 64, 64);
-    pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'bold');
-    
-    // Headers
-    pdf.setFillColor(248, 249, 250);
-    pdf.rect(tableX, yPosition, personnelColWidths.reduce((a, b) => a + b, 0), 8, 'F');
-    
-    personnelHeaders.forEach((header, i) => {
-      pdf.text(header, tableX + 2, yPosition + 6);
-      tableX += personnelColWidths[i];
-    });
-    
-    yPosition += 8;
-    
-    // Personnel Data Rows
-    pdf.setFont('helvetica', 'normal');
-    manpowerData.forEach((item, index) => {
-      tableX = margin;
-      const rowY = yPosition + index * 8;
-      
-      if (index % 2 === 0) {
-        pdf.setFillColor(252, 252, 252);
-        pdf.rect(tableX, rowY, personnelColWidths.reduce((a, b) => a + b, 0), 8, 'F');
-      }
-      
-      const personnelRowData = [
-        item.role, item.count.toString(), item.capacity.toString(), `${item.utilization}%`
-      ];
-      
-      personnelRowData.forEach((data, i) => {
-        if (index === 0) { // Total Personnel row
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(64, 64, 64);
-        } else if (i === 3) { // Utilization column
-          const utilColor = item.utilization >= 80 ? green : item.utilization >= 60 ? orange : red;
-          pdf.setTextColor(utilColor[0], utilColor[1], utilColor[2]);
-          pdf.setFont('helvetica', 'bold');
-        } else {
-          pdf.setTextColor(64, 64, 64);
-          pdf.setFont('helvetica', 'normal');
-        }
-        pdf.text(data, tableX + 2, rowY + 6);
-        tableX += personnelColWidths[i];
-      });
-      
-      // Status bar
-      const barWidth = 25;
-      const barHeight = 3;
-      const barX = tableX - personnelColWidths[4] + 8;
-      const barY = rowY + 4;
-      
-      // Background bar
-      pdf.setFillColor(229, 231, 235);
-      pdf.rect(barX, barY, barWidth, barHeight, 'F');
-      
-      // Utilization bar
-      const utilColor = item.utilization >= 80 ? green : item.utilization >= 60 ? orange : red;
-      pdf.setFillColor(utilColor[0], utilColor[1], utilColor[2]);
-      pdf.rect(barX, barY, (barWidth * item.utilization) / 100, barHeight, 'F');
-    });
-    
-    yPosition += manpowerData.length * 8 + 15;
-    
-    // Video Evidence Section
-    checkPageBreak(30);
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('VIDEO EVIDENCE & DOCUMENTATION', margin + 3, yPosition + 6);
-    
-    yPosition += 15;
-    
-    videoEvidence.forEach((video, index) => {
-      const severityColor = video.severity === 'high' ? red : orange;
-      
-      // Video entry box
-      pdf.setFillColor(248, 249, 250);
-      pdf.rect(margin, yPosition, pageWidth - 2 * margin, 12, 'F');
-      pdf.setDrawColor(229, 231, 235);
-      pdf.rect(margin, yPosition, pageWidth - 2 * margin, 12);
-      
-      // Severity indicator
-      drawColoredBox(margin + 2, yPosition + 2, 3, 8, severityColor);
-      
-      pdf.setTextColor(64, 64, 64);
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(video.title, margin + 8, yPosition + 6);
-      
+      pdf.setTextColor(colors.light[0], colors.light[1], colors.light[2]);
+      pdf.setFontSize(8);
       pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(9);
-      pdf.text(`Time: ${video.time} | Duration: ${video.duration}`, margin + 8, yPosition + 10);
-      
-      // Severity badge
-      pdf.setFillColor(severityColor[0], severityColor[1], severityColor[2], 0.2);
-      pdf.rect(pageWidth - 35, yPosition + 3, 20, 6, 'F');
-      pdf.setTextColor(severityColor[0], severityColor[1], severityColor[2]);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(video.severity.toUpperCase(), pageWidth - 32, yPosition + 7);
-      
-      yPosition += 15;
-      checkPageBreak(15);
-    });
+      pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, footerY + 8);
+      pdf.text('CONFIDENTIAL - Bisleri Bottling Plant', pageWidth - margin, footerY + 8, { align: 'right' });
+      pdf.text(`Page ${pdf.getNumberOfPages()}`, pageWidth / 2, footerY + 15, { align: 'center' });
+    };
     
-    // Recommendations Section
-    checkPageBreak(50);
-    pdf.setFillColor(234, 56, 76);
-    pdf.rect(margin, yPosition, pageWidth - 2 * margin, 8, 'F');
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(14);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('RECOMMENDED ACTIONS & NEXT STEPS', margin + 3, yPosition + 6);
+    // Add footer to all pages
+    const totalPages = pdf.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      addFooter();
+    }
     
-    yPosition += 15;
+    // Save with enhanced filename
+    const timestamp = new Date().toISOString().split('T')[0];
+    pdf.save(`Bisleri_Security_Operations_Report_${timestamp}.pdf`);
     
-    // Immediate Actions
-    pdf.setTextColor(239, 68, 68);
-    pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Immediate Actions Required:', margin, yPosition);
-    yPosition += 10;
-    
-    immediateActions.forEach((action) => {
-      pdf.setTextColor(64, 64, 64);
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`• ${action.title}`, margin + 5, yPosition);
-      yPosition += 5;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(9);
-      const descLines = pdf.splitTextToSize(action.description, pageWidth - 2 * margin - 15);
-      pdf.text(descLines, margin + 10, yPosition);
-      yPosition += 8;
-    });
-    
-    yPosition += 5;
-    
-    // Operational Improvements
-    pdf.setTextColor(59, 130, 246);
-    pdf.setFontSize(12);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Operational Improvements:', margin, yPosition);
-    yPosition += 10;
-    
-    operationalImprovements.forEach((improvement) => {
-      pdf.setTextColor(64, 64, 64);
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`• ${improvement.title}`, margin + 5, yPosition);
-      yPosition += 5;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(9);
-      const descLines = pdf.splitTextToSize(improvement.description, pageWidth - 2 * margin - 15);
-      pdf.text(descLines, margin + 10, yPosition);
-      yPosition += 8;
-    });
-    
-    // Footer on last page
-    pdf.setFillColor(248, 249, 250);
-    pdf.rect(0, pageHeight - 15, pageWidth, 15, 'F');
-    pdf.setTextColor(128, 128, 128);
-    pdf.setFontSize(8);
-    pdf.text(`Generated on: ${new Date().toLocaleString()}`, margin, pageHeight - 8);
-    pdf.text('Confidential - Bisleri Bottling Plant', pageWidth - margin, pageHeight - 8, { align: 'right' });
-    pdf.text(`Page ${pdf.getNumberOfPages()}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
-    
-    // Save the PDF
-    pdf.save(`Bisleri_Security_Operations_Report_${new Date().toISOString().split('T')[0]}.pdf`);
-    
-    console.log("Enhanced PDF report exported successfully");
+    console.log("Enhanced visual PDF report exported successfully");
   };
 
   return (
