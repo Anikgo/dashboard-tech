@@ -27,7 +27,7 @@ export default function LiveViewPage() {
     { id: "cam-1", name: "Indian Factory Entrance", status: "Active", alert: false, image: "/indian-factory-1.jpg" },
     { id: "cam-2", name: "Shop Floor", status: "Active", alert: true, image: "/indian-shop-1.jpg" },
     { id: "cam-3", name: "Indian Shop Entrance", status: "Active", alert: false, image: "/indian-factory-2.jpg" },
-    { id: "cam-4", name: "Production Line", status: "Active", alert: false, image: "/indian-shop-2.jpg" },
+    { id: "cam-4", name: "Production Line", status: "Active", alert: false, image: "/lovable-uploads/0b1b007b-d9e7-4523-90bd-f2fabfbb8b73.png" },
     { id: "cam-5", name: "Warehouse", status: "Offline", alert: false, image: "/indian-factory-3.jpg" },
     { id: "cam-6", name: "Shop Counter", status: "Active", alert: false, image: "/indian-shop-3.jpg" }
   ];
@@ -173,6 +173,10 @@ export default function LiveViewPage() {
           </CardHeader>
           <CardContent className="p-4">
             <div className="space-y-3">
+              <div className="border-l-2 border-guardai-red pl-3 py-1">
+                <div className="text-sm font-medium"><strong>IDLE MACHINERY SINCE 45 MIN!</strong></div>
+                <div className="text-xs text-gray-500">Today, 10:15 AM</div>
+              </div>
               <div className="border-l-2 border-guardai-red pl-3 py-1">
                 <div className="text-sm font-medium">Motion detected - Loading Dock</div>
                 <div className="text-xs text-gray-500">Today, 09:42 AM</div>
