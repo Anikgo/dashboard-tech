@@ -174,8 +174,8 @@ export default function LiveViewPage() {
           <CardContent className="p-4">
             <div className="space-y-3">
               <div className="border-l-2 border-guardai-red pl-3 py-1">
-                <div className="text-sm font-medium"><strong>IDLE MACHINERY SINCE 45 MIN!</strong></div>
-                <div className="text-xs text-gray-500">Today, 10:15 AM</div>
+                <div className="text-sm font-medium"><strong>IDLE MACHINERY SINCE 9:30 AM FOR 45 MIN!</strong></div>
+                <div className="text-xs text-gray-500">Today, 9:30 AM</div>
               </div>
               <div className="border-l-2 border-guardai-red pl-3 py-1">
                 <div className="text-sm font-medium">Motion detected - Loading Dock</div>
