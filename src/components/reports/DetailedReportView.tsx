@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Download, AlertTriangle, CheckCircle, XCircle, Clock, Users, Video, Shield, Settings, FileText, TrendingUp, TrendingDown, Activity } from "lucide-react";
+import jsPDF from 'jspdf';
 
 interface DetailedReportViewProps {
   onClose: () => void;
@@ -70,42 +71,172 @@ export function DetailedReportView({ onClose }: DetailedReportViewProps) {
   };
 
   const handleExportPDF = () => {
-    // Create a comprehensive PDF export
-    const reportData = {
-      title: "Security & Operations Report",
-      facility: "Bisleri Bottling Plant, Uttar Pradesh",
-      period: "June 01, 2024 - June 07, 2024",
-      reportId: "BSL-OP-001",
-      generatedAt: new Date().toISOString(),
-      summary: {
-        securityEvents: 1247,
-        criticalIncidents: 3,
-        equipmentDowntime: "3h 40m",
-        safetyViolations: 7,
-        personnelCapacity: "37/45",
-        overallEfficiency: "89%"
-      },
-      operations: machineData,
-      security: accessData,
-      compliance: complianceData,
-      personnel: manpowerData
-    };
-
-    // Convert to JSON and create downloadable file
-    const dataStr = JSON.stringify(reportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    let yPosition = 20;
     
-    // Create download link
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Bisleri_Security_Report_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    console.log("PDF export initiated for Bisleri Bottling Plant report");
+    // Header
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('SECURITY & OPERATIONS REPORT', pageWidth / 2, yPosition, { align: 'center' });
+    
+    yPosition += 10;
+    pdf.setFontSize(16);
+    pdf.text('Bisleri Bottling Plant, Uttar Pradesh', pageWidth / 2, yPosition, { align: 'center' });
+    
+    yPosition += 8;
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Report Period: June 01, 2024 - June 07, 2024', pageWidth / 2, yPosition, { align: 'center' });
+    pdf.text('Report ID: BSL-OP-001', pageWidth / 2, yPosition + 5, { align: 'center' });
+    
+    yPosition += 20;
+    
+    // Executive Summary
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('EXECUTIVE SUMMARY', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    const summaryData = [
+      'Security Events: 1,247 (↑ 12% from last week)',
+      'Critical Incidents: 3 (Requires immediate action)',
+      'Equipment Downtime: 3h 40m (15% above baseline)',
+      'Safety Violations: 7 (Down from 12 last week)',
+      'Personnel Capacity: 37/45 (82% utilization)',
+      'Overall Efficiency: 89% (Above target of 85%)'
+    ];
+    
+    summaryData.forEach((item) => {
+      pdf.text(`• ${item}`, 25, yPosition);
+      yPosition += 6;
+    });
+    
+    yPosition += 10;
+    
+    // Operations Analysis
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('PRODUCTION & OPERATIONS ANALYSIS', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Equipment', 20, yPosition);
+    pdf.text('Productive', 70, yPosition);
+    pdf.text('Idle', 100, yPosition);
+    pdf.text('Workers', 120, yPosition);
+    pdf.text('Efficiency', 150, yPosition);
+    yPosition += 8;
+    
+    pdf.setFont('helvetica', 'normal');
+    machineData.forEach((machine) => {
+      pdf.text(machine.name, 20, yPosition);
+      pdf.text(machine.productive, 70, yPosition);
+      pdf.text(machine.idle, 100, yPosition);
+      pdf.text(machine.workers.toString(), 120, yPosition);
+      pdf.text(`${machine.efficiency}%`, 150, yPosition);
+      yPosition += 6;
+    });
+    
+    yPosition += 10;
+    
+    // Check if we need a new page
+    if (yPosition > pageHeight - 50) {
+      pdf.addPage();
+      yPosition = 20;
+    }
+    
+    // Security & Access Control
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('SECURITY & ACCESS CONTROL', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Zone', 20, yPosition);
+    pdf.text('Authorized', 70, yPosition);
+    pdf.text('Unauthorized', 110, yPosition);
+    pdf.text('Status', 150, yPosition);
+    yPosition += 8;
+    
+    pdf.setFont('helvetica', 'normal');
+    accessData.forEach((access) => {
+      pdf.text(access.zone, 20, yPosition);
+      pdf.text(access.authorized.toString(), 70, yPosition);
+      pdf.text(access.unauthorized.toString(), 110, yPosition);
+      pdf.text(access.status, 150, yPosition);
+      yPosition += 6;
+    });
+    
+    yPosition += 10;
+    
+    // Compliance Monitoring
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('SAFETY & COMPLIANCE MONITORING', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Compliance Area', 20, yPosition);
+    pdf.text('Status', 100, yPosition);
+    pdf.text('Violations', 130, yPosition);
+    pdf.text('Score', 160, yPosition);
+    yPosition += 8;
+    
+    pdf.setFont('helvetica', 'normal');
+    complianceData.forEach((item) => {
+      pdf.text(item.area, 20, yPosition);
+      pdf.text(item.status, 100, yPosition);
+      pdf.text(item.violations.toString(), 130, yPosition);
+      pdf.text(`${item.score}%`, 160, yPosition);
+      yPosition += 6;
+    });
+    
+    yPosition += 10;
+    
+    // Check if we need a new page
+    if (yPosition > pageHeight - 40) {
+      pdf.addPage();
+      yPosition = 20;
+    }
+    
+    // Critical Alerts
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('CRITICAL ALERTS & RECOMMENDATIONS', 20, yPosition);
+    yPosition += 10;
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    const alerts = [
+      'HIGH PRIORITY: Production Line 2 idle for 1h 10m - 40% above baseline',
+      'SAFETY CONCERN: Worker using mobile device near Production Line 1',
+      'SECURITY BREACH: Unauthorized access in Administration Block at 22:40',
+      'COMPLIANCE: 4 PPE violations detected - immediate training required'
+    ];
+    
+    alerts.forEach((alert) => {
+      pdf.text(`• ${alert}`, 25, yPosition);
+      yPosition += 8;
+    });
+    
+    yPosition += 10;
+    
+    // Footer
+    pdf.setFontSize(8);
+    pdf.text(`Generated on: ${new Date().toLocaleString()}`, 20, pageHeight - 15);
+    pdf.text('Confidential - Bisleri Bottling Plant', pageWidth - 20, pageHeight - 15, { align: 'right' });
+    
+    // Save the PDF
+    pdf.save(`Bisleri_Security_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+    
+    console.log("PDF report exported successfully");
   };
 
   return (
