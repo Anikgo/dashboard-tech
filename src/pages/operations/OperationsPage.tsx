@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Factory, Clock, Users, Truck, TrendingUp, Activity, AlertTriangle, CheckCircle } from "lucide-react";
+import { Factory, Clock, Users, Truck, TrendingUp, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +51,7 @@ export default function OperationsPage() {
       title: "Employee Access & Tracking",
       description: "Face recognition, attendance, and work monitoring",
       icon: Users,
-      status: "warning",
+      status: "active",
       count: 156,
       details: {
         currentShift: 156,
@@ -129,45 +129,6 @@ export default function OperationsPage() {
     return "outline";
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "critical":
-        return "text-red-500";
-      case "warning":
-        return "text-yellow-500";
-      case "active":
-        return "text-green-500";
-      default:
-        return "text-guardai-gray";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "critical":
-        return AlertTriangle;
-      case "warning":
-        return AlertTriangle;
-      case "active":
-        return CheckCircle;
-      default:
-        return Activity;
-    }
-  };
-
-  const getStatusBg = (status: string) => {
-    switch (status) {
-      case "critical":
-        return "bg-red-50 border-red-200";
-      case "warning":
-        return "bg-yellow-50 border-yellow-200";
-      case "active":
-        return "bg-green-50 border-green-200";
-      default:
-        return "bg-gray-50 border-gray-200";
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col">
       <motion.div 
@@ -193,155 +154,151 @@ export default function OperationsPage() {
           animate="visible"
           className="space-y-6 pb-6"
         >
-          {operationsFeatures.map((feature) => {
-            const StatusIcon = getStatusIcon(feature.status);
-            
-            return (
-              <motion.div key={feature.id} variants={itemVariants}>
-                <Card className={cn("shadow-lg w-full bg-white", getStatusBg(feature.status))}>
-                  <CardHeader className="p-4 pb-2">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-guardai-red/10 p-2 rounded-lg">
-                          <feature.icon size={24} className="text-guardai-red" />
-                        </div>
-                        <div className="bg-guardai-red text-white text-sm px-3 py-1 rounded-full font-medium">
-                          {feature.count}
-                        </div>
+          {operationsFeatures.map((feature) => (
+            <motion.div key={feature.id} variants={itemVariants}>
+              <Card className="border border-gray-200 shadow-lg w-full bg-white">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-guardai-red/10 p-2 rounded-lg">
+                        <feature.icon size={24} className="text-guardai-red" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <StatusIcon size={16} className={getStatusColor(feature.status)} />
-                        <span className={cn("text-xs font-medium", getStatusColor(feature.status))}>
-                          {feature.status === "critical" ? "Critical" : 
-                           feature.status === "warning" ? "Warning" : "Active"}
-                        </span>
+                      <div className="bg-guardai-red text-white text-sm px-3 py-1 rounded-full font-medium">
+                        {feature.count}
                       </div>
                     </div>
-                    <CardTitle className="text-lg font-semibold text-guardai-darkgray">{feature.title}</CardTitle>
-                    <p className="text-sm text-guardai-gray">{feature.description}</p>
-                  </CardHeader>
-                  
-                  <CardContent className="p-4 pt-0">
-                    {/* Summary Stats */}
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-                      {Object.entries(feature.details).map(([key, value]) => (
-                        <div key={key} className="text-center p-3 bg-white rounded-lg border border-guardai-lightgray shadow-sm">
-                          <div className="text-lg font-bold text-guardai-red">{value}</div>
-                          <div className="text-xs text-guardai-darkgray capitalize">
-                            {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                          </div>
-                        </div>
-                      ))}
+                    <div className="flex items-center gap-2">
+                      <Activity size={12} className="text-guardai-red" />
+                      <span className="text-xs text-guardai-gray">
+                        {feature.status === "critical" ? "Critical" : 
+                         feature.status === "warning" ? "Warning" : "Active"}
+                      </span>
                     </div>
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-guardai-darkgray">{feature.title}</CardTitle>
+                  <p className="text-sm text-guardai-gray">{feature.description}</p>
+                </CardHeader>
+                
+                <CardContent className="p-4 pt-0">
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                    {Object.entries(feature.details).map(([key, value]) => (
+                      <div key={key} className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
+                        <div className="text-lg font-bold text-guardai-red">{value}</div>
+                        <div className="text-xs text-guardai-darkgray capitalize">
+                          {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                    {/* Data Table */}
-                    <div className="border rounded-lg overflow-hidden bg-white">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-guardai-red/5">
+                  {/* Data Table */}
+                  <div className="border rounded-lg overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-guardai-red/5">
+                          {feature.id === "machine-idle" && (
+                            <>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Machine ID</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Idle Duration</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Location</TableHead>
+                            </>
+                          )}
+                          {feature.id === "employee-access" && (
+                            <>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Employee ID</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Name</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Time In</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Time Out</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Shift</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Hours Worked</TableHead>
+                            </>
+                          )}
+                          {feature.id === "loading-unloading" && (
+                            <>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Operation ID</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Type</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Truck</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Cartons</TableHead>
+                            </>
+                          )}
+                          {feature.id === "productivity-analytics" && (
+                            <>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Metric</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Current</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Target</TableHead>
+                              <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
+                            </>
+                          )}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(feature.data.machines || feature.data.employees || feature.data.operations || feature.data.metrics || []).map((item: any, index: number) => (
+                          <TableRow key={index} className="hover:bg-guardai-lightgray/30">
                             {feature.id === "machine-idle" && (
                               <>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Machine ID</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Idle Duration</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Location</TableHead>
+                                <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
+                                <TableCell className="text-xs">
+                                  <Badge variant={getBadgeVariant(item.status)} className="text-xs">
+                                    {item.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.duration}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.location}</TableCell>
                               </>
                             )}
                             {feature.id === "employee-access" && (
                               <>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Employee ID</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Name</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Time In</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Time Out</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Shift</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Hours Worked</TableHead>
+                                <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.name}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.timeIn}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.timeOut}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.shift}</TableCell>
+                                <TableCell className="text-xs">
+                                  <Badge variant={getBadgeVariant(item.status)} className="text-xs">
+                                    {item.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.hoursWorked}</TableCell>
                               </>
                             )}
                             {feature.id === "loading-unloading" && (
                               <>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Operation ID</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Type</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Truck</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Cartons</TableHead>
+                                <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.type}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.truck}</TableCell>
+                                <TableCell className="text-xs">
+                                  <Badge variant={getBadgeVariant(item.status)} className="text-xs">
+                                    {item.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.cartons}</TableCell>
                               </>
                             )}
                             {feature.id === "productivity-analytics" && (
                               <>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Metric</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Current</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Target</TableHead>
-                                <TableHead className="text-xs font-semibold text-guardai-darkgray">Status</TableHead>
+                                <TableCell className="text-xs font-medium text-guardai-darkgray">{item.metric}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.current}</TableCell>
+                                <TableCell className="text-xs text-guardai-darkgray">{item.target}</TableCell>
+                                <TableCell className="text-xs">
+                                  <Badge variant={getBadgeVariant(item.status)} className="text-xs">
+                                    {item.status}
+                                  </Badge>
+                                </TableCell>
                               </>
                             )}
                           </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {(feature.data.machines || feature.data.employees || feature.data.operations || feature.data.metrics || []).map((item: any, index: number) => (
-                            <TableRow key={index} className="hover:bg-guardai-lightgray/30">
-                              {feature.id === "machine-idle" && (
-                                <>
-                                  <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <Badge variant={getBadgeVariant(item.status)} className="text-xs">
-                                      {item.status}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.duration}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.location}</TableCell>
-                                </>
-                              )}
-                              {feature.id === "employee-access" && (
-                                <>
-                                  <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.name}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.timeIn}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.timeOut}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.shift}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <Badge variant={getBadgeVariant(item.status)} className="text-xs">
-                                      {item.status}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.hoursWorked}</TableCell>
-                                </>
-                              )}
-                              {feature.id === "loading-unloading" && (
-                                <>
-                                  <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.type}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.truck}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <Badge variant={getBadgeVariant(item.status)} className="text-xs">
-                                      {item.status}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.cartons}</TableCell>
-                                </>
-                              )}
-                              {feature.id === "productivity-analytics" && (
-                                <>
-                                  <TableCell className="text-xs font-medium text-guardai-darkgray">{item.metric}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.current}</TableCell>
-                                  <TableCell className="text-xs text-guardai-darkgray">{item.target}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <Badge variant={getBadgeVariant(item.status)} className="text-xs">
-                                      {item.status}
-                                    </Badge>
-                                  </TableCell>
-                                </>
-                              )}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
 
           {/* Summary Stats */}
           <motion.div variants={itemVariants}>
