@@ -39,10 +39,10 @@ export default function OperationsPage() {
       },
       data: {
         machines: [
-          { id: "CNC-01", status: "Idle", duration: "45 min", operator: "None", location: "Production Line 1" },
-          { id: "Press-02", status: "Idle", duration: "32 min", operator: "None", location: "Assembly Area" },
-          { id: "Assembly-03", status: "Idle", duration: "28 min", operator: "None", location: "Production Line 2" },
-          { id: "Drill-04", status: "Active", duration: "0 min", operator: "John Smith", location: "Workshop" }
+          { id: "CNC-01", status: "Idle", duration: "45 min", operator: "None", location: "Production Line 1", priority: "critical" },
+          { id: "Press-02", status: "Idle", duration: "32 min", operator: "None", location: "Assembly Area", priority: "warning" },
+          { id: "Assembly-03", status: "Idle", duration: "28 min", operator: "None", location: "Production Line 2", priority: "warning" },
+          { id: "Drill-04", status: "Active", duration: "0 min", operator: "John Smith", location: "Workshop", priority: "good" }
         ]
       }
     },
@@ -63,11 +63,11 @@ export default function OperationsPage() {
       },
       data: {
         employees: [
-          { id: "EMP001", name: "John Smith", timeIn: "08:00", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.5h" },
-          { id: "EMP002", name: "Maria Garcia", timeIn: "08:15", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.3h" },
-          { id: "EMP003", name: "David Chen", timeIn: "-", timeOut: "-", shift: "Day", status: "Absent", hoursWorked: "0h" },
-          { id: "EMP004", name: "Sarah Johnson", timeIn: "20:00", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.0h" },
-          { id: "EMP005", name: "Mike Wilson", timeIn: "19:45", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.2h" }
+          { id: "EMP001", name: "John Smith", timeIn: "08:00", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.5h", priority: "good" },
+          { id: "EMP002", name: "Maria Garcia", timeIn: "08:15", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.3h", priority: "good" },
+          { id: "EMP003", name: "David Chen", timeIn: "-", timeOut: "-", shift: "Day", status: "Absent", hoursWorked: "0h", priority: "critical" },
+          { id: "EMP004", name: "Sarah Johnson", timeIn: "20:00", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.0h", priority: "good" },
+          { id: "EMP005", name: "Mike Wilson", timeIn: "19:45", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.2h", priority: "good" }
         ]
       }
     },
@@ -88,10 +88,10 @@ export default function OperationsPage() {
       },
       data: {
         operations: [
-          { id: "TR001", type: "Loading", truck: "MH-12-AB-1234", bay: "Bay 1", startTime: "10:30 AM", status: "In Progress", cartons: 45 },
-          { id: "TR002", type: "Unloading", truck: "UP-32-CD-5678", bay: "Bay 3", startTime: "11:00 AM", status: "Completed", cartons: 38 },
-          { id: "TR003", type: "Loading", truck: "DL-01-EF-9012", bay: "Bay 2", startTime: "11:15 AM", status: "Waiting", cartons: 52 },
-          { id: "TR004", type: "Unloading", truck: "RJ-14-GH-3456", bay: "Bay 4", startTime: "09:45 AM", status: "In Progress", cartons: 29 }
+          { id: "TR001", type: "Loading", truck: "MH-12-AB-1234", bay: "Bay 1", startTime: "10:30 AM", status: "In Progress", cartons: 45, priority: "warning" },
+          { id: "TR002", type: "Unloading", truck: "UP-32-CD-5678", bay: "Bay 3", startTime: "11:00 AM", status: "Completed", cartons: 38, priority: "good" },
+          { id: "TR003", type: "Loading", truck: "DL-01-EF-9012", bay: "Bay 2", startTime: "11:15 AM", status: "Waiting", cartons: 52, priority: "critical" },
+          { id: "TR004", type: "Unloading", truck: "RJ-14-GH-3456", bay: "Bay 4", startTime: "09:45 AM", status: "In Progress", cartons: 29, priority: "good" }
         ]
       }
     },
@@ -112,10 +112,10 @@ export default function OperationsPage() {
       },
       data: {
         metrics: [
-          { metric: "Production Rate", current: "245 units/hr", target: "250 units/hr", status: "Below Target" },
-          { metric: "Quality Rate", current: "98.5%", target: "98%", status: "Above Target" },
-          { metric: "Machine Efficiency", current: "92%", target: "90%", status: "Above Target" },
-          { metric: "Overall Equipment Effectiveness", current: "89%", target: "85%", status: "Above Target" }
+          { metric: "Production Rate", current: "245 units/hr", target: "250 units/hr", status: "Below Target", priority: "warning" },
+          { metric: "Quality Rate", current: "98.5%", target: "98%", status: "Above Target", priority: "good" },
+          { metric: "Machine Efficiency", current: "92%", target: "90%", status: "Above Target", priority: "good" },
+          { metric: "Overall Equipment Effectiveness", current: "89%", target: "85%", status: "Above Target", priority: "good" }
         ]
       }
     }
@@ -127,6 +127,32 @@ export default function OperationsPage() {
     if (status === "Present" || status === "Active" || status === "Completed") return "default";
     if (status === "Idle" || status === "Waiting") return "secondary";
     return "outline";
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "critical":
+        return "bg-red-500";
+      case "warning":
+        return "bg-yellow-500";
+      case "good":
+        return "bg-green-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const getFeatureStatusColor = (status: string) => {
+    switch (status) {
+      case "critical":
+        return "bg-red-500";
+      case "warning":
+        return "bg-yellow-500";
+      case "active":
+        return "bg-green-500";
+      default:
+        return "bg-gray-500";
+    }
   };
 
   return (
@@ -168,8 +194,9 @@ export default function OperationsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <div className={cn("w-3 h-3 rounded-full", getFeatureStatusColor(feature.status))}></div>
                       <Activity size={12} className="text-guardai-red" />
-                      <span className="text-xs text-guardai-gray">
+                      <span className="text-xs text-guardai-gray capitalize">
                         {feature.status === "critical" ? "Critical" : 
                          feature.status === "warning" ? "Warning" : "Active"}
                       </span>
@@ -197,6 +224,7 @@ export default function OperationsPage() {
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-guardai-red/5">
+                          <TableHead className="text-xs font-semibold text-guardai-darkgray w-12">Status</TableHead>
                           {feature.id === "machine-idle" && (
                             <>
                               <TableHead className="text-xs font-semibold text-guardai-darkgray">Machine ID</TableHead>
@@ -238,6 +266,9 @@ export default function OperationsPage() {
                       <TableBody>
                         {(feature.data.machines || feature.data.employees || feature.data.operations || feature.data.metrics || []).map((item: any, index: number) => (
                           <TableRow key={index} className="hover:bg-guardai-lightgray/30">
+                            <TableCell className="text-xs w-12">
+                              <div className={cn("w-3 h-3 rounded-full mx-auto", getPriorityColor(item.priority))}></div>
+                            </TableCell>
                             {feature.id === "machine-idle" && (
                               <>
                                 <TableCell className="text-xs font-medium text-guardai-darkgray">{item.id}</TableCell>
