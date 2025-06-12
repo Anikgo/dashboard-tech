@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { HardHat, Phone, Trash, Flame, Activity, AlertTriangle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { HardHat, Phone, Trash, Flame, Activity, AlertTriangle, Eye, Clock, User, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -30,14 +32,20 @@ export default function CompliancePage() {
       icon: HardHat,
       status: "warning",
       count: 12,
-      details: {
-        violations: 12,
-        complianceRate: "87%",
-        missingHairnet: 7,
-        missingMask: 5,
-        missingGloves: 3,
-        totalChecked: 156,
-        lastViolation: "10:45 AM"
+      data: {
+        violations: [
+          { id: "EMP001", name: "John Smith", time: "10:45 AM", violation: "Missing Hairnet", zone: "Production Line 1", status: "Present" },
+          { id: "EMP003", name: "David Chen", time: "11:20 AM", violation: "Missing Mask", zone: "Packaging Area", status: "Present" },
+          { id: "EMP007", name: "Lisa Wang", time: "09:15 AM", violation: "Missing Gloves", zone: "Quality Control", status: "Present" },
+          { id: "EMP012", name: "Mike Johnson", time: "10:30 AM", violation: "Missing Safety Vest", zone: "Loading Bay", status: "Present" },
+          { id: "EMP015", name: "Sarah Wilson", time: "11:45 AM", violation: "Missing Hairnet", zone: "Production Line 2", status: "Present" }
+        ],
+        summary: {
+          totalChecked: 156,
+          violations: 12,
+          complianceRate: "87%",
+          lastViolation: "11:45 AM"
+        }
       }
     },
     {
@@ -47,13 +55,19 @@ export default function CompliancePage() {
       icon: Phone,
       status: "warning",
       count: 8,
-      details: {
-        violations: 8,
-        avgUsageTime: "12 min",
-        mostViolated: "Assembly Line",
-        productivity: "-15%",
-        totalDetections: 23,
-        peakUsage: "2:30 PM"
+      data: {
+        violations: [
+          { id: "EMP002", name: "Maria Garcia", time: "10:15 AM", duration: "8 min", zone: "Assembly Line", status: "Present" },
+          { id: "EMP005", name: "Robert Kim", time: "11:30 AM", duration: "12 min", zone: "Packaging Area", status: "Present" },
+          { id: "EMP009", name: "Jennifer Lee", time: "09:45 AM", duration: "5 min", zone: "Quality Control", status: "Present" },
+          { id: "EMP014", name: "Carlos Rodriguez", time: "10:50 AM", duration: "15 min", zone: "Production Line 1", status: "Present" }
+        ],
+        summary: {
+          totalDetections: 23,
+          violations: 8,
+          avgUsageTime: "12 min",
+          productivityImpact: "-15%"
+        }
       }
     },
     {
@@ -63,13 +77,19 @@ export default function CompliancePage() {
       icon: Trash,
       status: "warning",
       count: 4,
-      details: {
-        blockedPaths: 2,
-        dirtyAreas: 2,
-        lastCleaning: "2 hrs ago",
-        complianceRate: "78%",
-        criticalAreas: 1,
-        nextInspection: "4:00 PM"
+      data: {
+        issues: [
+          { zone: "Production Line 1", issue: "Blocked Pathway", detected: "09:30 AM", severity: "Critical", status: "Pending" },
+          { zone: "Packaging Area", issue: "Dirty Floor", detected: "10:45 AM", severity: "Warning", status: "In Progress" },
+          { zone: "Loading Bay", issue: "Material Misplacement", detected: "11:15 AM", severity: "Warning", status: "Pending" },
+          { zone: "Quality Control", issue: "Blocked Emergency Exit", detected: "08:30 AM", severity: "Critical", status: "Resolved" }
+        ],
+        summary: {
+          totalAreas: 12,
+          cleanAreas: 8,
+          issuesFound: 4,
+          lastInspection: "2 hrs ago"
+        }
       }
     },
     {
@@ -79,13 +99,19 @@ export default function CompliancePage() {
       icon: Flame,
       status: "active",
       count: 0,
-      details: {
-        fireAlerts: 0,
-        smokeDetected: 0,
-        sensorsActive: 24,
-        systemHealth: "100%",
-        lastTest: "Yesterday",
-        batteryStatus: "Good"
+      data: {
+        sensors: [
+          { id: "FS001", location: "Production Line 1", status: "Active", lastTest: "Yesterday", battery: "98%" },
+          { id: "FS002", location: "Packaging Area", status: "Active", lastTest: "Yesterday", battery: "95%" },
+          { id: "FS003", location: "Loading Bay", status: "Active", lastTest: "Yesterday", battery: "92%" },
+          { id: "FS004", location: "Quality Control", status: "Active", lastTest: "Yesterday", battery: "97%" }
+        ],
+        summary: {
+          totalSensors: 24,
+          activeSensors: 24,
+          fireAlerts: 0,
+          systemHealth: "100%"
+        }
       }
     }
   ];
@@ -105,6 +131,15 @@ export default function CompliancePage() {
       case "warning": return "bg-yellow-500 text-white";
       case "active": return "bg-green-500 text-white";
       default: return "bg-gray-500 text-white";
+    }
+  };
+
+  const getBadgeVariant = (severity: string) => {
+    switch (severity) {
+      case "Critical": return "destructive";
+      case "Warning": return "secondary";
+      case "Active": return "default";
+      default: return "outline";
     }
   };
 
@@ -187,23 +222,112 @@ export default function CompliancePage() {
                         <h3 className="font-semibold">{feature.title}</h3>
                       </div>
                       
-                      <div className="space-y-3">
-                        {Object.entries(feature.details).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
-                            <span className="text-sm text-guardai-gray capitalize">
-                              {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                            </span>
-                            <span className="text-sm font-medium">{value}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <div className="space-y-4">
+                        {/* Summary Stats */}
+                        <div className="grid grid-cols-2 gap-3">
+                          {Object.entries(feature.data.summary).map(([key, value]) => (
+                            <div key={key} className="text-center p-2 bg-gray-50 rounded">
+                              <div className="text-lg font-bold text-guardai-red">{value}</div>
+                              <div className="text-xs text-guardai-gray">
+                                {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
 
-                      <div className="pt-3 border-t">
+                        {/* Data Table */}
+                        <div className="max-h-96 overflow-y-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                {feature.id === "ppe-compliance" && (
+                                  <>
+                                    <TableHead className="text-xs">Employee</TableHead>
+                                    <TableHead className="text-xs">Violation</TableHead>
+                                    <TableHead className="text-xs">Time</TableHead>
+                                    <TableHead className="text-xs">Zone</TableHead>
+                                  </>
+                                )}
+                                {feature.id === "mobile-usage" && (
+                                  <>
+                                    <TableHead className="text-xs">Employee</TableHead>
+                                    <TableHead className="text-xs">Duration</TableHead>
+                                    <TableHead className="text-xs">Time</TableHead>
+                                    <TableHead className="text-xs">Zone</TableHead>
+                                  </>
+                                )}
+                                {feature.id === "hygiene-compliance" && (
+                                  <>
+                                    <TableHead className="text-xs">Zone</TableHead>
+                                    <TableHead className="text-xs">Issue</TableHead>
+                                    <TableHead className="text-xs">Severity</TableHead>
+                                    <TableHead className="text-xs">Status</TableHead>
+                                  </>
+                                )}
+                                {feature.id === "fire-smoke-detection" && (
+                                  <>
+                                    <TableHead className="text-xs">Sensor ID</TableHead>
+                                    <TableHead className="text-xs">Location</TableHead>
+                                    <TableHead className="text-xs">Status</TableHead>
+                                    <TableHead className="text-xs">Battery</TableHead>
+                                  </>
+                                )}
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {(feature.data.violations || feature.data.issues || feature.data.sensors || []).slice(0, 5).map((item: any, index: number) => (
+                                <TableRow key={index}>
+                                  {feature.id === "ppe-compliance" && (
+                                    <>
+                                      <TableCell className="text-xs font-medium">{item.id}</TableCell>
+                                      <TableCell className="text-xs">{item.violation}</TableCell>
+                                      <TableCell className="text-xs">{item.time}</TableCell>
+                                      <TableCell className="text-xs">{item.zone}</TableCell>
+                                    </>
+                                  )}
+                                  {feature.id === "mobile-usage" && (
+                                    <>
+                                      <TableCell className="text-xs font-medium">{item.id}</TableCell>
+                                      <TableCell className="text-xs">{item.duration}</TableCell>
+                                      <TableCell className="text-xs">{item.time}</TableCell>
+                                      <TableCell className="text-xs">{item.zone}</TableCell>
+                                    </>
+                                  )}
+                                  {feature.id === "hygiene-compliance" && (
+                                    <>
+                                      <TableCell className="text-xs font-medium">{item.zone}</TableCell>
+                                      <TableCell className="text-xs">{item.issue}</TableCell>
+                                      <TableCell className="text-xs">
+                                        <Badge variant={getBadgeVariant(item.severity)} className="text-xs">
+                                          {item.severity}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell className="text-xs">{item.status}</TableCell>
+                                    </>
+                                  )}
+                                  {feature.id === "fire-smoke-detection" && (
+                                    <>
+                                      <TableCell className="text-xs font-medium">{item.id}</TableCell>
+                                      <TableCell className="text-xs">{item.location}</TableCell>
+                                      <TableCell className="text-xs">
+                                        <Badge variant="default" className="text-xs bg-green-500">
+                                          {item.status}
+                                        </Badge>
+                                      </TableCell>
+                                      <TableCell className="text-xs">{item.battery}</TableCell>
+                                    </>
+                                  )}
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+
                         <Button 
                           variant="outline" 
                           className="w-full border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red"
                         >
-                          View Compliance Report
+                          View Full Report
                         </Button>
                       </div>
                     </div>
