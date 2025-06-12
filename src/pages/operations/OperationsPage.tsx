@@ -87,10 +87,10 @@ export default function OperationsPage() {
       },
       data: {
         operations: [
-          { id: "TR001", type: "Loading", truck: "MH-12-AB-1234", bay: "Bay 1", startTime: "10:30 AM", status: "In Progress" },
-          { id: "TR002", type: "Unloading", truck: "UP-32-CD-5678", bay: "Bay 3", startTime: "11:00 AM", status: "Completed" },
-          { id: "TR003", type: "Loading", truck: "DL-01-EF-9012", bay: "Bay 2", startTime: "11:15 AM", status: "Waiting" },
-          { id: "TR004", type: "Unloading", truck: "RJ-14-GH-3456", bay: "Bay 4", startTime: "09:45 AM", status: "In Progress" }
+          { id: "TR001", type: "Loading", truck: "MH-12-AB-1234", bay: "Bay 1", startTime: "10:30 AM", status: "In Progress", cartons: 45 },
+          { id: "TR002", type: "Unloading", truck: "UP-32-CD-5678", bay: "Bay 3", startTime: "11:00 AM", status: "Completed", cartons: 38 },
+          { id: "TR003", type: "Loading", truck: "DL-01-EF-9012", bay: "Bay 2", startTime: "11:15 AM", status: "Waiting", cartons: 52 },
+          { id: "TR004", type: "Unloading", truck: "RJ-14-GH-3456", bay: "Bay 4", startTime: "09:45 AM", status: "In Progress", cartons: 29 }
         ]
       }
     },
@@ -241,6 +241,7 @@ export default function OperationsPage() {
                               <TableHead className="text-xs font-semibold">Type</TableHead>
                               <TableHead className="text-xs font-semibold">Truck</TableHead>
                               <TableHead className="text-xs font-semibold">Status</TableHead>
+                              <TableHead className="text-xs font-semibold">Cartons</TableHead>
                             </>
                           )}
                           {feature.id === "productivity-analytics" && (
@@ -293,6 +294,7 @@ export default function OperationsPage() {
                                     {item.status}
                                   </Badge>
                                 </TableCell>
+                                <TableCell className="text-xs">{item.cartons}</TableCell>
                               </>
                             )}
                             {feature.id === "productivity-analytics" && (
