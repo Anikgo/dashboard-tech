@@ -1,16 +1,12 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { HardHat, Phone, Trash, Flame, Activity, AlertTriangle, Eye, Clock, User, MapPin } from "lucide-react";
+import { HardHat, Phone, Trash, Flame, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function CompliancePage() {
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -159,191 +155,138 @@ export default function CompliancePage() {
         Monitor safety compliance, hygiene standards, and regulatory requirements in real-time.
       </motion.p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Features Grid */}
-        <motion.div variants={itemVariants} className="lg:col-span-2">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {complianceFeatures.map((feature) => (
-              <Card 
-                key={feature.id}
-                className={cn(
-                  "cursor-pointer transition-all duration-200 hover:shadow-md border-2",
-                  getStatusColor(feature.status),
-                  selectedFeature === feature.id ? "ring-2 ring-guardai-red" : ""
-                )}
-                onClick={() => setSelectedFeature(selectedFeature === feature.id ? null : feature.id)}
-              >
-                <CardHeader className="p-4 pb-2">
-                  <div className="flex items-center justify-between">
-                    <feature.icon size={24} className="text-guardai-red" />
-                    <div className={cn(
-                      "text-xs px-2 py-1 rounded-full font-medium",
-                      getCountColor(feature.status)
-                    )}>
-                      {feature.count}
-                    </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {complianceFeatures.map((feature) => (
+          <motion.div key={feature.id} variants={itemVariants}>
+            <Card className={cn(
+              "border-2 shadow-lg",
+              getStatusColor(feature.status)
+            )}>
+              <CardHeader className="p-4 pb-2">
+                <div className="flex items-center justify-between mb-2">
+                  <feature.icon size={24} className="text-guardai-red" />
+                  <div className={cn(
+                    "text-xs px-2 py-1 rounded-full font-medium",
+                    getCountColor(feature.status)
+                  )}>
+                    {feature.count}
                   </div>
-                  <CardTitle className="text-sm font-semibold">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <p className="text-xs text-guardai-gray">{feature.description}</p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <Activity size={12} className="text-guardai-red" />
-                    <span className="text-xs text-guardai-gray">
-                      {feature.status === "critical" ? "Critical" : 
-                       feature.status === "warning" ? "Warning" : "Active"}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Detail Panel */}
-        <motion.div variants={itemVariants}>
-          <Card className="border border-gray-200 bg-white shadow-sm h-fit sticky top-6">
-            <CardHeader className="p-4 border-b">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle size={18} className="text-guardai-red" />
-                <span>Compliance Details</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              {selectedFeature ? (
-                (() => {
-                  const feature = complianceFeatures.find(f => f.id === selectedFeature);
-                  if (!feature) return null;
-                  
-                  return (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <feature.icon size={20} className="text-guardai-red" />
-                        <h3 className="font-semibold">{feature.title}</h3>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        {/* Summary Stats */}
-                        <div className="grid grid-cols-2 gap-3">
-                          {Object.entries(feature.data.summary).map(([key, value]) => (
-                            <div key={key} className="text-center p-2 bg-gray-50 rounded">
-                              <div className="text-lg font-bold text-guardai-red">{value}</div>
-                              <div className="text-xs text-guardai-gray">
-                                {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Data Table */}
-                        <div className="max-h-96 overflow-y-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                {feature.id === "ppe-compliance" && (
-                                  <>
-                                    <TableHead className="text-xs">Employee</TableHead>
-                                    <TableHead className="text-xs">Violation</TableHead>
-                                    <TableHead className="text-xs">Time</TableHead>
-                                    <TableHead className="text-xs">Zone</TableHead>
-                                  </>
-                                )}
-                                {feature.id === "mobile-usage" && (
-                                  <>
-                                    <TableHead className="text-xs">Employee</TableHead>
-                                    <TableHead className="text-xs">Duration</TableHead>
-                                    <TableHead className="text-xs">Time</TableHead>
-                                    <TableHead className="text-xs">Zone</TableHead>
-                                  </>
-                                )}
-                                {feature.id === "hygiene-compliance" && (
-                                  <>
-                                    <TableHead className="text-xs">Zone</TableHead>
-                                    <TableHead className="text-xs">Issue</TableHead>
-                                    <TableHead className="text-xs">Severity</TableHead>
-                                    <TableHead className="text-xs">Status</TableHead>
-                                  </>
-                                )}
-                                {feature.id === "fire-smoke-detection" && (
-                                  <>
-                                    <TableHead className="text-xs">Sensor ID</TableHead>
-                                    <TableHead className="text-xs">Location</TableHead>
-                                    <TableHead className="text-xs">Status</TableHead>
-                                    <TableHead className="text-xs">Battery</TableHead>
-                                  </>
-                                )}
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {(feature.data.violations || feature.data.issues || feature.data.sensors || []).slice(0, 5).map((item: any, index: number) => (
-                                <TableRow key={index}>
-                                  {feature.id === "ppe-compliance" && (
-                                    <>
-                                      <TableCell className="text-xs font-medium">{item.id}</TableCell>
-                                      <TableCell className="text-xs">{item.violation}</TableCell>
-                                      <TableCell className="text-xs">{item.time}</TableCell>
-                                      <TableCell className="text-xs">{item.zone}</TableCell>
-                                    </>
-                                  )}
-                                  {feature.id === "mobile-usage" && (
-                                    <>
-                                      <TableCell className="text-xs font-medium">{item.id}</TableCell>
-                                      <TableCell className="text-xs">{item.duration}</TableCell>
-                                      <TableCell className="text-xs">{item.time}</TableCell>
-                                      <TableCell className="text-xs">{item.zone}</TableCell>
-                                    </>
-                                  )}
-                                  {feature.id === "hygiene-compliance" && (
-                                    <>
-                                      <TableCell className="text-xs font-medium">{item.zone}</TableCell>
-                                      <TableCell className="text-xs">{item.issue}</TableCell>
-                                      <TableCell className="text-xs">
-                                        <Badge variant={getBadgeVariant(item.severity)} className="text-xs">
-                                          {item.severity}
-                                        </Badge>
-                                      </TableCell>
-                                      <TableCell className="text-xs">{item.status}</TableCell>
-                                    </>
-                                  )}
-                                  {feature.id === "fire-smoke-detection" && (
-                                    <>
-                                      <TableCell className="text-xs font-medium">{item.id}</TableCell>
-                                      <TableCell className="text-xs">{item.location}</TableCell>
-                                      <TableCell className="text-xs">
-                                        <Badge variant="default" className="text-xs bg-green-500">
-                                          {item.status}
-                                        </Badge>
-                                      </TableCell>
-                                      <TableCell className="text-xs">{item.battery}</TableCell>
-                                    </>
-                                  )}
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red"
-                        >
-                          View Full Report
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })()
-              ) : (
-                <div className="text-center py-8">
-                  <HardHat size={48} className="text-guardai-gray mx-auto mb-4" />
-                  <p className="text-guardai-gray">
-                    Click on any compliance module to view detailed information and violation reports.
-                  </p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+                <CardTitle className="text-lg font-semibold">{feature.title}</CardTitle>
+                <p className="text-sm text-guardai-gray">{feature.description}</p>
+                <div className="flex items-center gap-2">
+                  <Activity size={12} className="text-guardai-red" />
+                  <span className="text-xs text-guardai-gray">
+                    {feature.status === "critical" ? "Critical" : 
+                     feature.status === "warning" ? "Warning" : "Active"}
+                  </span>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="p-4 pt-0">
+                {/* Summary Stats */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {Object.entries(feature.data.summary).map(([key, value]) => (
+                    <div key={key} className="text-center p-2 bg-white/60 rounded border">
+                      <div className="text-lg font-bold text-guardai-red">{value}</div>
+                      <div className="text-xs text-guardai-gray">
+                        {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Data Table */}
+                <div className="max-h-64 overflow-y-auto border rounded">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        {feature.id === "ppe-compliance" && (
+                          <>
+                            <TableHead className="text-xs font-semibold">Employee</TableHead>
+                            <TableHead className="text-xs font-semibold">Violation</TableHead>
+                            <TableHead className="text-xs font-semibold">Time</TableHead>
+                            <TableHead className="text-xs font-semibold">Zone</TableHead>
+                          </>
+                        )}
+                        {feature.id === "mobile-usage" && (
+                          <>
+                            <TableHead className="text-xs font-semibold">Employee</TableHead>
+                            <TableHead className="text-xs font-semibold">Duration</TableHead>
+                            <TableHead className="text-xs font-semibold">Time</TableHead>
+                            <TableHead className="text-xs font-semibold">Zone</TableHead>
+                          </>
+                        )}
+                        {feature.id === "hygiene-compliance" && (
+                          <>
+                            <TableHead className="text-xs font-semibold">Zone</TableHead>
+                            <TableHead className="text-xs font-semibold">Issue</TableHead>
+                            <TableHead className="text-xs font-semibold">Severity</TableHead>
+                            <TableHead className="text-xs font-semibold">Status</TableHead>
+                          </>
+                        )}
+                        {feature.id === "fire-smoke-detection" && (
+                          <>
+                            <TableHead className="text-xs font-semibold">Sensor ID</TableHead>
+                            <TableHead className="text-xs font-semibold">Location</TableHead>
+                            <TableHead className="text-xs font-semibold">Status</TableHead>
+                            <TableHead className="text-xs font-semibold">Battery</TableHead>
+                          </>
+                        )}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(feature.data.violations || feature.data.issues || feature.data.sensors || []).map((item: any, index: number) => (
+                        <TableRow key={index} className="hover:bg-gray-50">
+                          {feature.id === "ppe-compliance" && (
+                            <>
+                              <TableCell className="text-xs font-medium">{item.id}</TableCell>
+                              <TableCell className="text-xs">{item.violation}</TableCell>
+                              <TableCell className="text-xs">{item.time}</TableCell>
+                              <TableCell className="text-xs">{item.zone}</TableCell>
+                            </>
+                          )}
+                          {feature.id === "mobile-usage" && (
+                            <>
+                              <TableCell className="text-xs font-medium">{item.id}</TableCell>
+                              <TableCell className="text-xs">{item.duration}</TableCell>
+                              <TableCell className="text-xs">{item.time}</TableCell>
+                              <TableCell className="text-xs">{item.zone}</TableCell>
+                            </>
+                          )}
+                          {feature.id === "hygiene-compliance" && (
+                            <>
+                              <TableCell className="text-xs font-medium">{item.zone}</TableCell>
+                              <TableCell className="text-xs">{item.issue}</TableCell>
+                              <TableCell className="text-xs">
+                                <Badge variant={getBadgeVariant(item.severity)} className="text-xs">
+                                  {item.severity}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-xs">{item.status}</TableCell>
+                            </>
+                          )}
+                          {feature.id === "fire-smoke-detection" && (
+                            <>
+                              <TableCell className="text-xs font-medium">{item.id}</TableCell>
+                              <TableCell className="text-xs">{item.location}</TableCell>
+                              <TableCell className="text-xs">
+                                <Badge variant="default" className="text-xs bg-green-500">
+                                  {item.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-xs">{item.battery}</TableCell>
+                            </>
+                          )}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Summary Stats */}
