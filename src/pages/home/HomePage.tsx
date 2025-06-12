@@ -7,7 +7,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Redirect to operations dashboard
-    navigate("/insights");
+    navigate("/operations");
   }, [navigate]);
 
   return (

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart2, Video, Shield, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu, Factory, Users, Truck } from "lucide-react";
+import { BarChart2, Video, Shield, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu, Factory, Users, Truck, HardHat, Eye } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -16,7 +16,17 @@ const sidebarItems: SidebarItem[] = [
   {
     name: "Operations Dashboard",
     icon: Factory,
-    route: "/insights"
+    route: "/operations"
+  },
+  {
+    name: "Compliance Dashboard",
+    icon: HardHat,
+    route: "/compliance"
+  },
+  {
+    name: "Security Dashboard",
+    icon: Shield,
+    route: "/security"
   },
   {
     name: "Live Monitoring",
@@ -24,23 +34,18 @@ const sidebarItems: SidebarItem[] = [
     route: "/live-view"
   },
   {
-    name: "Compliance Reports",
+    name: "Reports & Analytics",
     icon: FileText,
     route: "/reports"
   },
   {
-    name: "Security & Perimeter",
-    icon: Shield,
-    route: "/projects"
-  },
-  {
-    name: "Safety & Alerts",
+    name: "Alert Management",
     icon: Bell,
     route: "/alerts"
   },
   {
-    name: "Employee Tracking",
-    icon: Users,
+    name: "Camera Management",
+    icon: Camera,
     route: "/cameras"
   },
   {
@@ -58,12 +63,13 @@ export function Sidebar() {
 
   // Set active item based on current route
   const getActiveItemFromPath = (path: string) => {
-    if (path === "/insights") return "Operations Dashboard";
+    if (path === "/operations") return "Operations Dashboard";
+    if (path === "/compliance") return "Compliance Dashboard";
+    if (path === "/security") return "Security Dashboard";
     if (path === "/live-view") return "Live Monitoring";
-    if (path === "/projects") return "Security & Perimeter";
-    if (path === "/reports") return "Compliance Reports";
-    if (path === "/alerts") return "Safety & Alerts";
-    if (path === "/cameras") return "Employee Tracking";
+    if (path === "/reports") return "Reports & Analytics";
+    if (path === "/alerts") return "Alert Management";
+    if (path === "/cameras") return "Camera Management";
     if (path === "/settings") return "System Settings";
     return "Operations Dashboard";
   };

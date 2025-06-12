@@ -6,9 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/layout/Layout";
 import HomePage from "./pages/home/HomePage";
-import InsightsPage from "./pages/insights/InsightsPage";
+import OperationsPage from "./pages/operations/OperationsPage";
+import CompliancePage from "./pages/compliance/CompliancePage";
+import SecurityPage from "./pages/security/SecurityPage";
 import LiveViewPage from "./pages/liveview/LiveViewPage";
-import ProjectsPage from "./pages/projects/ProjectsPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import AlertsPage from "./pages/alerts/AlertsPage";
 import CamerasPage from "./pages/cameras/CamerasPage";
@@ -26,9 +27,10 @@ const App = () => (
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/insights" element={<InsightsPage />} />
+            <Route path="/operations" element={<OperationsPage />} />
+            <Route path="/compliance" element={<CompliancePage />} />
+            <Route path="/security" element={<SecurityPage />} />
             <Route path="/live-view" element={<LiveViewPage />} />
-            <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/cameras" element={<CamerasPage />} />
