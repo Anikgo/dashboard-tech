@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -63,10 +62,11 @@ export default function OperationsPage() {
       },
       data: {
         employees: [
-          { id: "EMP001", name: "John Smith", department: "Production", checkIn: "08:00 AM", status: "Present" },
-          { id: "EMP002", name: "Maria Garcia", department: "Quality Control", checkIn: "08:15 AM", status: "Present" },
-          { id: "EMP003", name: "David Chen", department: "Packaging", checkIn: "08:30 AM", status: "Present" },
-          { id: "EMP004", name: "Lisa Wang", department: "Assembly", checkIn: "08:45 AM", status: "Break" }
+          { id: "EMP001", name: "John Smith", timeIn: "08:00", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.5h" },
+          { id: "EMP002", name: "Maria Garcia", timeIn: "08:15", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.3h" },
+          { id: "EMP003", name: "David Chen", timeIn: "-", timeOut: "-", shift: "Day", status: "Absent", hoursWorked: "0h" },
+          { id: "EMP004", name: "Sarah Johnson", timeIn: "20:00", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.0h" },
+          { id: "EMP005", name: "Mike Wilson", timeIn: "19:45", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.2h" }
         ]
       }
     },
@@ -228,8 +228,11 @@ export default function OperationsPage() {
                             <>
                               <TableHead className="text-xs font-semibold">Employee ID</TableHead>
                               <TableHead className="text-xs font-semibold">Name</TableHead>
-                              <TableHead className="text-xs font-semibold">Department</TableHead>
+                              <TableHead className="text-xs font-semibold">Time In</TableHead>
+                              <TableHead className="text-xs font-semibold">Time Out</TableHead>
+                              <TableHead className="text-xs font-semibold">Shift</TableHead>
                               <TableHead className="text-xs font-semibold">Status</TableHead>
+                              <TableHead className="text-xs font-semibold">Hours Worked</TableHead>
                             </>
                           )}
                           {feature.id === "loading-unloading" && (
@@ -269,12 +272,15 @@ export default function OperationsPage() {
                               <>
                                 <TableCell className="text-xs font-medium">{item.id}</TableCell>
                                 <TableCell className="text-xs">{item.name}</TableCell>
-                                <TableCell className="text-xs">{item.department}</TableCell>
+                                <TableCell className="text-xs">{item.timeIn}</TableCell>
+                                <TableCell className="text-xs">{item.timeOut}</TableCell>
+                                <TableCell className="text-xs">{item.shift}</TableCell>
                                 <TableCell className="text-xs">
                                   <Badge variant={getBadgeVariant(item.status)} className="text-xs">
                                     {item.status}
                                   </Badge>
                                 </TableCell>
+                                <TableCell className="text-xs">{item.hoursWorked}</TableCell>
                               </>
                             )}
                             {feature.id === "loading-unloading" && (
