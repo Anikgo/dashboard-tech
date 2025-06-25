@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -42,7 +41,7 @@ export default function OperationsPage() {
           { id: "CNC-01", status: "Idle", duration: "45 min", operator: "None", location: "Production Line 1", priority: "critical" },
           { id: "Press-02", status: "Idle", duration: "32 min", operator: "None", location: "Assembly Area", priority: "warning" },
           { id: "Assembly-03", status: "Idle", duration: "28 min", operator: "None", location: "Production Line 2", priority: "warning" },
-          { id: "Drill-04", status: "Active", duration: "0 min", operator: "John Smith", location: "Workshop", priority: "good" }
+          { id: "Drill-04", status: "Active", duration: "0 min", operator: "Aniket Sharma", location: "Workshop", priority: "good" }
         ]
       }
     },
@@ -63,11 +62,11 @@ export default function OperationsPage() {
       },
       data: {
         employees: [
-          { id: "EMP001", name: "John Smith", timeIn: "08:00", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.5h", priority: "good" },
-          { id: "EMP002", name: "Maria Garcia", timeIn: "08:15", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.3h", priority: "good" },
-          { id: "EMP003", name: "David Chen", timeIn: "-", timeOut: "-", shift: "Day", status: "Absent", hoursWorked: "0h", priority: "critical" },
-          { id: "EMP004", name: "Sarah Johnson", timeIn: "20:00", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.0h", priority: "good" },
-          { id: "EMP005", name: "Mike Wilson", timeIn: "19:45", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.2h", priority: "good" }
+          { id: "EMP001", name: "Aniket Sharma", timeIn: "08:00", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.5h", priority: "good" },
+          { id: "EMP002", name: "Naman Gupta", timeIn: "08:15", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.3h", priority: "good" },
+          { id: "EMP003", name: "Rakesh Kumar", timeIn: "-", timeOut: "-", shift: "Day", status: "Absent", hoursWorked: "0h", priority: "critical" },
+          { id: "EMP004", name: "Praveen Singh", timeIn: "20:00", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.0h", priority: "good" },
+          { id: "EMP005", name: "Ramesh Patel", timeIn: "19:45", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.2h", priority: "good" }
         ]
       }
     },
