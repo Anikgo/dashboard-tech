@@ -9,7 +9,6 @@ import HomePage from "./pages/home/HomePage";
 import OperationsPage from "./pages/operations/OperationsPage";
 import CompliancePage from "./pages/compliance/CompliancePage";
 import SecurityPage from "./pages/security/SecurityPage";
-import LiveViewPage from "./pages/liveview/LiveViewPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import AlertsPage from "./pages/alerts/AlertsPage";
 import CamerasPage from "./pages/cameras/CamerasPage";
@@ -30,7 +29,6 @@ const App = () => (
             <Route path="/operations" element={<OperationsPage />} />
             <Route path="/compliance" element={<CompliancePage />} />
             <Route path="/security" element={<SecurityPage />} />
-            <Route path="/live-view" element={<LiveViewPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/cameras" element={<CamerasPage />} />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -27,11 +26,6 @@ const sidebarItems: SidebarItem[] = [
     name: "Security Dashboard",
     icon: Shield,
     route: "/security"
-  },
-  {
-    name: "Live Monitoring",
-    icon: Video,
-    route: "/live-view"
   },
   {
     name: "Reports & Analytics",
@@ -66,7 +60,6 @@ export function Sidebar() {
     if (path === "/operations") return "Operations Dashboard";
     if (path === "/compliance") return "Compliance Dashboard";
     if (path === "/security") return "Security Dashboard";
-    if (path === "/live-view") return "Live Monitoring";
     if (path === "/reports") return "Reports & Analytics";
     if (path === "/alerts") return "Alert Management";
     if (path === "/cameras") return "Camera Management";
