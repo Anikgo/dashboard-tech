@@ -3,6 +3,16 @@ import Alert from '../models/Alert.js';
 
 const router = express.Router();
 
+// GET PPE compliance alerts
+router.get('/ppe-compliance', async (req, res) => {
+    try {
+      const ppeAlerts = await Alert.find({ violation_type: 'PPE' }); // Filter by PPE compliance
+      res.json(ppeAlerts); // Send PPE alerts as JSON response
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
 // GET all alerts
 router.get('/', async (req, res) => {
   try {
