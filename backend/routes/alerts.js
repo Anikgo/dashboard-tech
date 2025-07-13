@@ -1,5 +1,8 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Alert from '../models/Alert.js';
+import { ObjectId } from 'mongodb';
+import { GridFSBucket } from 'mongodb';
 
 const router = express.Router();
 
@@ -10,6 +13,31 @@ router.get('/ppe-compliance', async (req, res) => {
       res.json(ppeAlerts); // Send PPE alerts as JSON response
     } catch (error) {
       res.status(500).send({ error: error.message });
+    }
+  });
+
+  // Get images
+router.get('/image/:image_id', async (req, res) => {
+    try {
+      const db = mongoose.connection.db;
+      const bucket = new GridFSBucket(db, { bucketName: 'fs' });
+  
+      const fileId = new ObjectId(req.params.image_id);
+  
+      // Check if file exists
+      const files = await db.collection('fs.files').find({ _id: fileId }).toArray();
+      if (!files || files.length === 0) {
+        return res.status(404).send('Image not found');
+      }
+  
+      // Set correct MIME type
+      res.set('Content-Type', files[0].contentType || 'image/jpeg');
+  
+      // Stream image
+      bucket.openDownloadStream(fileId).pipe(res);
+    } catch (err) {
+      console.error("Image fetch error:", err.message);
+      res.status(500).send({ error: err.message });
     }
   });
 

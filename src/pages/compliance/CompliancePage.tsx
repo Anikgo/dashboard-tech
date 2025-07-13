@@ -24,6 +24,12 @@ export default function CompliancePage() {
     violation: string;
     zone: string;
     status: string;
+    camera_id: string;
+    person_id: string;
+    frame_timestamp: string;
+    image_id: string;
+    logged_at: string;
+    violation_type: string;
   };
 
   const [ppeViolations, setPpeViolations] = useState<PPEViolation[]>([]);
@@ -66,9 +72,7 @@ export default function CompliancePage() {
           lastViolation: ppeViolations.at(-1)?.time || "N/A"
         }
       }
-    },
-    // Other features unchanged
-    // ...
+    }
   ];
 
   const getStatusColor = (status: string) => {
@@ -89,15 +93,6 @@ export default function CompliancePage() {
     }
   };
 
-  const getBadgeVariant = (severity: string) => {
-    switch (severity) {
-      case "Critical": return "destructive";
-      case "Warning": return "secondary";
-      case "Active": return "default";
-      default: return "outline";
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col">
       <motion.div
@@ -110,7 +105,6 @@ export default function CompliancePage() {
           <HardHat size={28} className="text-guardai-red" />
           <h1 className="text-2xl font-semibold text-guardai-darkgray">Compliance Dashboard</h1>
         </motion.div>
-
         <motion.p variants={itemVariants} className="text-guardai-gray mb-4 ml-9">
           Monitor safety compliance, hygiene standards, and regulatory requirements in real-time.
         </motion.p>
@@ -125,17 +119,11 @@ export default function CompliancePage() {
         >
           {complianceFeatures.map((feature) => (
             <motion.div key={feature.id} variants={itemVariants}>
-              <Card className={cn(
-                "border-2 shadow-lg w-full",
-                getStatusColor(feature.status)
-              )}>
+              <Card className={cn("border-2 shadow-lg w-full", getStatusColor(feature.status))}>
                 <CardHeader className="p-4 pb-2">
                   <div className="flex items-center justify-between mb-2">
                     <feature.icon size={24} className="text-guardai-red" />
-                    <div className={cn(
-                      "text-xs px-2 py-1 rounded-full font-medium",
-                      getCountColor(feature.status)
-                    )}>
+                    <div className={cn("text-xs px-2 py-1 rounded-full font-medium", getCountColor(feature.status))}>
                       {feature.count}
                     </div>
                   </div>
@@ -144,12 +132,10 @@ export default function CompliancePage() {
                   <div className="flex items-center gap-2">
                     <Activity size={12} className="text-guardai-red" />
                     <span className="text-xs text-guardai-gray">
-                      {feature.status === "critical" ? "Critical" :
-                        feature.status === "warning" ? "Warning" : "Active"}
+                      {feature.status === "critical" ? "Critical" : feature.status === "warning" ? "Warning" : "Active"}
                     </span>
                   </div>
                 </CardHeader>
-
                 <CardContent className="p-4 pt-0">
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                     {Object.entries(feature.data.summary).map(([key, value]) => (
@@ -162,28 +148,40 @@ export default function CompliancePage() {
                     ))}
                   </div>
 
-                  {/* ✅ Table fix */}
+                  {/* PPE Table with Image View */}
                   <div className="border rounded">
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-gray-50">
-                          {feature.id === "ppe-compliance" && (
-                            <>
-                              <TableHead className="text-xs font-semibold">Employee</TableHead>
-                              <TableHead className="text-xs font-semibold">Violation</TableHead>
-                              <TableHead className="text-xs font-semibold">Time</TableHead>
-                              <TableHead className="text-xs font-semibold">Zone</TableHead>
-                            </>
-                          )}
+                          <TableHead className="text-xs font-semibold">Employee</TableHead>
+                          <TableHead className="text-xs font-semibold">Violation</TableHead>
+                          <TableHead className="text-xs font-semibold">Time</TableHead>
+                          <TableHead className="text-xs font-semibold">Zone</TableHead>
+                          <TableHead className="text-xs font-semibold">Image</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {feature.id === "ppe-compliance" && feature.data.violations.map((item, index) => (
+                        {feature.data.violations.map((item, index) => (
                           <TableRow key={index} className="hover:bg-gray-50">
-                            <TableCell className="text-xs font-medium">{item.id}</TableCell>
-                            <TableCell className="text-xs">{item.violation}</TableCell>
-                            <TableCell className="text-xs">{item.time}</TableCell>
-                            <TableCell className="text-xs">{item.zone}</TableCell>
+                            <TableCell className="text-xs font-medium">{item.person_id}</TableCell>
+                            <TableCell className="text-xs">Hairnet missing</TableCell>
+                            <TableCell className="text-xs">
+                              {new Date(item.logged_at).toLocaleTimeString("en-IN", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </TableCell>
+                            <TableCell className="text-xs">{item.camera_id}</TableCell>
+                            <TableCell className="text-xs">
+                              <a
+                                href={`http://localhost:3001/api/alerts/image/${item.image_id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-guardai-red underline text-xs"
+                              >
+                                View
+                              </a>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -193,38 +191,6 @@ export default function CompliancePage() {
               </Card>
             </motion.div>
           ))}
-
-          {/* ✅ Updated summary cards using live PPE data */}
-          <motion.div variants={itemVariants}>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-yellow-500">{ppeViolations.length}</div>
-                  <div className="text-sm text-guardai-gray">Total Violations</div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-red-500">{ppeViolations.length}</div>
-                  <div className="text-sm text-guardai-gray">PPE Violations</div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-500">
-                    {`${Math.round(100 - (ppeViolations.length / 156) * 100)}%`}
-                  </div>
-                  <div className="text-sm text-guardai-gray">Compliance Rate</div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-500">0</div>
-                  <div className="text-sm text-guardai-gray">Safety Incidents</div>
-                </CardContent>
-              </Card>
-            </div>
-          </motion.div>
         </motion.div>
       </ScrollArea>
     </div>
