@@ -1,20 +1,24 @@
 import mongoose from 'mongoose';
 
+
+
 const alertSchema = new mongoose.Schema({
-  camera_id: { type: String, required: true },
-  person_id: { type: String, required: true },
-  frame_timestamp: { type: Date, required: true },
-  logged_at: { type: Date, default: Date.now },
-  image_id: { type: String, required: true },
-  
-  // 👇 Add these for frontend compatibility
-  violation_type: { type: String }, // e.g., 'PPE'
-  id: { type: String },             // same as person_id, for frontend use
-  name: { type: String },
-  time: { type: String },           // e.g., "10:45 AM"
-  violation: { type: String },      // e.g., "Missing Mask"
-  zone: { type: String },
-  status: { type: String }          // e.g., "Present"
+  // 🔍 Core fields (now all optional)
+  camera_id:       { type: String },
+  person_id:       { type: String },
+  frame_timestamp: { type: Date },
+  logged_at:       { type: Date, default: Date.now },
+  image_id:        { type: String },
+  box_count:       { type: Number },
+
+  // 🧾 Meta fields for frontend rendering (optional)
+  violation_type:  { type: String },  // e.g., 'PPE', 'Fire', 'Smoke'
+  id:              { type: String },  // for frontend compatibility
+  name:            { type: String },  // employee name if available
+  time:            { type: String },  // human-readable time string
+  violation:       { type: String },  // e.g., "Hairnet Missing"
+  zone:            { type: String },  // mapped from camera
+  status:          { type: String }   // e.g., "Detected", "Present"
 });
 
 const Alert = mongoose.model('Alert', alertSchema);
