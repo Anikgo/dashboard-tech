@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -6,19 +5,62 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Shield, Eye, Flame, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+
+type FireSmokeAlert = {
+  id: string;
+  camera_id: string;
+  frame_timestamp: string;
+  logged_at: string;
+  image_id: string;
+  box_count: number;
+};
 
 export default function SecurityPage() {
+  const [fireSmokeAlerts, setFireSmokeAlerts] = useState<FireSmokeAlert[]>([]);
+
+  useEffect(() => {
+    const fetchFireSmokeAlerts = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/alerts/fire-smoke");
+        const data = await res.json();
+        setFireSmokeAlerts(data);
+      } catch (err) {
+        console.error("Failed to fetch fire/smoke alerts", err);
+      }
+    };
+
+    fetchFireSmokeAlerts();
+    const interval = setInterval(fetchFireSmokeAlerts, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "critical": return "border-red-500 bg-red-50";
+      case "warning": return "border-yellow-500 bg-yellow-50";
+      case "active": return "border-green-500 bg-green-50";
+      default: return "border-gray-300 bg-white";
+    }
+  };
+
+  const getCountColor = (status: string) => {
+    switch (status) {
+      case "critical": return "bg-red-500 text-white";
+      case "warning": return "bg-yellow-500 text-white";
+      case "active": return "bg-green-500 text-white";
+      default: return "bg-gray-500 text-white";
+    }
   };
 
   const securityFeatures = [
@@ -72,47 +114,24 @@ export default function SecurityPage() {
     },
     {
       id: "fire-water-detection",
-      title: "Fire & Water Detection",
+      title: "Fire & Smoke Detection",
       description: "Environmental hazard and leak monitoring",
       icon: Flame,
-      status: "active",
-      count: 0,
+      status: fireSmokeAlerts.length > 0 ? "warning" : "active",
+      count: fireSmokeAlerts.length,
       details: {
-        fireAlerts: 0,
-        waterLeaks: 0,
+        fireAlerts: fireSmokeAlerts.length,
+        smokeAlerts: 0,
         smokeDetected: 0,
         systemHealth: "100%",
-        sensorsActive: 28,
+        cameraActive: 19,
         emergencyProtocol: "Ready"
       },
       data: {
-        sensors: [
-          { id: "FW001", location: "Production Line 1", type: "Fire", status: "Active", lastTest: "Yesterday" },
-          { id: "FW002", location: "Packaging Area", type: "Water", status: "Active", lastTest: "Yesterday" },
-          { id: "FW003", location: "Storage Room", type: "Smoke", status: "Active", lastTest: "Yesterday" },
-          { id: "FW004", location: "Loading Bay", type: "Fire", status: "Active", lastTest: "Yesterday" }
-        ]
+        alerts: fireSmokeAlerts
       }
     }
   ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "critical": return "border-red-500 bg-red-50";
-      case "warning": return "border-yellow-500 bg-yellow-50";
-      case "active": return "border-green-500 bg-green-50";
-      default: return "border-gray-300 bg-white";
-    }
-  };
-
-  const getCountColor = (status: string) => {
-    switch (status) {
-      case "critical": return "bg-red-500 text-white";
-      case "warning": return "bg-yellow-500 text-white";
-      case "active": return "bg-green-500 text-white";
-      default: return "bg-gray-500 text-white";
-    }
-  };
 
   return (
     <div className="h-screen flex flex-col">
@@ -126,7 +145,7 @@ export default function SecurityPage() {
           <Shield size={28} className="text-guardai-red" />
           <h1 className="text-2xl font-semibold text-guardai-darkgray">Security Dashboard</h1>
         </motion.div>
-        
+
         <motion.p variants={itemVariants} className="text-guardai-gray mb-4 ml-9">
           Comprehensive security monitoring including perimeter protection, quality control, and hazard detection.
         </motion.p>
@@ -141,17 +160,11 @@ export default function SecurityPage() {
         >
           {securityFeatures.map((feature) => (
             <motion.div key={feature.id} variants={itemVariants}>
-              <Card className={cn(
-                "border-2 shadow-lg w-full",
-                getStatusColor(feature.status)
-              )}>
+              <Card className={cn("border-2 shadow-lg w-full", getStatusColor(feature.status))}>
                 <CardHeader className="p-4 pb-2">
                   <div className="flex items-center justify-between mb-2">
                     <feature.icon size={24} className="text-guardai-red" />
-                    <div className={cn(
-                      "text-xs px-2 py-1 rounded-full font-medium",
-                      getCountColor(feature.status)
-                    )}>
+                    <div className={cn("text-xs px-2 py-1 rounded-full font-medium", getCountColor(feature.status))}>
                       {feature.count}
                     </div>
                   </div>
@@ -160,14 +173,12 @@ export default function SecurityPage() {
                   <div className="flex items-center gap-2">
                     <Activity size={12} className="text-guardai-red" />
                     <span className="text-xs text-guardai-gray">
-                      {feature.status === "critical" ? "Critical" : 
-                       feature.status === "warning" ? "Warning" : "Active"}
+                      {feature.status === "critical" ? "Critical" : feature.status === "warning" ? "Warning" : "Active"}
                     </span>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="p-4 pt-0">
-                  {/* Summary Stats */}
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                     {Object.entries(feature.details).map(([key, value]) => (
                       <div key={key} className="text-center p-2 bg-white/60 rounded border">
@@ -179,14 +190,13 @@ export default function SecurityPage() {
                     ))}
                   </div>
 
-                  {/* Data Table */}
                   <div className="border rounded">
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-gray-50">
                           {feature.id === "perimeter-security" && (
                             <>
-                              <TableHead className="text-xs font-semibold">Sensor ID</TableHead>
+                              <TableHead className="text-xs font-semibold">Check</TableHead>
                               <TableHead className="text-xs font-semibold">Location</TableHead>
                               <TableHead className="text-xs font-semibold">Status</TableHead>
                               <TableHead className="text-xs font-semibold">Battery</TableHead>
@@ -202,25 +212,23 @@ export default function SecurityPage() {
                           )}
                           {feature.id === "fire-water-detection" && (
                             <>
-                              <TableHead className="text-xs font-semibold">Sensor ID</TableHead>
-                              <TableHead className="text-xs font-semibold">Location</TableHead>
-                              <TableHead className="text-xs font-semibold">Type</TableHead>
-                              <TableHead className="text-xs font-semibold">Status</TableHead>
+                              <TableHead className="text-xs font-semibold">Camera</TableHead>
+                              <TableHead className="text-xs font-semibold">Time</TableHead>
+                              <TableHead className="text-xs font-semibold">Detections</TableHead>
+                              <TableHead className="text-xs font-semibold">Image</TableHead>
                             </>
                           )}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {(feature.data.sensors || feature.data.inspections || []).map((item: any, index: number) => (
+                        {(feature.data.sensors || feature.data.inspections || feature.data.alerts || []).map((item: any, index: number) => (
                           <TableRow key={index} className="hover:bg-gray-50">
                             {feature.id === "perimeter-security" && (
                               <>
                                 <TableCell className="text-xs font-medium">{item.id}</TableCell>
                                 <TableCell className="text-xs">{item.location}</TableCell>
                                 <TableCell className="text-xs">
-                                  <Badge variant="default" className="text-xs bg-green-500">
-                                    {item.status}
-                                  </Badge>
+                                  <Badge variant="default" className="text-xs bg-green-500">{item.status}</Badge>
                                 </TableCell>
                                 <TableCell className="text-xs">{item.battery}</TableCell>
                               </>
@@ -239,13 +247,18 @@ export default function SecurityPage() {
                             )}
                             {feature.id === "fire-water-detection" && (
                               <>
-                                <TableCell className="text-xs font-medium">{item.id}</TableCell>
-                                <TableCell className="text-xs">{item.location}</TableCell>
-                                <TableCell className="text-xs">{item.type}</TableCell>
+                                <TableCell className="text-xs font-medium">{item.camera_id}</TableCell>
+                                <TableCell className="text-xs">{new Date(item.logged_at).toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell className="text-xs">{item.violation_type}</TableCell>
                                 <TableCell className="text-xs">
-                                  <Badge variant="default" className="text-xs bg-green-500">
-                                    {item.status}
-                                  </Badge>
+                                  <a
+                                    href={`http://localhost:3001/api/alerts/image/${item.image_id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 underline"
+                                  >
+                                    View
+                                  </a>
                                 </TableCell>
                               </>
                             )}
@@ -258,36 +271,6 @@ export default function SecurityPage() {
               </Card>
             </motion.div>
           ))}
-
-          {/* Summary Stats */}
-          <motion.div variants={itemVariants}>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-500">0</div>
-                  <div className="text-sm text-guardai-gray">Security Breaches</div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-500">98.5%</div>
-                  <div className="text-sm text-guardai-gray">Quality Rate</div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-green-500">60</div>
-                  <div className="text-sm text-guardai-gray">Active Sensors</div>
-                </CardContent>
-              </Card>
-              <Card className="border border-gray-200 bg-white shadow-sm">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-guardai-red">High</div>
-                  <div className="text-sm text-guardai-gray">Security Level</div>
-                </CardContent>
-              </Card>
-            </div>
-          </motion.div>
         </motion.div>
       </ScrollArea>
     </div>

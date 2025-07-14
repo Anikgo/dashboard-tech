@@ -41,6 +41,19 @@ router.get('/image/:image_id', async (req, res) => {
     }
   });
 
+// routes/alerts.js
+router.get('/fire-smoke', async (req, res) => {
+    try {
+      const alerts = await Alert.find({ violation_type: { $in: ['Fire', 'Smoke'] } }).sort({ frame_timestamp: -1 });
+      res.json(alerts);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+  
+  
+
 // GET all alerts
 router.get('/', async (req, res) => {
   try {
