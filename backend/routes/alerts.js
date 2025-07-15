@@ -16,6 +16,16 @@ router.get('/ppe-compliance', async (req, res) => {
     }
   });
 
+// GET Attendance alerts
+router.get('/attendance', async (req, res) => {
+    try {
+      const alerts = await Alert.find({ alert_type: 'attendance' }); // Filter by PPE compliance
+      res.json(alerts); // Send attendance alerts as JSON response
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
 // GET idle machinery alerts
 router.get('/idle_machinery', async (req, res) => {
     try {

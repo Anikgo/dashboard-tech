@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 
-
 const alertSchema = new mongoose.Schema({
   // 🔍 Core fields (now all optional)
   camera_id:       { type: String },
@@ -13,6 +12,8 @@ const alertSchema = new mongoose.Schema({
 
   // 🧾 Meta fields for frontend rendering (optional)
   alert_type:  { type: String },
+  emp_id:      { type: String },  // employee ID if known
+  known:           { type: Boolean, default: false }, // true if emp_id is known
   violation_type:  { type: String },  // e.g., 'PPE', 'Fire', 'Smoke'
   id:              { type: String },  // for frontend compatibility
   name:            { type: String },  // employee name if available
