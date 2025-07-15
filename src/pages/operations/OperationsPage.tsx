@@ -26,6 +26,7 @@ export default function OperationsPage() {
 
   const [loiteringData, setLoiteringData] = useState([]);
   const [idleMachineryData, setIdleMachineryData] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   useEffect(() => {
     const fetchLoiteringData = async () => {
@@ -46,12 +47,23 @@ export default function OperationsPage() {
       }
     };
 
+    const fetchAttendanceData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/alerts/attendance");
+        setAttendanceData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch attendance data:", err);
+      }
+    };
+
     fetchLoiteringData();
     fetchIdleData();
+    fetchAttendanceData();
 
     const interval = setInterval(() => {
       fetchLoiteringData();
       fetchIdleData();
+      fetchAttendanceData();
     }, 10000);
 
     return () => clearInterval(interval);
@@ -97,28 +109,22 @@ export default function OperationsPage() {
       }
     },
     {
-      id: "employee-access",
-      title: "Employee Access & Tracking",
-      description: "Face recognition, attendance, and work monitoring",
+      id: "employee-attendance",
+      title: "Employee Attendance",
+      description: "Face recognition-based real-time attendance tracking",
       icon: Users,
       status: "active",
-      count: 156,
+      count: attendanceData.length,
       details: {
-        currentShift: 156,
-        dayShift: 142,
-        nightShift: 89,
+        present: attendanceData.length,
         unauthorized: 0,
-        avgWorkingHours: "7.5 hrs",
+        totalEmployees: 180,
+        shift: "Day Shift",
+        avgCheckInTime: "08:12 AM",
         attendanceRate: "94%"
       },
       data: {
-        employees: [
-          { id: "EMP001", name: "Aniket Sharma", timeIn: "08:00", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.5h", priority: "good" },
-          { id: "EMP002", name: "Naman Gupta", timeIn: "08:15", timeOut: "-", shift: "Day", status: "Present", hoursWorked: "4.3h", priority: "good" },
-          { id: "EMP003", name: "Rakesh Kumar", timeIn: "-", timeOut: "-", shift: "Day", status: "Absent", hoursWorked: "0h", priority: "critical" },
-          { id: "EMP004", name: "Praveen Singh", timeIn: "20:00", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.0h", priority: "good" },
-          { id: "EMP005", name: "Ramesh Patel", timeIn: "19:45", timeOut: "-", shift: "Night", status: "Present", hoursWorked: "8.2h", priority: "good" }
-        ]
+        employees: attendanceData
       }
     }
   ];
@@ -200,15 +206,13 @@ export default function OperationsPage() {
                               <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
                             </>
                           )}
-                          {feature.id === "employee-access" && (
+                          {feature.id === "employee-attendance" && (
                             <>
                               <TableHead className="text-xs text-guardai-darkgray">Employee ID</TableHead>
                               <TableHead className="text-xs text-guardai-darkgray">Name</TableHead>
                               <TableHead className="text-xs text-guardai-darkgray">Time In</TableHead>
-                              <TableHead className="text-xs text-guardai-darkgray">Time Out</TableHead>
-                              <TableHead className="text-xs text-guardai-darkgray">Shift</TableHead>
                               <TableHead className="text-xs text-guardai-darkgray">Status</TableHead>
-                              <TableHead className="text-xs text-guardai-darkgray">Hours Worked</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
                             </>
                           )}
                         </TableRow>
@@ -219,16 +223,11 @@ export default function OperationsPage() {
                             {feature.id === "loitering-detection" && (
                               <>
                                 <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                <TableCell className="text-xs">{"Blow Moulding"}</TableCell>
+                                <TableCell className="text-xs">Blow Moulding</TableCell>
                                 <TableCell className="text-xs">{item.box_count}</TableCell>
-                                <TableCell className="text-xs">{1}</TableCell>
+                                <TableCell className="text-xs">1</TableCell>
                                 <TableCell className="text-xs">
-                                  <a
-                                    className="text-blue-600 underline flex items-center gap-1"
-                                    href={`http://localhost:3001/api/alerts/image/${item.image_id}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
+                                  <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
                                     <ImageIcon size={14} /> View
                                   </a>
                                 </TableCell>
@@ -237,29 +236,26 @@ export default function OperationsPage() {
                             {feature.id === "machine-idle" && (
                               <>
                                 <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                <TableCell className="text-xs">"Filler Room"</TableCell>
-                                <TableCell className="text-xs">"30 minutes"</TableCell>
+                                <TableCell className="text-xs">Filler Room</TableCell>
+                                <TableCell className="text-xs">30 minutes</TableCell>
                                 <TableCell className="text-xs">
-                                  <a
-                                    className="text-blue-600 underline flex items-center gap-1"
-                                    href={`http://localhost:3001/api/alerts/image/${item.image_id}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
+                                  <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
                                     <ImageIcon size={14} /> View
                                   </a>
                                 </TableCell>
                               </>
                             )}
-                            {feature.id === "employee-access" && (
+                            {feature.id === "employee-attendance" && (
                               <>
-                                <TableCell className="text-xs">{item.id}</TableCell>
-                                <TableCell className="text-xs">{item.name}</TableCell>
-                                <TableCell className="text-xs">{item.timeIn}</TableCell>
-                                <TableCell className="text-xs">{item.timeOut}</TableCell>
-                                <TableCell className="text-xs">{item.shift}</TableCell>
-                                <TableCell className="text-xs">{item.status}</TableCell>
-                                <TableCell className="text-xs">{item.hoursWorked}</TableCell>
+                                <TableCell className="text-xs">{item.emp_id}</TableCell>
+                                <TableCell className="text-xs">{"Aniket Goel"}</TableCell>
+                                <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                <TableCell className="text-xs">{"Present"}</TableCell>
+                                <TableCell className="text-xs">
+                                  <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                    <ImageIcon size={14} /> View
+                                  </a>
+                                </TableCell>
                               </>
                             )}
                           </TableRow>

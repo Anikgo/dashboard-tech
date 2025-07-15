@@ -14,6 +14,7 @@ type FireSmokeAlert = {
   logged_at: string;
   image_id: string;
   box_count: number;
+  violation_type: string;
 };
 
 export default function SecurityPage() {
@@ -85,30 +86,6 @@ export default function SecurityPage() {
           { id: "PS002", location: "Loading Bay", status: "Active", lastCheck: "1 min ago", battery: "95%" },
           { id: "PS003", location: "Perimeter Wall", status: "Active", lastCheck: "3 mins ago", battery: "97%" },
           { id: "PS004", location: "Emergency Exit", status: "Active", lastCheck: "1 min ago", battery: "99%" }
-        ]
-      }
-    },
-    {
-      id: "quality-control",
-      title: "Quality Control",
-      description: "Product quality and defect detection",
-      icon: Eye,
-      status: "active",
-      count: 2,
-      details: {
-        defectsToday: 2,
-        qualityRate: "98.5%",
-        inspections: 145,
-        rejectedItems: 3,
-        passedItems: 2447,
-        lastInspection: "11:30 AM"
-      },
-      data: {
-        inspections: [
-          { id: "QC001", product: "Bottle Cap", result: "Passed", time: "11:30 AM", inspector: "QC-Bot-01" },
-          { id: "QC002", product: "Label Alignment", result: "Failed", time: "11:25 AM", inspector: "QC-Bot-02" },
-          { id: "QC003", product: "Fill Level", result: "Passed", time: "11:20 AM", inspector: "QC-Bot-01" },
-          { id: "QC004", product: "Bottle Integrity", result: "Failed", time: "11:15 AM", inspector: "QC-Bot-03" }
         ]
       }
     },
@@ -202,14 +179,6 @@ export default function SecurityPage() {
                               <TableHead className="text-xs font-semibold">Battery</TableHead>
                             </>
                           )}
-                          {feature.id === "quality-control" && (
-                            <>
-                              <TableHead className="text-xs font-semibold">Inspection ID</TableHead>
-                              <TableHead className="text-xs font-semibold">Product</TableHead>
-                              <TableHead className="text-xs font-semibold">Result</TableHead>
-                              <TableHead className="text-xs font-semibold">Time</TableHead>
-                            </>
-                          )}
                           {feature.id === "fire-water-detection" && (
                             <>
                               <TableHead className="text-xs font-semibold">Camera</TableHead>
@@ -221,7 +190,7 @@ export default function SecurityPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {(feature.data.sensors || feature.data.inspections || feature.data.alerts || []).map((item: any, index: number) => (
+                        {(feature.data.sensors || feature.data.alerts || []).map((item: any, index: number) => (
                           <TableRow key={index} className="hover:bg-gray-50">
                             {feature.id === "perimeter-security" && (
                               <>
@@ -231,18 +200,6 @@ export default function SecurityPage() {
                                   <Badge variant="default" className="text-xs bg-green-500">{item.status}</Badge>
                                 </TableCell>
                                 <TableCell className="text-xs">{item.battery}</TableCell>
-                              </>
-                            )}
-                            {feature.id === "quality-control" && (
-                              <>
-                                <TableCell className="text-xs font-medium">{item.id}</TableCell>
-                                <TableCell className="text-xs">{item.product}</TableCell>
-                                <TableCell className="text-xs">
-                                  <Badge variant={item.result === "Passed" ? "default" : "destructive"} className="text-xs">
-                                    {item.result}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="text-xs">{item.time}</TableCell>
                               </>
                             )}
                             {feature.id === "fire-water-detection" && (
