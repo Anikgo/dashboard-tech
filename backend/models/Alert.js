@@ -12,6 +12,7 @@ const alertSchema = new mongoose.Schema({
   box_count:       { type: Number },
 
   // 🧾 Meta fields for frontend rendering (optional)
+  alert_type:  { type: String },
   violation_type:  { type: String },  // e.g., 'PPE', 'Fire', 'Smoke'
   id:              { type: String },  // for frontend compatibility
   name:            { type: String },  // employee name if available
