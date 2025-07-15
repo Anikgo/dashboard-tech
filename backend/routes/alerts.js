@@ -16,6 +16,29 @@ router.get('/ppe-compliance', async (req, res) => {
     }
   });
 
+// GET idle machinery alerts
+router.get('/idle_machinery', async (req, res) => {
+    try {
+      const alerts = await Alert.find({ alert_type: 'idle_machinery' }).sort({ created_at: -1 });
+      res.json(alerts);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+
+// GET loitering alerts
+router.get('/loitering', async (req, res) => {
+    try {
+      const alerts = await Alert.find({ violation_type: 'Loitering' }).sort({ frame_timestamp: -1 });
+      res.json(alerts);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+  
+
   // Get images
 router.get('/image/:image_id', async (req, res) => {
     try {
