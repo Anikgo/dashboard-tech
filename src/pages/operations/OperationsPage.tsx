@@ -27,6 +27,8 @@ export default function OperationsPage() {
   const [loiteringData, setLoiteringData] = useState([]);
   const [idleMachineryData, setIdleMachineryData] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [sleepData, setSleepData] = useState([]);
+  const [phoneData, setPhoneData] = useState([]);
 
   useEffect(() => {
     const fetchLoiteringData = async () => {
@@ -56,14 +58,36 @@ export default function OperationsPage() {
       }
     };
 
+    const fetchSleepData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/alerts/sleeping");
+        setSleepData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch attendance data:", err);
+      }
+    };
+
+    const fetchPhoneData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/alerts/phone");
+        setPhoneData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch attendance data:", err);
+      }
+    };
+
     fetchLoiteringData();
     fetchIdleData();
     fetchAttendanceData();
+    fetchSleepData();
+    fetchPhoneData();
 
     const interval = setInterval(() => {
       fetchLoiteringData();
       fetchIdleData();
       fetchAttendanceData();
+      fetchSleepData();
+      fetchPhoneData();
     }, 10000);
 
     return () => clearInterval(interval);
@@ -125,6 +149,44 @@ export default function OperationsPage() {
       },
       data: {
         employees: attendanceData
+      }
+    },
+    {
+      id: "sleep-detection",
+      title: "Sleep Detection",
+      description: "Detect employees sleeping on duty",
+      icon: Users,
+      status: "critical",
+      count: sleepData.length,
+      details: {
+        // zonesMonitored: 8,
+        activeAlerts: sleepData.length,
+        highestCluster: "Zone A",
+        mostFrequentTime: "11:00 AM"
+        // averageClusterSize: "4.2",
+        // systemHealth: "98%"
+      },
+      data: {
+        alerts: sleepData
+      }
+    },
+    {
+      id: "phone-detection",
+      title: "Phone Detection",
+      description: "Detect employees using phone on duty",
+      icon: Users,
+      status: "critical",
+      count: phoneData.length,
+      details: {
+        // zonesMonitored: 8,
+        activeAlerts: phoneData.length,
+        highestCluster: "Zone A",
+        mostFrequentTime: "11:00 AM"
+        // averageClusterSize: "4.2",
+        // systemHealth: "98%"
+      },
+      data: {
+        alerts: phoneData
       }
     }
   ];
@@ -215,6 +277,24 @@ export default function OperationsPage() {
                               <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
                             </>
                           )}
+                          {feature.id === "sleep-detection" && (
+                            <>
+                              <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Timestamp</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Sleeping From</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                            </>
+                          )}
+                          {feature.id === "phone-detection" && (
+                            <>
+                              <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Timestamp</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Using Phone From</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                            </>
+                          )}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -251,6 +331,32 @@ export default function OperationsPage() {
                                 <TableCell className="text-xs">{"Aniket Goel"}</TableCell>
                                 <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
                                 <TableCell className="text-xs">{"Present"}</TableCell>
+                                <TableCell className="text-xs">
+                                  <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                    <ImageIcon size={14} /> View
+                                  </a>
+                                </TableCell>
+                              </>
+                            )}
+                            {feature.id === "sleep-detection" && (
+                              <>
+                                <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                <TableCell className="text-xs">{"Blow Moulding Room"}</TableCell>
+                                <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                <TableCell className="text-xs">{"45 mins"}</TableCell>
+                                <TableCell className="text-xs">
+                                  <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                    <ImageIcon size={14} /> View
+                                  </a>
+                                </TableCell>
+                              </>
+                            )}
+                            {feature.id === "phone-detection" && (
+                              <>
+                                <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                <TableCell className="text-xs">{"Blow Moulding Room"}</TableCell>
+                                <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                <TableCell className="text-xs">{"45 mins"}</TableCell>
                                 <TableCell className="text-xs">
                                   <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
                                     <ImageIcon size={14} /> View
