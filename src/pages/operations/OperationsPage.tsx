@@ -29,6 +29,7 @@ export default function OperationsPage() {
   const [attendanceData, setAttendanceData] = useState([]);
   const [sleepData, setSleepData] = useState([]);
   const [phoneData, setPhoneData] = useState([]);
+  const [restrictedData, setRestrictedData] = useState([]);
 
   useEffect(() => {
     const fetchLoiteringData = async () => {
@@ -58,6 +59,15 @@ export default function OperationsPage() {
       }
     };
 
+    const fetchRestrictedData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/api/alerts/restricted");
+        setRestrictedData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch idle machinery data:", err);
+      }
+    };
+
     const fetchSleepData = async () => {
       try {
         const res = await axios.get("http://localhost:3001/api/alerts/sleeping");
@@ -79,6 +89,7 @@ export default function OperationsPage() {
     fetchLoiteringData();
     fetchIdleData();
     fetchAttendanceData();
+    fetchRestrictedData();
     fetchSleepData();
     fetchPhoneData();
 
@@ -86,6 +97,7 @@ export default function OperationsPage() {
       fetchLoiteringData();
       fetchIdleData();
       fetchAttendanceData();
+      fetchRestrictedData();
       fetchSleepData();
       fetchPhoneData();
     }, 10000);
@@ -149,6 +161,21 @@ export default function OperationsPage() {
       },
       data: {
         employees: attendanceData
+      }
+    },
+    {
+      id: "restricted-access",
+      title: "Restricted Access",
+      description: "Alerts when someone unauthorized enters restricted zones",
+      icon: Users,
+      status: "active",
+      count: restrictedData.length,
+      details: {
+        Alerts: restrictedData.length,
+        unauthorized: 0
+      },
+      data: {
+        employees: restrictedData
       }
     },
     {
@@ -277,6 +304,15 @@ export default function OperationsPage() {
                               <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
                             </>
                           )}
+                          {feature.id === "restricted-access" && (
+                            <>
+                              <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                              <TableHead className="text-xs text-guardai-darkgray">Time</TableHead>
+                              {/* <TableHead className="text-xs text-guardai-darkgray"></TableHead> */}
+                              <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                            </>
+                          )}
                           {feature.id === "sleep-detection" && (
                             <>
                               <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
@@ -331,6 +367,19 @@ export default function OperationsPage() {
                                 <TableCell className="text-xs">{"Aniket Goel"}</TableCell>
                                 <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
                                 <TableCell className="text-xs">{"Present"}</TableCell>
+                                <TableCell className="text-xs">
+                                  <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                    <ImageIcon size={14} /> View
+                                  </a>
+                                </TableCell>
+                              </>
+                            )}
+                            {feature.id === "restricted-access" && (
+                              <>
+                                <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                <TableCell className="text-xs">{"Blow Moulding Room"}</TableCell>
+                                <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                {/* <TableCell className="text-xs">{"Present"}</TableCell> */}
                                 <TableCell className="text-xs">
                                   <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
                                     <ImageIcon size={14} /> View
