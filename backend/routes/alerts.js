@@ -16,6 +16,36 @@ router.get('/ppe-compliance', async (req, res) => {
     }
   });
 
+// GET restricted  alerts
+router.get('/restricted', async (req, res) => {
+    try {
+      const ppeAlerts = await Alert.find({ violation_type: 'unauthorized_entry' }); // Filter by PPE compliance
+      res.json(ppeAlerts); // Send PPE alerts as JSON response
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
+// GET sleep  alerts
+router.get('/sleeping', async (req, res) => {
+    try {
+      const ppeAlerts = await Alert.find({ violation_type: 'sleeping' }); // Filter by PPE compliance
+      res.json(ppeAlerts); // Send PPE alerts as JSON response
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
+// GET phone  alerts
+router.get('/phone', async (req, res) => {
+    try {
+      const ppeAlerts = await Alert.find({ violation_type: 'on_phone' }); // Filter by PPE compliance
+      res.json(ppeAlerts); // Send PPE alerts as JSON response
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
 // GET Attendance alerts
 router.get('/attendance', async (req, res) => {
     try {
