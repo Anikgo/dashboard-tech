@@ -46,6 +46,7 @@ router.get('/phone', async (req, res) => {
     }
   });
 
+
 // GET Attendance alerts
 router.get('/attendance', async (req, res) => {
     try {
@@ -59,23 +60,23 @@ router.get('/attendance', async (req, res) => {
 // GET idle machinery alerts
 router.get('/idle_machinery', async (req, res) => {
     try {
-      const alerts = await Alert.find({ alert_type: 'idle_machinery' }).sort({ created_at: -1 });
-      res.json(alerts);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      const ppeAlerts = await Alert.find({ violation_type: 'idle_machinery' }); // Filter by PPE compliance
+      res.json(ppeAlerts); // Send PPE alerts as JSON response
+    } catch (error) {
+      res.status(500).send({ error: error.message });
     }
   });
   
 
 // GET loitering alerts
 router.get('/loitering', async (req, res) => {
-    try {
-      const alerts = await Alert.find({ violation_type: 'Loitering' }).sort({ frame_timestamp: -1 });
-      res.json(alerts);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
+  try {
+    const ppeAlerts = await Alert.find({ violation_type: 'loitering' }); // Filter by PPE compliance
+    res.json(ppeAlerts); // Send PPE alerts as JSON response
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
   
   
 
