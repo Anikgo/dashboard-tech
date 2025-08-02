@@ -5,10 +5,12 @@ import { FileText, Download, Calendar, Filter, ChevronDown, FileCog, PieChart, B
 import { motion } from "framer-motion";
 import { ReportGenerationDialog } from "@/components/reports/ReportGenerationDialog";
 import { DetailedReportView } from "@/components/reports/DetailedReportView";
+import jsPDF from 'jspdf';
 
 export default function ReportsPage() {
   const [showGenerationDialog, setShowGenerationDialog] = useState(false);
   const [showDetailedReport, setShowDetailedReport] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -31,47 +33,89 @@ export default function ReportsPage() {
     }, 1000);
   };
 
+  const handleViewReport = (report: any) => {
+    setSelectedReport(report);
+    setShowDetailedReport(true);
+  };
+
+  const handleDownloadReport = (report: any) => {
+    // Create empty PDF for now
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    
+    // Add report title
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(report.title, pageWidth / 2, 30, { align: 'center' });
+    
+    // Add report description
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+    const descriptionLines = pdf.splitTextToSize(report.description, pageWidth - 40);
+    pdf.text(descriptionLines, 20, 50);
+    
+    // Add report details
+    pdf.setFontSize(10);
+    pdf.text(`Report Type: ${report.type}`, 20, 80);
+    pdf.text(`Generated: ${report.date}`, 20, 90);
+    pdf.text(`File Size: ${report.size}`, 20, 100);
+    
+    // Add placeholder content
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Report Content', 20, 120);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('This is a placeholder report. Actual content will be generated based on the selected report type.', 20, 130);
+    
+    // Save with report name
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `${report.title.replace(/\s+/g, '_')}_${timestamp}.pdf`;
+    pdf.save(filename);
+  };
+
   const reports = [
     {
       id: 1,
-      title: "Daily Security Summary",
-      description: "Overview of all security events from the past 24 hours",
+      title: "Operational Report",
+      description: "Comprehensive analysis of sleep, phone usage, loitering, and idle machinery incidents",
       date: "Today, 6:00 AM",
-      type: "Automated",
-      size: "2.4 MB",
-      icon: LineChart
-    },
-    {
-      id: 2,
-      title: "Weekly Camera Status",
-      description: "Health and uptime report for all camera equipment",
-      date: "Apr 14, 2025",
-      type: "System",
-      size: "4.8 MB",
-      icon: PieChart
-    },
-    {
-      id: 3,
-      title: "Monthly Incident Analytics",
-      description: "Comprehensive analysis of all security incidents and resolutions",
-      date: "Mar 31, 2025",
-      type: "Analytics",
-      size: "8.7 MB",
+      type: "Operations",
+      size: "3.2 MB",
       icon: BarChart
     },
     {
-      id: 4,
-      title: "Quarterly Compliance Audit",
-      description: "Security compliance report for regulatory requirements",
-      date: "Mar 15, 2025",
+      id: 2,
+      title: "Attendance Report",
+      description: "Employee attendance tracking and workforce management analytics",
+      date: "Today, 5:30 AM",
+      type: "HR",
+      size: "1.8 MB",
+      icon: LineChart
+    },
+    {
+      id: 3,
+      title: "Compliance Dashboard Report",
+      description: "PPE compliance monitoring and safety regulation adherence",
+      date: "Today, 5:00 AM",
       type: "Compliance",
-      size: "12.2 MB",
+      size: "2.1 MB",
+      icon: PieChart
+    },
+    {
+      id: 4,
+      title: "Security Report",
+      description: "Perimeter security monitoring and fire & smoke detection analysis",
+      date: "Today, 4:30 AM",
+      type: "Security",
+      size: "4.5 MB",
       icon: FileCog
     }
   ];
 
   if (showDetailedReport) {
-    return <DetailedReportView onClose={() => setShowDetailedReport(false)} />;
+    return <DetailedReportView onClose={() => setShowDetailedReport(false)} report={selectedReport} />;
   }
 
   return (
@@ -139,10 +183,10 @@ export default function ReportsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red">
+                    <Button variant="outline" size="sm" className="border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red" onClick={() => handleViewReport(report)}>
                       View
                     </Button>
-                    <Button variant="outline" size="sm" className="border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red">
+                    <Button variant="outline" size="sm" className="border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red" onClick={() => handleDownloadReport(report)}>
                       <Download size={14} className="mr-1" />
                       Download
                     </Button>

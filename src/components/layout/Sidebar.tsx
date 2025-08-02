@@ -33,7 +33,7 @@ const sidebarItems: SidebarItem[] = [
     route: "/reports"
   },
   {
-    name: "Alert Management",
+    name: "Live Alert Console",
     icon: Bell,
     route: "/alerts"
   },
@@ -61,7 +61,7 @@ export function Sidebar() {
     if (path === "/compliance") return "Compliance Dashboard";
     if (path === "/security") return "Security Dashboard";
     if (path === "/reports") return "Reports & Analytics";
-    if (path === "/alerts") return "Alert Management";
+    if (path === "/alerts") return "Live Alert Console";
     if (path === "/cameras") return "Camera Management";
     if (path === "/settings") return "System Settings";
     return "Operations Dashboard";

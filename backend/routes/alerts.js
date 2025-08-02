@@ -1,86 +1,105 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Alert from '../models/Alert.js';
+import ResolvedAlert from '../models/ResolvedAlert.js';
 import { ObjectId } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
 
 const router = express.Router();
 
-// GET PPE compliance alerts
+// Helper function to filter out resolved alerts
+const filterResolvedAlerts = async (alerts) => {
+  const resolvedAlerts = await ResolvedAlert.find({}, 'originalAlertId');
+  const resolvedIds = resolvedAlerts.map(alert => alert.originalAlertId);
+  return alerts.filter(alert => !resolvedIds.includes(alert._id.toString()));
+};
+
+// GET PPE compliance alerts - return all alerts for now
 router.get('/ppe-compliance', async (req, res) => {
     try {
-      const ppeAlerts = await Alert.find({ violation_type: 'PPE' }); // Filter by PPE compliance
-      res.json(ppeAlerts); // Send PPE alerts as JSON response
+      // Get all PPE alerts
+      const ppeAlerts = await Alert.find({ violation_type: 'PPE' });
+      
+      // Filter out already resolved alerts
+      const activePpeAlerts = await filterResolvedAlerts(ppeAlerts);
+      
+      res.json(activePpeAlerts);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   });
 
-// GET restricted  alerts
+// GET restricted alerts - return all alerts for now
 router.get('/restricted', async (req, res) => {
     try {
-      const ppeAlerts = await Alert.find({ violation_type: 'unauthorized_entry' }); // Filter by PPE compliance
-      res.json(ppeAlerts); // Send PPE alerts as JSON response
+      // Get all restricted alerts
+      const restrictedAlerts = await Alert.find({ violation_type: 'unauthorized_entry' });
+      
+      // Filter out already resolved alerts
+      const activeRestrictedAlerts = await filterResolvedAlerts(restrictedAlerts);
+      
+      res.json(activeRestrictedAlerts);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   });
 
-// GET sleep  alerts
+// GET sleep alerts - return all alerts for now
 router.get('/sleeping', async (req, res) => {
     try {
-      const ppeAlerts = await Alert.find({ violation_type: 'sleeping' }); // Filter by PPE compliance
-      res.json(ppeAlerts); // Send PPE alerts as JSON response
+      const sleepAlerts = await Alert.find({ violation_type: 'sleeping' });
+      const activeSleepAlerts = await filterResolvedAlerts(sleepAlerts);
+      res.json(activeSleepAlerts);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   });
 
-// GET phone  alerts
+// GET phone alerts - return all alerts for now
 router.get('/phone', async (req, res) => {
     try {
-      const ppeAlerts = await Alert.find({ violation_type: 'on_phone' }); // Filter by PPE compliance
-      res.json(ppeAlerts); // Send PPE alerts as JSON response
+      const phoneAlerts = await Alert.find({ violation_type: 'on_phone' });
+      const activePhoneAlerts = await filterResolvedAlerts(phoneAlerts);
+      res.json(activePhoneAlerts);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   });
 
-
-// GET Attendance alerts
+// GET Attendance alerts - return all alerts for now
 router.get('/attendance', async (req, res) => {
     try {
-      const alerts = await Alert.find({ alert_type: 'attendance' }); // Filter by PPE compliance
-      res.json(alerts); // Send attendance alerts as JSON response
+      const alerts = await Alert.find({ alert_type: 'attendance' });
+      const activeAttendanceAlerts = await filterResolvedAlerts(alerts);
+      res.json(activeAttendanceAlerts);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   });
 
-// GET idle machinery alerts
+// GET idle machinery alerts - return all alerts for now
 router.get('/idle_machinery', async (req, res) => {
     try {
-      const ppeAlerts = await Alert.find({ violation_type: 'idle_machinery' }); // Filter by PPE compliance
-      res.json(ppeAlerts); // Send PPE alerts as JSON response
+      const idleAlerts = await Alert.find({ violation_type: 'idle_machinery' });
+      const activeIdleAlerts = await filterResolvedAlerts(idleAlerts);
+      res.json(activeIdleAlerts);
     } catch (error) {
       res.status(500).send({ error: error.message });
     }
   });
   
-
-// GET loitering alerts
+// GET loitering alerts - return all alerts for now
 router.get('/loitering', async (req, res) => {
   try {
-    const ppeAlerts = await Alert.find({ violation_type: 'loitering' }); // Filter by PPE compliance
-    res.json(ppeAlerts); // Send PPE alerts as JSON response
+    const loiteringAlerts = await Alert.find({ violation_type: 'loitering' });
+    const activeLoiteringAlerts = await filterResolvedAlerts(loiteringAlerts);
+    res.json(activeLoiteringAlerts);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
-  
-  
 
-  // Get images
+// Get images
 router.get('/image/:image_id', async (req, res) => {
     try {
       const db = mongoose.connection.db;
@@ -108,16 +127,20 @@ router.get('/image/:image_id', async (req, res) => {
 // routes/alerts.js
 router.get('/fire-smoke', async (req, res) => {
     try {
-      const alerts = await Alert.find({ violation_type: { $in: ['Fire', 'Smoke'] } }).sort({ frame_timestamp: -1 });
-      res.json(alerts);
+      const alerts = await Alert.find({ 
+        $or: [
+          { violation_type: 'fire_smoke' },
+          { violation_type: 'fire' },
+          { violation_type: 'smoke' }
+        ]
+      });
+      const activeFireSmokeAlerts = await filterResolvedAlerts(alerts);
+      res.json(activeFireSmokeAlerts);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   });
   
-  
-  
-
 // GET all alerts
 router.get('/', async (req, res) => {
   try {
@@ -135,7 +158,7 @@ router.post('/', async (req, res) => {
     const savedAlert = await newAlert.save(); // Save to MongoDB
     res.status(201).json(savedAlert); // Send saved alert as response
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    res.status(500).send({ error: error.message });
   }
 });
 
@@ -148,6 +171,5 @@ router.delete('/:id', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
-  
 
 export default router;
