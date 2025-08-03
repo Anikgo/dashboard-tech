@@ -364,17 +364,13 @@ export function Sidebar() {
             <div className='flex items-center gap-2'>
               <img
                 alt='Guardex'
-                src='/lovable-uploads/51d1dccf-6614-4504-a42f-eda602f10158.png'
+                src='/logo.png'
                 className='h-20 w-full object-contain'
               />
             </div>
           )}
           {collapsed && (
-            <img
-              src='/lovable-uploads/51d1dccf-6614-4504-a42f-eda602f10158.png'
-              alt='Guardex'
-              className='h-10 mx-auto'
-            />
+            <img src='/logo.png' alt='Guardex' className='h-10 mx-auto' />
           )}
           <Button
             variant='ghost'
