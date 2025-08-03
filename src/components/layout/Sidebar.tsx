@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { BarChart2, Video, Shield, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu, Factory, Users, Truck, HardHat, Eye } from "lucide-react";
+import { BarChart2, Video, Shield, FileText, Bell, Camera, Settings, ChevronLeft, ChevronRight, Menu, Factory, Users, Truck, HardHat, Eye, Bot } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -38,15 +38,12 @@ const sidebarItems: SidebarItem[] = [
     route: "/alerts"
   },
   {
-    name: "Camera Management",
-    icon: Camera,
-    route: "/cameras"
+    name: "AI Video Assistant",
+    icon: Bot,
+    route: "/ai-assistant"
   },
-  {
-    name: "System Settings",
-    icon: Settings,
-    route: "/settings"
-  }
+
+
 ];
 
 export function Sidebar() {
@@ -62,8 +59,7 @@ export function Sidebar() {
     if (path === "/security") return "Security Dashboard";
     if (path === "/reports") return "Reports & Analytics";
     if (path === "/alerts") return "Live Alert Console";
-    if (path === "/cameras") return "Camera Management";
-    if (path === "/settings") return "System Settings";
+    if (path === "/ai-assistant") return "AI Video Assistant";
     return "Operations Dashboard";
   };
   const [activeItem, setActiveItem] = useState(getActiveItemFromPath(location.pathname));

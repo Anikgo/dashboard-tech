@@ -11,6 +11,7 @@ import CompliancePage from "./pages/compliance/CompliancePage";
 import SecurityPage from "./pages/security/SecurityPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import AlertsPage from "./pages/alerts/AlertsPage";
+import AIAssistantPage from "./pages/ai-assistant/AIAssistantPage";
 import CamerasPage from "./pages/cameras/CamerasPage";
 import SettingsPage from "./pages/settings/SettingsPage";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/security" element={<SecurityPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/ai-assistant" element={<AIAssistantPage />} />
             <Route path="/cameras" element={<CamerasPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>

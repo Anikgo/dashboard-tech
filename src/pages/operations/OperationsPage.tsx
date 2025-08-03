@@ -355,338 +355,340 @@ export default function OperationsPage() {
               </Card>
             </motion.div>
           ) : (
-            operationsFeatures.map((feature) => (
-              <motion.div key={feature.id} variants={itemVariants}>
+            <>
+              {operationsFeatures.map((feature) => (
+                <motion.div key={feature.id} variants={itemVariants}>
+                  <Card className="border border-gray-200 shadow-lg w-full bg-white">
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-guardai-red/10 p-2 rounded-lg">
+                            <feature.icon size={24} className="text-guardai-red" />
+                          </div>
+                          <div className="bg-guardai-red text-white text-sm px-3 py-1 rounded-full font-medium">
+                            {feature.count}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className={cn("w-3 h-3 rounded-full", getFeatureStatusColor(feature.status))}></div>
+                          <Activity size={12} className="text-guardai-red" />
+                          <span className="text-xs text-guardai-gray capitalize">
+                            {feature.status === "critical" ? "Critical" : feature.status === "warning" ? "Warning" : "Active"}
+                          </span>
+                        </div>
+                      </div>
+                      <CardTitle className="text-lg font-semibold text-guardai-darkgray">{feature.title}</CardTitle>
+                      <p className="text-sm text-guardai-gray">{feature.description}</p>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                        {Object.entries(feature.details).map(([key, value]) => (
+                          <div key={key} className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
+                            <div className="text-lg font-bold text-guardai-red">{value}</div>
+                            <div className="text-xs text-guardai-darkgray capitalize">{key.replace(/([A-Z])/g, ' $1').toLowerCase()}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border rounded-lg overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-guardai-red/5">
+                              {feature.id === "loitering-detection" && (
+                                <>
+                                  <TableHead className="text-xs text-guardai-darkgray">Zone</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray"># People</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Time of Alert</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
+                                </>
+                              )}
+                              {feature.id === "machine-idle" && (
+                                <>
+                                  <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Zone</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Time</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
+                                </>
+                              )}
+                              {feature.id === "employee-attendance" && (
+                                <>
+                                  <TableHead className="text-xs text-guardai-darkgray">Employee ID</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Name</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Time In</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Status</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                                </>
+                              )}
+                              {feature.id === "restricted-access" && (
+                                <>
+                                  <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Time</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
+                                </>
+                              )}
+                              {feature.id === "sleep-detection" && (
+                                <>
+                                  <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Timestamp</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Sleeping From</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
+                                </>
+                              )}
+                              {feature.id === "phone-detection" && (
+                                <>
+                                  <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Timestamp</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Using Phone From</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
+                                  <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
+                                </>
+                              )}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {(feature.data.alerts || feature.data.machines || feature.data.employees || []).map((item, idx) => (
+                              <TableRow key={idx}>
+                                {feature.id === "loitering-detection" && (
+                                  <>
+                                    <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                    <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
+                                    <TableCell className="text-xs">{item.box_count}</TableCell>
+                                    <TableCell className="text-xs">
+                                      {item.frame_timestamp ? new Date(item.frame_timestamp).toLocaleTimeString("en-IN", {
+                                        hour: "2-digit",
+                                        minute: "2-digit"
+                                      }) : "N/A"}
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                      <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                        <ImageIcon size={14} /> View
+                                      </a>
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                      <button
+                                        onClick={() => handleResolve(item._id, 'loitering', item)}
+                                        className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
+                                      >
+                                        Resolve
+                                      </button>
+                                    </TableCell>
+                                  </>
+                                )}
+                                {feature.id === "machine-idle" && (
+                                  <>
+                                    <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                    <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
+                                    <TableCell className="text-xs">30 minutes</TableCell>
+                                    <TableCell className="text-xs">
+                                      <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                        <ImageIcon size={14} /> View
+                                      </a>
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                      <button
+                                        onClick={() => handleResolve(item._id, 'idle_machinery', item)}
+                                        className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
+                                      >
+                                        Resolve
+                                      </button>
+                                    </TableCell>
+                                  </>
+                                )}
+                                {feature.id === "employee-attendance" && (
+                                  <>
+                                    <TableCell className="text-xs">{item.emp_id}</TableCell>
+                                    <TableCell className="text-xs">{item.name || "Unknown Employee"}</TableCell>
+                                    <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                    <TableCell className="text-xs">{"Present"}</TableCell>
+                                    <TableCell className="text-xs">
+                                      <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                        <ImageIcon size={14} /> View
+                                      </a>
+                                    </TableCell>
+                                  </>
+                                )}
+                                {feature.id === "restricted-access" && (
+                                  <>
+                                    <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                    <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
+                                    <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                    <TableCell className="text-xs">
+                                      <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                        <ImageIcon size={14} /> View
+                                      </a>
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                      <button
+                                        onClick={() => handleResolve(item._id, 'restricted', item)}
+                                        className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
+                                      >
+                                        Resolve
+                                      </button>
+                                    </TableCell>
+                                  </>
+                                )}
+                                {feature.id === "sleep-detection" && (
+                                  <>
+                                    <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                    <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
+                                    <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                    <TableCell className="text-xs">{"45 mins"}</TableCell>
+                                    <TableCell className="text-xs">
+                                      <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                        <ImageIcon size={14} /> View
+                                      </a>
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                      <button
+                                        onClick={() => handleResolve(item._id, 'sleeping', item)}
+                                        className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
+                                      >
+                                        Resolve
+                                      </button>
+                                    </TableCell>
+                                  </>
+                                )}
+                                {feature.id === "phone-detection" && (
+                                  <>
+                                    <TableCell className="text-xs">{item.camera_id}</TableCell>
+                                    <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
+                                    <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
+                                    <TableCell className="text-xs">{"45 mins"}</TableCell>
+                                    <TableCell className="text-xs">
+                                      <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
+                                        <ImageIcon size={14} /> View
+                                      </a>
+                                    </TableCell>
+                                    <TableCell className="text-xs">
+                                      <button
+                                        onClick={() => handleResolve(item._id, 'phone', item)}
+                                        className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
+                                      >
+                                        Resolve
+                                      </button>
+                                    </TableCell>
+                                  </>
+                                )}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+
+              {/* Loading & Unloading Operations Table */}
+              <motion.div variants={itemVariants}>
                 <Card className="border border-gray-200 shadow-lg w-full bg-white">
                   <CardHeader className="p-4 pb-2">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
                         <div className="bg-guardai-red/10 p-2 rounded-lg">
-                          <feature.icon size={24} className="text-guardai-red" />
+                          <Truck size={24} className="text-guardai-red" />
                         </div>
                         <div className="bg-guardai-red text-white text-sm px-3 py-1 rounded-full font-medium">
-                          {feature.count}
+                          4
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className={cn("w-3 h-3 rounded-full", getFeatureStatusColor(feature.status))}></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
                         <Activity size={12} className="text-guardai-red" />
                         <span className="text-xs text-guardai-gray capitalize">
-                          {feature.status === "critical" ? "Critical" : feature.status === "warning" ? "Warning" : "Active"}
+                          Active
                         </span>
                       </div>
                     </div>
-                    <CardTitle className="text-lg font-semibold text-guardai-darkgray">{feature.title}</CardTitle>
-                    <p className="text-sm text-guardai-gray">{feature.description}</p>
+                    <CardTitle className="text-lg font-semibold text-guardai-darkgray">Loading & Unloading Operations</CardTitle>
+                    <p className="text-sm text-guardai-gray">Track cargo operations and logistics</p>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-                      {Object.entries(feature.details).map(([key, value]) => (
-                        <div key={key} className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
-                          <div className="text-lg font-bold text-guardai-red">{value}</div>
-                          <div className="text-xs text-guardai-darkgray capitalize">{key.replace(/([A-Z])/g, ' $1').toLowerCase()}</div>
-                        </div>
-                      ))}
+                      <div className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
+                        <div className="text-lg font-bold text-guardai-red">28</div>
+                        <div className="text-xs text-guardai-darkgray">today loaded</div>
+                      </div>
+                      <div className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
+                        <div className="text-lg font-bold text-guardai-red">3</div>
+                        <div className="text-xs text-guardai-darkgray">pending trucks</div>
+                      </div>
+                      <div className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
+                        <div className="text-lg font-bold text-guardai-red">45 min</div>
+                        <div className="text-xs text-guardai-darkgray">average time</div>
+                      </div>
                     </div>
                     <div className="border rounded-lg overflow-hidden">
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-guardai-red/5">
-                            {feature.id === "loitering-detection" && (
-                              <>
-                                <TableHead className="text-xs text-guardai-darkgray">Zone</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray"># People</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Time of Alert</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
-                              </>
-                            )}
-                            {feature.id === "machine-idle" && (
-                              <>
-                                <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Zone</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Time</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
-                              </>
-                            )}
-                            {feature.id === "employee-attendance" && (
-                              <>
-                                <TableHead className="text-xs text-guardai-darkgray">Employee ID</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Name</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Time In</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Status</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
-                              </>
-                            )}
-                            {feature.id === "restricted-access" && (
-                              <>
-                                <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Time</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
-                              </>
-                            )}
-                            {feature.id === "sleep-detection" && (
-                              <>
-                                <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Timestamp</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Sleeping From</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
-                              </>
-                            )}
-                            {feature.id === "phone-detection" && (
-                              <>
-                                <TableHead className="text-xs text-guardai-darkgray">Camera ID</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Location</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Timestamp</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Using Phone From</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Image</TableHead>
-                                <TableHead className="text-xs text-guardai-darkgray">Resolve</TableHead>
-                              </>
-                            )}
+                            <TableHead className="text-xs text-guardai-darkgray">Operation ID</TableHead>
+                            <TableHead className="text-xs text-guardai-darkgray">Type</TableHead>
+                            <TableHead className="text-xs text-guardai-darkgray">Truck</TableHead>
+                            <TableHead className="text-xs text-guardai-darkgray">To Be Loaded</TableHead>
+                            <TableHead className="text-xs text-guardai-darkgray">Status</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {(feature.data.alerts || feature.data.machines || feature.data.employees || []).map((item, idx) => (
-                            <TableRow key={idx}>
-                              {feature.id === "loitering-detection" && (
-                                <>
-                                  <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                  <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
-                                  <TableCell className="text-xs">{item.box_count}</TableCell>
-                                  <TableCell className="text-xs">
-                                    {item.frame_timestamp ? new Date(item.frame_timestamp).toLocaleTimeString("en-IN", {
-                                      hour: "2-digit",
-                                      minute: "2-digit"
-                                    }) : "N/A"}
-                                  </TableCell>
-                                  <TableCell className="text-xs">
-                                    <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
-                                      <ImageIcon size={14} /> View
-                                    </a>
-                                  </TableCell>
-                                  <TableCell className="text-xs">
-                                    <button
-                                      onClick={() => handleResolve(item._id, 'loitering', item)}
-                                      className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                      Resolve
-                                    </button>
-                                  </TableCell>
-                                </>
-                              )}
-                              {feature.id === "machine-idle" && (
-                                <>
-                                  <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                  <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
-                                  <TableCell className="text-xs">30 minutes</TableCell>
-                                  <TableCell className="text-xs">
-                                    <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
-                                      <ImageIcon size={14} /> View
-                                    </a>
-                                  </TableCell>
-                                  <TableCell className="text-xs">
-                                    <button
-                                      onClick={() => handleResolve(item._id, 'idle_machinery', item)}
-                                      className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                      Resolve
-                                    </button>
-                                  </TableCell>
-                                </>
-                              )}
-                              {feature.id === "employee-attendance" && (
-                                <>
-                                  <TableCell className="text-xs">{item.emp_id}</TableCell>
-                                  <TableCell className="text-xs">{"Aniket Goel"}</TableCell>
-                                  <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
-                                  <TableCell className="text-xs">{"Present"}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
-                                      <ImageIcon size={14} /> View
-                                    </a>
-                                  </TableCell>
-                                </>
-                              )}
-                              {feature.id === "restricted-access" && (
-                                <>
-                                  <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                  <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
-                                  <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
-                                      <ImageIcon size={14} /> View
-                                    </a>
-                                  </TableCell>
-                                  <TableCell className="text-xs">
-                                    <button
-                                      onClick={() => handleResolve(item._id, 'restricted', item)}
-                                      className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                      Resolve
-                                    </button>
-                                  </TableCell>
-                                </>
-                              )}
-                              {feature.id === "sleep-detection" && (
-                                <>
-                                  <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                  <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
-                                  <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
-                                  <TableCell className="text-xs">{"45 mins"}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
-                                      <ImageIcon size={14} /> View
-                                    </a>
-                                  </TableCell>
-                                  <TableCell className="text-xs">
-                                    <button
-                                      onClick={() => handleResolve(item._id, 'sleeping', item)}
-                                      className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                      Resolve
-                                    </button>
-                                  </TableCell>
-                                </>
-                              )}
-                              {feature.id === "phone-detection" && (
-                                <>
-                                  <TableCell className="text-xs">{item.camera_id}</TableCell>
-                                  <TableCell className="text-xs">{item.zone || "Unknown Location"}</TableCell>
-                                  <TableCell className="text-xs">{item.frame_timestamp}</TableCell>
-                                  <TableCell className="text-xs">{"45 mins"}</TableCell>
-                                  <TableCell className="text-xs">
-                                    <a className="text-blue-600 underline flex items-center gap-1" href={`http://localhost:3001/api/alerts/image/${item.image_id}`} target="_blank" rel="noreferrer">
-                                      <ImageIcon size={14} /> View
-                                    </a>
-                                  </TableCell>
-                                  <TableCell className="text-xs">
-                                    <button
-                                      onClick={() => handleResolve(item._id, 'phone', item)}
-                                      className="text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600"
-                                    >
-                                      Resolve
-                                    </button>
-                                  </TableCell>
-                                </>
-                              )}
-                            </TableRow>
-                          ))}
+                          <TableRow className="hover:bg-gray-50">
+                            <TableCell className="text-xs">TR001</TableCell>
+                            <TableCell className="text-xs">Loading</TableCell>
+                            <TableCell className="text-xs">MH-12-AB-1234</TableCell>
+                            <TableCell className="text-xs">500 boxes</TableCell>
+                            <TableCell className="text-xs">
+                              <Badge className="bg-green-100 text-green-800 border-green-200">
+                                In Progress
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="hover:bg-gray-50">
+                            <TableCell className="text-xs">TR002</TableCell>
+                            <TableCell className="text-xs">Unloading</TableCell>
+                            <TableCell className="text-xs">UP-32-CD-5678</TableCell>
+                            <TableCell className="text-xs">750 boxes</TableCell>
+                            <TableCell className="text-xs">
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                                Completed
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="hover:bg-gray-50">
+                            <TableCell className="text-xs">TR003</TableCell>
+                            <TableCell className="text-xs">Loading</TableCell>
+                            <TableCell className="text-xs">DL-01-EF-9012</TableCell>
+                            <TableCell className="text-xs">300 boxes</TableCell>
+                            <TableCell className="text-xs">
+                              <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                                Waiting
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="hover:bg-gray-50">
+                            <TableCell className="text-xs">TR004</TableCell>
+                            <TableCell className="text-xs">Unloading</TableCell>
+                            <TableCell className="text-xs">RJ-14-GH-3456</TableCell>
+                            <TableCell className="text-xs">600 boxes</TableCell>
+                            <TableCell className="text-xs">
+                              <Badge className="bg-green-100 text-green-800 border-green-200">
+                                In Progress
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
                         </TableBody>
                       </Table>
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
-            ))
+            </>
           )}
-
-          {/* Loading & Unloading Operations Table */}
-          <motion.div variants={itemVariants}>
-            <Card className="border border-gray-200 shadow-lg w-full bg-white">
-              <CardHeader className="p-4 pb-2">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-guardai-red/10 p-2 rounded-lg">
-                      <Truck size={24} className="text-guardai-red" />
-                    </div>
-                    <div className="bg-guardai-red text-white text-sm px-3 py-1 rounded-full font-medium">
-                      4
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <Activity size={12} className="text-guardai-red" />
-                    <span className="text-xs text-guardai-gray capitalize">
-                      Active
-                    </span>
-                  </div>
-                </div>
-                <CardTitle className="text-lg font-semibold text-guardai-darkgray">Loading & Unloading Operations</CardTitle>
-                <p className="text-sm text-guardai-gray">Track cargo operations and logistics</p>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-                  <div className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
-                    <div className="text-lg font-bold text-guardai-red">28</div>
-                    <div className="text-xs text-guardai-darkgray">today loaded</div>
-                  </div>
-                  <div className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
-                    <div className="text-lg font-bold text-guardai-red">3</div>
-                    <div className="text-xs text-guardai-darkgray">pending trucks</div>
-                  </div>
-                  <div className="text-center p-3 bg-guardai-lightgray/50 rounded-lg border border-guardai-lightgray">
-                    <div className="text-lg font-bold text-guardai-red">45 min</div>
-                    <div className="text-xs text-guardai-darkgray">average time</div>
-                  </div>
-                </div>
-                <div className="border rounded-lg overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-guardai-red/5">
-                        <TableHead className="text-xs text-guardai-darkgray">Operation ID</TableHead>
-                        <TableHead className="text-xs text-guardai-darkgray">Type</TableHead>
-                        <TableHead className="text-xs text-guardai-darkgray">Truck</TableHead>
-                        <TableHead className="text-xs text-guardai-darkgray">To Be Loaded</TableHead>
-                        <TableHead className="text-xs text-guardai-darkgray">Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow className="hover:bg-gray-50">
-                        <TableCell className="text-xs">TR001</TableCell>
-                        <TableCell className="text-xs">Loading</TableCell>
-                        <TableCell className="text-xs">MH-12-AB-1234</TableCell>
-                        <TableCell className="text-xs">500 boxes</TableCell>
-                        <TableCell className="text-xs">
-                          <Badge className="bg-green-100 text-green-800 border-green-200">
-                            In Progress
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="hover:bg-gray-50">
-                        <TableCell className="text-xs">TR002</TableCell>
-                        <TableCell className="text-xs">Unloading</TableCell>
-                        <TableCell className="text-xs">UP-32-CD-5678</TableCell>
-                        <TableCell className="text-xs">750 boxes</TableCell>
-                        <TableCell className="text-xs">
-                          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                            Completed
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="hover:bg-gray-50">
-                        <TableCell className="text-xs">TR003</TableCell>
-                        <TableCell className="text-xs">Loading</TableCell>
-                        <TableCell className="text-xs">DL-01-EF-9012</TableCell>
-                        <TableCell className="text-xs">300 boxes</TableCell>
-                        <TableCell className="text-xs">
-                          <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                            Waiting
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="hover:bg-gray-50">
-                        <TableCell className="text-xs">TR004</TableCell>
-                        <TableCell className="text-xs">Unloading</TableCell>
-                        <TableCell className="text-xs">RJ-14-GH-3456</TableCell>
-                        <TableCell className="text-xs">600 boxes</TableCell>
-                        <TableCell className="text-xs">
-                          <Badge className="bg-green-100 text-green-800 border-green-200">
-                            In Progress
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
         </motion.div>
       </ScrollArea>
     </div>
