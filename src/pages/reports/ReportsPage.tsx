@@ -1,16 +1,130 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Calendar, Filter, ChevronDown, FileCog, PieChart, BarChart, LineChart } from "lucide-react";
+import { FileText, Download, Calendar, Filter, ChevronDown, FileCog, PieChart, BarChart, LineChart, Clock, Volume2, Mic } from "lucide-react";
 import { motion } from "framer-motion";
 import { ReportGenerationDialog } from "@/components/reports/ReportGenerationDialog";
 import { DetailedReportView } from "@/components/reports/DetailedReportView";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 import jsPDF from 'jspdf';
 
 export default function ReportsPage() {
   const [showGenerationDialog, setShowGenerationDialog] = useState(false);
   const [showDetailedReport, setShowDetailedReport] = useState(false);
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [reportType, setReportType] = useState("today");
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showSpecificCalendar, setShowSpecificCalendar] = useState(false);
+  const [showStartCalendar, setShowStartCalendar] = useState(false);
+  const [showEndCalendar, setShowEndCalendar] = useState(false);
+  const [dashboardTimePeriod, setDashboardTimePeriod] = useState("today");
+  const [dashboardData, setDashboardData] = useState({
+    operations: 70,
+    security: 47,
+    compliance: 39,
+    total: 156
+  });
+  const [staticDashboardData] = useState({
+    operations: 70,
+    security: 47,
+    compliance: 39,
+    total: 156
+  });
+
+  const getScaledData = (timePeriod: string) => {
+    const baseData = {
+      operations: 70,
+      security: 47,
+      compliance: 39,
+      total: 156
+    };
+
+    let scale = 1;
+    switch (timePeriod) {
+      case "today":
+        scale = 0.3; // ~50 alerts
+        break;
+      case "lastWeek":
+        scale = 2.2; // ~350 alerts
+        break;
+      case "lastMonth":
+        scale = 9.6; // ~1500 alerts
+        break;
+    }
+
+    return {
+      operations: Math.round(baseData.operations * scale),
+      security: Math.round(baseData.security * scale),
+      compliance: Math.round(baseData.compliance * scale),
+      total: Math.round(baseData.total * scale)
+    };
+  };
+  const [showAudioSummary, setShowAudioSummary] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [currentSummary, setCurrentSummary] = useState("");
+  const [scheduledReports, setScheduledReports] = useState({
+    dailySummary: { enabled: true, time: "06:00" },
+    weeklyAnalytics: { enabled: true, time: "09:00" },
+    monthlyCompliance: { enabled: false, time: "08:00" }
+  });
+
+  const handleScheduledReportToggle = (reportType: string, enabled: boolean) => {
+    setScheduledReports(prev => ({
+      ...prev,
+      [reportType]: { ...prev[reportType as keyof typeof prev], enabled }
+    }));
+  };
+
+  const handleScheduledReportTimeChange = (reportType: string, time: string) => {
+    setScheduledReports(prev => ({
+      ...prev,
+      [reportType]: { ...prev[reportType as keyof typeof prev], time }
+    }));
+  };
+
+  const handleDashboardTimeChange = (value: string) => {
+    setDashboardTimePeriod(value);
+    generateDashboardData(value);
+  };
+
+  const generateDashboardData = (timePeriod: string) => {
+    let total = 0;
+    let operations = 0;
+    let security = 0;
+    let compliance = 0;
+
+    switch (timePeriod) {
+      case "today":
+        total = Math.floor(Math.random() * 30) + 40; // 40-70
+        operations = Math.floor(total * 0.45);
+        security = Math.floor(total * 0.3);
+        compliance = total - operations - security;
+        break;
+      case "lastWeek":
+        total = Math.floor(Math.random() * 100) + 300; // 300-400
+        operations = Math.floor(total * 0.45);
+        security = Math.floor(total * 0.3);
+        compliance = total - operations - security;
+        break;
+      case "lastMonth":
+        total = Math.floor(Math.random() * 500) + 1200; // 1200-1700
+        operations = Math.floor(total * 0.45);
+        security = Math.floor(total * 0.3);
+        compliance = total - operations - security;
+        break;
+    }
+
+    setDashboardData({ operations, security, compliance, total });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -75,6 +189,87 @@ export default function ReportsPage() {
     pdf.save(filename);
   };
 
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Simulate quick refresh
+    setTimeout(() => {
+      setIsRefreshing(false);
+      // Regenerate dashboard data to simulate new data
+      generateDashboardData(dashboardTimePeriod);
+    }, 800);
+  };
+
+  const handleAudioSummary = () => {
+    const summary = getTodaySummary();
+    setCurrentSummary(summary);
+    setShowAudioSummary(true);
+    
+    // Start playing audio
+    setIsPlayingAudio(true);
+    const utterance = new SpeechSynthesisUtterance(summary);
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.name.includes('Google') || voice.name.includes('Samantha') || voice.name.includes('Alex')
+    );
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+    
+    utterance.onend = () => {
+      setIsPlayingAudio(false);
+    };
+    
+    utterance.onerror = () => {
+      setIsPlayingAudio(false);
+    };
+    
+    speechSynthesis.speak(utterance);
+  };
+
+  const getTodaySummary = () => {
+    return `Today's security summary: ${dashboardData.total} total alerts were raised across all dashboards. Operations dashboard had ${dashboardData.operations} alerts, Security dashboard had ${dashboardData.security} alerts, and Compliance dashboard had ${dashboardData.compliance} alerts. The alert resolution rate is currently at 87%. All systems are operating normally with no critical issues reported.`;
+  };
+
+  const stopAudio = () => {
+    speechSynthesis.cancel();
+    setIsPlayingAudio(false);
+  };
+
+  const toggleAudio = () => {
+    if (isPlayingAudio) {
+      stopAudio();
+    } else {
+      // Use the stored summary instead of generating new one
+      setIsPlayingAudio(true);
+      const utterance = new SpeechSynthesisUtterance(currentSummary);
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      const voices = speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Google') || voice.name.includes('Samantha') || voice.name.includes('Alex')
+      );
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+      
+      utterance.onend = () => {
+        setIsPlayingAudio(false);
+      };
+      
+      utterance.onerror = () => {
+        setIsPlayingAudio(false);
+      };
+      
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   const reports = [
     {
       id: 1,
@@ -123,7 +318,7 @@ export default function ReportsPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="p-6 max-w-7xl mx-auto"
+      className={`p-6 max-w-7xl mx-auto transition-opacity duration-300 ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}
     >
       <motion.div variants={itemVariants} className="flex items-center gap-3 mb-1">
         <FileText size={28} className="text-guardai-red" />
@@ -135,24 +330,131 @@ export default function ReportsPage() {
       </motion.p>
 
       <motion.div variants={itemVariants} className="mb-6 flex flex-wrap gap-4 items-center">
-        <Button variant="outline" className="border-guardai-gray/30 flex items-center gap-2">
-          <Calendar size={16} />
-          <span>Date Range</span>
-          <ChevronDown size={14} />
-        </Button>
-        
-        <Button variant="outline" className="border-guardai-gray/30 flex items-center gap-2">
-          <Filter size={16} />
-          <span>Filter Reports</span>
-          <ChevronDown size={14} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Select value={reportType} onValueChange={setReportType}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select report type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today's Report</SelectItem>
+              <SelectItem value="specific">Specific Date Report</SelectItem>
+              <SelectItem value="range">Date Range Report</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {/* Specific Date Calendar */}
+          {reportType === "specific" && (
+            <div className="flex items-center gap-2">
+              <Popover open={showSpecificCalendar} onOpenChange={setShowSpecificCalendar}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-48 justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => {
+                      setSelectedDate(date);
+                      setShowSpecificCalendar(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              {selectedDate && (
+                <Button 
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="bg-guardai-red hover:bg-guardai-red/90 text-white px-4"
+                >
+                  {isRefreshing ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Go"
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
+          
+          {/* Date Range Calendar */}
+          {reportType === "range" && (
+            <div className="flex items-center gap-2">
+              <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-48 justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.from ? format(dateRange.from, "LLL dd, y") : "Start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={dateRange.from}
+                    onSelect={(date) => {
+                      setDateRange({ ...dateRange, from: date || new Date() });
+                      setShowStartCalendar(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              <span className="text-gray-500">to</span>
+              
+              <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-48 justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.to ? format(dateRange.to, "LLL dd, y") : "End date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={dateRange.to}
+                    onSelect={(date) => {
+                      setDateRange({ ...dateRange, to: date });
+                      setShowEndCalendar(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              {dateRange.from && dateRange.to && (
+                <Button 
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="bg-guardai-red hover:bg-guardai-red/90 text-white px-4"
+                >
+                  {isRefreshing ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Go"
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
 
         <Button 
-          onClick={() => setShowGenerationDialog(true)}
+          onClick={handleAudioSummary}
           className="ml-auto bg-guardai-red hover:bg-guardai-red/90 text-white"
         >
-          <FileText size={16} className="mr-2" />
-          Generate New Report
+          <Mic size={16} className="mr-2" />
+          Quick Summary
         </Button>
       </motion.div>
 
@@ -212,55 +514,331 @@ export default function ReportsPage() {
                 Set up automatic report generation and delivery to your email.
               </p>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm">Daily Summary</div>
-                  <div className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">Active</div>
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">Daily Summary</div>
+                    <div className="text-xs text-guardai-gray">Daily operational overview</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {scheduledReports.dailySummary.enabled && (
+                      <Select 
+                        value={scheduledReports.dailySummary.time} 
+                        onValueChange={(value) => handleScheduledReportTimeChange('dailySummary', value)}
+                      >
+                        <SelectTrigger className="w-20 h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="00:00">00:00</SelectItem>
+                          <SelectItem value="01:00">01:00</SelectItem>
+                          <SelectItem value="02:00">02:00</SelectItem>
+                          <SelectItem value="03:00">03:00</SelectItem>
+                          <SelectItem value="04:00">04:00</SelectItem>
+                          <SelectItem value="05:00">05:00</SelectItem>
+                          <SelectItem value="06:00">06:00</SelectItem>
+                          <SelectItem value="07:00">07:00</SelectItem>
+                          <SelectItem value="08:00">08:00</SelectItem>
+                          <SelectItem value="09:00">09:00</SelectItem>
+                          <SelectItem value="10:00">10:00</SelectItem>
+                          <SelectItem value="11:00">11:00</SelectItem>
+                          <SelectItem value="12:00">12:00</SelectItem>
+                          <SelectItem value="13:00">13:00</SelectItem>
+                          <SelectItem value="14:00">14:00</SelectItem>
+                          <SelectItem value="15:00">15:00</SelectItem>
+                          <SelectItem value="16:00">16:00</SelectItem>
+                          <SelectItem value="17:00">17:00</SelectItem>
+                          <SelectItem value="18:00">18:00</SelectItem>
+                          <SelectItem value="19:00">19:00</SelectItem>
+                          <SelectItem value="20:00">20:00</SelectItem>
+                          <SelectItem value="21:00">21:00</SelectItem>
+                          <SelectItem value="22:00">22:00</SelectItem>
+                          <SelectItem value="23:00">23:00</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <Switch 
+                      checked={scheduledReports.dailySummary.enabled}
+                      onCheckedChange={(checked) => handleScheduledReportToggle('dailySummary', checked)}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="text-sm">Weekly Analytics</div>
-                  <div className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">Active</div>
+                
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">Weekly Analytics</div>
+                    <div className="text-xs text-guardai-gray">Weekly performance metrics</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {scheduledReports.weeklyAnalytics.enabled && (
+                      <Select 
+                        value={scheduledReports.weeklyAnalytics.time} 
+                        onValueChange={(value) => handleScheduledReportTimeChange('weeklyAnalytics', value)}
+                      >
+                        <SelectTrigger className="w-20 h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="00:00">00:00</SelectItem>
+                          <SelectItem value="01:00">01:00</SelectItem>
+                          <SelectItem value="02:00">02:00</SelectItem>
+                          <SelectItem value="03:00">03:00</SelectItem>
+                          <SelectItem value="04:00">04:00</SelectItem>
+                          <SelectItem value="05:00">05:00</SelectItem>
+                          <SelectItem value="06:00">06:00</SelectItem>
+                          <SelectItem value="07:00">07:00</SelectItem>
+                          <SelectItem value="08:00">08:00</SelectItem>
+                          <SelectItem value="09:00">09:00</SelectItem>
+                          <SelectItem value="10:00">10:00</SelectItem>
+                          <SelectItem value="11:00">11:00</SelectItem>
+                          <SelectItem value="12:00">12:00</SelectItem>
+                          <SelectItem value="13:00">13:00</SelectItem>
+                          <SelectItem value="14:00">14:00</SelectItem>
+                          <SelectItem value="15:00">15:00</SelectItem>
+                          <SelectItem value="16:00">16:00</SelectItem>
+                          <SelectItem value="17:00">17:00</SelectItem>
+                          <SelectItem value="18:00">18:00</SelectItem>
+                          <SelectItem value="19:00">19:00</SelectItem>
+                          <SelectItem value="20:00">20:00</SelectItem>
+                          <SelectItem value="21:00">21:00</SelectItem>
+                          <SelectItem value="22:00">22:00</SelectItem>
+                          <SelectItem value="23:00">23:00</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <Switch 
+                      checked={scheduledReports.weeklyAnalytics.enabled}
+                      onCheckedChange={(checked) => handleScheduledReportToggle('weeklyAnalytics', checked)}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="text-sm">Monthly Compliance</div>
-                  <div className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full">Inactive</div>
+                
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">Monthly Compliance</div>
+                    <div className="text-xs text-guardai-gray">Monthly compliance overview</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {scheduledReports.monthlyCompliance.enabled && (
+                      <Select 
+                        value={scheduledReports.monthlyCompliance.time} 
+                        onValueChange={(value) => handleScheduledReportTimeChange('monthlyCompliance', value)}
+                      >
+                        <SelectTrigger className="w-20 h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="00:00">00:00</SelectItem>
+                          <SelectItem value="01:00">01:00</SelectItem>
+                          <SelectItem value="02:00">02:00</SelectItem>
+                          <SelectItem value="03:00">03:00</SelectItem>
+                          <SelectItem value="04:00">04:00</SelectItem>
+                          <SelectItem value="05:00">05:00</SelectItem>
+                          <SelectItem value="06:00">06:00</SelectItem>
+                          <SelectItem value="07:00">07:00</SelectItem>
+                          <SelectItem value="08:00">08:00</SelectItem>
+                          <SelectItem value="09:00">09:00</SelectItem>
+                          <SelectItem value="10:00">10:00</SelectItem>
+                          <SelectItem value="11:00">11:00</SelectItem>
+                          <SelectItem value="12:00">12:00</SelectItem>
+                          <SelectItem value="13:00">13:00</SelectItem>
+                          <SelectItem value="14:00">14:00</SelectItem>
+                          <SelectItem value="15:00">15:00</SelectItem>
+                          <SelectItem value="16:00">16:00</SelectItem>
+                          <SelectItem value="17:00">17:00</SelectItem>
+                          <SelectItem value="18:00">18:00</SelectItem>
+                          <SelectItem value="19:00">19:00</SelectItem>
+                          <SelectItem value="20:00">20:00</SelectItem>
+                          <SelectItem value="21:00">21:00</SelectItem>
+                          <SelectItem value="22:00">22:00</SelectItem>
+                          <SelectItem value="23:00">23:00</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <Switch 
+                      checked={scheduledReports.monthlyCompliance.enabled}
+                      onCheckedChange={(checked) => handleScheduledReportToggle('monthlyCompliance', checked)}
+                    />
+                  </div>
                 </div>
               </div>
-              <Button variant="outline" className="w-full mt-4 border-guardai-gray/30 hover:bg-guardai-lightgray hover:text-guardai-red">
-                Manage Schedules
-              </Button>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div variants={itemVariants} className="col-span-1 md:col-span-2">
-          <Card className="border border-gray-200 shadow-sm h-full">
-            <CardHeader className="p-4 border-b">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <BarChart size={18} className="text-guardai-red" />
-                <span>Report Analytics</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="h-48 flex items-end justify-between border-b border-l">
-                {/* Simple bar chart visualization */}
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <div key={i} className="flex flex-col items-center flex-1">
-                    <div 
-                      className="w-5/6 bg-guardai-red/80 hover:bg-guardai-red transition-colors rounded-t"
-                      style={{ height: `${20 + Math.random() * 80}px` }}
-                    />
-                    <div className="text-xs text-guardai-gray mt-1">{`${i+1}`}</div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Weekly Alert Resolution Rate */}
+            <Card className="border border-gray-200 shadow-sm h-full">
+              <CardHeader className="p-4 border-b">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <BarChart size={18} className="text-guardai-red" />
+                  <span>Weekly Alert Resolution</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="h-48 flex items-end justify-between border-b border-l relative">
+                  {/* Y-axis labels for Alert Count */}
+                  <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-gray-500">
+                    <span>100</span>
+                    <span>75</span>
+                    <span>50</span>
+                    <span>25</span>
+                    <span>0</span>
                   </div>
-                ))}
-              </div>
-              <div className="flex justify-between mt-2">
-                <div className="text-xs text-guardai-gray">Reports generated per month (2025)</div>
-                <Button variant="link" className="text-xs text-guardai-red p-0 h-auto">
-                  View Details
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  
+                  {/* Static data for 7 days */}
+                  {[
+                    { day: 'Mon', raised: 45, resolved: 38, percentage: 84 },
+                    { day: 'Tue', raised: 52, resolved: 44, percentage: 85 },
+                    { day: 'Wed', raised: 38, resolved: 32, percentage: 84 },
+                    { day: 'Thu', raised: 61, resolved: 55, percentage: 90 },
+                    { day: 'Fri', raised: 48, resolved: 41, percentage: 85 },
+                    { day: 'Sat', raised: 29, resolved: 25, percentage: 86 },
+                    { day: 'Sun', raised: 35, resolved: 30, percentage: 86 }
+                  ].map((data, index) => (
+                    <div key={index} className="flex flex-col items-center flex-1">
+                      <div className="flex items-end gap-1 mb-2">
+                        <div 
+                          className="w-3 bg-red-500 rounded-t"
+                          style={{ height: `${(data.raised / 100) * 120}px` }}
+                        />
+                        <div 
+                          className="w-3 bg-green-500 rounded-t"
+                          style={{ height: `${(data.resolved / 100) * 120}px` }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-600 mb-1">{data.day}</div>
+                      <div className="text-xs text-green-600 font-medium">{data.percentage}%</div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Legend */}
+                <div className="flex items-center justify-center gap-4 mt-3 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span>Raised</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span>Resolved</span>
+                  </div>
+                </div>
+                
+                {/* Insight */}
+                <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
+                  <p className="text-xs text-blue-700">
+                    <strong>Thursday</strong> had the highest resolution rate at 90%, with 55 out of 61 alerts resolved.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dashboard Alert Distribution */}
+            <Card className="border border-gray-200 shadow-sm h-full">
+              <CardHeader className="p-4 border-b">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <PieChart size={18} className="text-guardai-red" />
+                  <span>Dashboard Alert Distribution</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {/* Time Period Selector */}
+                <div className="mb-4">
+                  <Select value={dashboardTimePeriod} onValueChange={handleDashboardTimeChange}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="lastWeek">Last Week</SelectItem>
+                      <SelectItem value="lastMonth">Last Month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Pie Chart */}
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                  <svg className="w-full h-full" viewBox="0 0 100 100">
+                    {/* Operations (Red) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="#ef4444"
+                      strokeWidth="8"
+                      strokeDasharray={`${(getScaledData(dashboardTimePeriod).operations / getScaledData(dashboardTimePeriod).total) * 251.2} 251.2`}
+                      strokeDashoffset="0"
+                      transform="rotate(-90 50 50)"
+                    />
+                    {/* Security (Blue) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="#3b82f6"
+                      strokeWidth="8"
+                      strokeDasharray={`${(getScaledData(dashboardTimePeriod).security / getScaledData(dashboardTimePeriod).total) * 251.2} 251.2`}
+                      strokeDashoffset={`-${(getScaledData(dashboardTimePeriod).operations / getScaledData(dashboardTimePeriod).total) * 251.2}`}
+                      transform="rotate(-90 50 50)"
+                    />
+                    {/* Compliance (Green) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="#22c55e"
+                      strokeWidth="8"
+                      strokeDasharray={`${(getScaledData(dashboardTimePeriod).compliance / getScaledData(dashboardTimePeriod).total) * 251.2} 251.2`}
+                      strokeDashoffset={`-${((getScaledData(dashboardTimePeriod).operations + getScaledData(dashboardTimePeriod).security) / getScaledData(dashboardTimePeriod).total) * 251.2}`}
+                      transform="rotate(-90 50 50)"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">{getScaledData(dashboardTimePeriod).total}</div>
+                      <div className="text-xs text-gray-600">Total Alerts</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Legend */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded"></div>
+                      <span className="text-sm">Operations</span>
+                    </div>
+                    <span className="text-sm font-medium">{Math.round((getScaledData(dashboardTimePeriod).operations / getScaledData(dashboardTimePeriod).total) * 100)}% ({getScaledData(dashboardTimePeriod).operations} alerts)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                      <span className="text-sm">Security</span>
+                    </div>
+                    <span className="text-sm font-medium">{Math.round((getScaledData(dashboardTimePeriod).security / getScaledData(dashboardTimePeriod).total) * 100)}% ({getScaledData(dashboardTimePeriod).security} alerts)</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded"></div>
+                      <span className="text-sm">Compliance</span>
+                    </div>
+                    <span className="text-sm font-medium">{Math.round((getScaledData(dashboardTimePeriod).compliance / getScaledData(dashboardTimePeriod).total) * 100)}% ({getScaledData(dashboardTimePeriod).compliance} alerts)</span>
+                  </div>
+                </div>
+                
+                {/* Insight */}
+                <div className="mt-3 p-2 bg-yellow-50 rounded border border-yellow-200">
+                  <p className="text-xs text-yellow-700">
+                    <strong>Operations Dashboard</strong> has the highest alert volume, primarily due to machine idle and loitering detection.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </motion.div>
       </motion.div>
 
@@ -269,6 +847,71 @@ export default function ReportsPage() {
         onOpenChange={setShowGenerationDialog}
         onGenerateReport={handleGenerateReport}
       />
+
+      {/* Audio Summary Dialog */}
+      <Dialog open={showAudioSummary} onOpenChange={setShowAudioSummary}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Volume2 className="text-guardai-red" size={20} />
+              AI Quick Summary
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+              <div className="flex-shrink-0">
+                {isPlayingAudio ? (
+                  <div className="w-8 h-8 bg-guardai-red rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                ) : (
+                  <Volume2 className="w-8 h-8 text-guardai-red" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {currentSummary}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-center text-xs text-gray-500">
+              <span>Duration: ~30 seconds</span>
+              <span>Generated: {new Date().toLocaleTimeString()}</span>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  stopAudio();
+                  setShowAudioSummary(false);
+                }}
+                className="flex-1"
+              >
+                Close
+              </Button>
+              <Button 
+                onClick={toggleAudio}
+                className="flex-1 bg-guardai-red hover:bg-guardai-red/90 text-white"
+              >
+                {isPlayingAudio ? (
+                  <>
+                    <div className="w-3 h-3 bg-white rounded-full animate-pulse mr-2"></div>
+                    Stop
+                  </>
+                ) : (
+                  <>
+                    <Volume2 size={14} className="mr-2" />
+                    Play
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
