@@ -414,6 +414,7 @@ export function Sidebar() {
               className='w-full'
               onClick={() => {
                 localStorage.removeItem('loginMode');
+                sessionStorage.removeItem('demoDialogDismissed');
                 navigate('/');
                 if (isMobile) setMobileOpen(false);
               }}
