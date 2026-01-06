@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "frontend",
       script: "npm",
-      args: "run dev -- --port 3005",
+      args: "run preview",
       cwd: "./",
       watch: false,
       autorestart: true,

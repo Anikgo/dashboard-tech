@@ -5,7 +5,7 @@ import alertRoutes from './routes/alerts.js';
 import resolvedAlertRoutes from './routes/resolvedAlerts.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8001;
 
 // Connect to MongoDB Atlas - explicitly specify guardex database
 mongoose.connect('mongodb+srv://anikgo:CtNjTIxe12acTT0p@guardex.cb67k9p.mongodb.net/guardex?retryWrites=true&w=majority&appName=Guardex', {
