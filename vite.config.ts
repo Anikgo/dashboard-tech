@@ -9,6 +9,13 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 4173,
     allowedHosts: ["guardex-login.guardex.ai"],
+    proxy: {
+      "/api": {
+        target: "http://localhost:8001/api",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
   server: {
     host: "::",
