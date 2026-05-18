@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Mail, Key } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { isValidDemoEmailLogin, isValidDemoPhone } from '@/lib/demoAuth';
 
 const LoginPage = () => {
   const [loginMode, setLoginMode] = useState<'phone' | 'email'>('email');
@@ -42,7 +43,7 @@ const LoginPage = () => {
         toast.error('Please enter a valid 10-digit phone number');
         return;
       }
-      if (phoneNumber !== '9205619488') {
+      if (!isValidDemoPhone(phoneNumber)) {
         toast.error('Invalid phone number. Please try again.');
         return;
       }
@@ -51,10 +52,7 @@ const LoginPage = () => {
         toast.error('Please enter both email and password');
         return;
       }
-      if (
-        (email !== 'info@guardex.ai' || password !== '123456') &&
-        (email !== 'YCombinator' || password !== 'yc1234')
-      ) {
+      if (!isValidDemoEmailLogin(email, password)) {
         toast.error('Invalid email or password. Please try again.');
         return;
       }

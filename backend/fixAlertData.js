@@ -1,15 +1,8 @@
-import mongoose from 'mongoose';
 import Alert from './models/Alert.js';
+import { connectWithHandlers } from './config/db.js';
 
-mongoose.connect('mongodb+srv://anikgo:CtNjTIxe12acTT0p@guardex.cb67k9p.mongodb.net/guardex?retryWrites=true&w=majority&appName=Guardex', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', async () => {
-  console.log('Connected to MongoDB Atlas - guardex database');
+connectWithHandlers(async () => {
+  console.log('Connected to MongoDB');
   try {
     // Get all current alerts
     const allAlerts = await Alert.find({});

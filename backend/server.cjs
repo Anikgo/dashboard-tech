@@ -1,24 +1,21 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import alertRoutes from './routes/alerts.js'; // Add `.js` extension for ES modules
-
-dotenv.config(); // Load environment variables
+import { connectDB } from './config/db.js';
+import alertRoutes from './routes/alerts.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Connect to MongoDB
-mongoose.set('strictQuery', true); // Suppress the warning and prepare for Mongoose 7
+mongoose.set('strictQuery', true);
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+connectDB()
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
-// Middleware
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
+
 app.use(express.json());
+app.use('/alerts', alertRoutes);
 
-// Routes
-app.use('/alerts', alertRoutes);    {/* TODO : Change the folder in MongoDB Guardex Server */}
-
-// Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
