@@ -554,7 +554,7 @@ export default function AlertsPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='bg-gray-50'>
       <div className='p-6 space-y-6'>
         {/* Error Display */}
         {error && (
