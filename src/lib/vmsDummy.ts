@@ -53,6 +53,9 @@ const VMS_VIDEO_SOURCES: { name: string; videoSrc: string }[] = [
   { name: 'Camera 7', videoSrc: '/videos/7.mov' },
   { name: 'Camera 8', videoSrc: '/videos/8.mov' },
   { name: 'Camera 9', videoSrc: '/videos/9.mov' },
+  { name: 'Camera 10', videoSrc: '/videos/10.MOV' },
+  { name: 'Camera 11', videoSrc: '/videos/11.MOV' },
+  { name: 'Camera 12', videoSrc: '/videos/12.MOV' },
   // { name: 'Camera 10', videoSrc: '/videos/10.mp4' },
 ];
 
