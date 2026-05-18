@@ -20,6 +20,7 @@ import { useViewType } from '@/hooks/useViewType';
 import { SecurityAlertGrid } from '@/components/SecurityAlertGrid';
 import { useDashboardAlerts } from '@/contexts/DashboardAlertsContext';
 import { mapSecurityFromApi } from '@/lib/mapApiAlerts';
+import { formatAlertTime } from '@/lib/formatTime';
 
 type FireSmokeAlert = {
   id: string;
@@ -554,15 +555,10 @@ export default function SecurityPage() {
                                       Unauthorized Entry
                                     </TableCell>
                                     <TableCell className='text-xs'>
-                                      {new Date(
-                                        item.logged_at
-                                      ).toLocaleTimeString('en-IN', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                      })}
+                                      {formatAlertTime(item.frame_timestamp ?? item.logged_at)}
                                     </TableCell>
                                     <TableCell className='text-xs'>
-                                      {item.zone || 'Perimeter'}
+                                      {item.zone || item.roomName || 'Perimeter'}
                                     </TableCell>
                                     <TableCell className='text-xs'>
                                       <a
@@ -599,15 +595,10 @@ export default function SecurityPage() {
                                       {item.violation_type}
                                     </TableCell>
                                     <TableCell className='text-xs'>
-                                      {new Date(
-                                        item.logged_at
-                                      ).toLocaleTimeString('en-IN', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                      })}
+                                      {formatAlertTime(item.frame_timestamp ?? item.logged_at)}
                                     </TableCell>
                                     <TableCell className='text-xs'>
-                                      {item.zone || 'Restricted Zone'}
+                                      {item.zone || item.roomName || 'Restricted Zone'}
                                     </TableCell>
                                     <TableCell className='text-xs'>
                                       <a
@@ -644,15 +635,10 @@ export default function SecurityPage() {
                                       {item.violation_type}
                                     </TableCell>
                                     <TableCell className='text-xs'>
-                                      {new Date(
-                                        item.logged_at
-                                      ).toLocaleTimeString('en-IN', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                      })}
+                                      {formatAlertTime(item.frame_timestamp ?? item.logged_at)}
                                     </TableCell>
                                     <TableCell className='text-xs'>
-                                      Perimeter
+                                      {item.zone || item.roomName || 'Perimeter'}
                                     </TableCell>
                                     <TableCell className='text-xs'>
                                       <a

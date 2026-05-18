@@ -3,11 +3,13 @@ import { formatAlertTime } from '@/lib/formatTime';
 
 type SecurityAlert = {
   _id: string;
-  camera_id: string;
-  logged_at: string;
-  image_id: string;
+  camera_id?: string;
+  logged_at?: string;
+  frame_timestamp?: string;
+  image_id?: string;
   violation_type?: string;
   zone?: string;
+  roomName?: string;
 };
 
 type SecurityAlertGridProps = {
@@ -32,14 +34,17 @@ export function SecurityAlertGrid({
   return (
     <>
       {alerts.map((item) => {
+        const location = item.zone || item.roomName || 'Unknown Location';
+        const time = formatAlertTime(item.frame_timestamp ?? item.logged_at);
+
         if (featureId === 'perimeter-security') {
           return (
             <AlertGridCard
               key={item._id}
               alertType='Unauthorized Entry'
-              location={item.zone || 'Perimeter'}
+              location={location || 'Perimeter'}
               cameraId={item.camera_id}
-              time={formatAlertTime(item.logged_at)}
+              time={time}
               imageId={item.image_id}
               onResolve={() => onResolve(item._id, item, 'unauthorized_entry')}
             />
@@ -50,9 +55,9 @@ export function SecurityAlertGrid({
             <AlertGridCard
               key={item._id}
               alertType={item.violation_type || 'Restricted Access'}
-              location={item.zone || 'Restricted Zone'}
+              location={location || 'Restricted Zone'}
               cameraId={item.camera_id}
-              time={formatAlertTime(item.logged_at)}
+              time={time}
               imageId={item.image_id}
               onResolve={() => onResolve(item._id, item, 'restricted')}
             />
@@ -62,9 +67,9 @@ export function SecurityAlertGrid({
           <AlertGridCard
             key={item._id}
             alertType={item.violation_type || 'Fire & Smoke'}
-            location={item.zone || 'Perimeter'}
+            location={location || 'Perimeter'}
             cameraId={item.camera_id}
-            time={formatAlertTime(item.logged_at)}
+            time={time}
             imageId={item.image_id}
             onResolve={() => onResolve(item._id, item, 'fire_smoke')}
           />

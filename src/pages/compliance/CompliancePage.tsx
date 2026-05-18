@@ -519,10 +519,10 @@ export default function CompliancePage() {
                                     'Sleeping on Duty'}
                                 </TableCell>
                                 <TableCell className='text-xs'>
-                                  {formatAlertTime(item.logged_at)}
+                                  {formatAlertTime(item.frame_timestamp ?? item.logged_at)}
                                 </TableCell>
                                 <TableCell className='text-xs'>
-                                  {item.zone || item.camera_id}
+                                  {item.zone || item.roomName || item.camera_id}
                                 </TableCell>
                                 <TableCell className='text-xs'>
                                   <a
@@ -579,9 +579,9 @@ export default function CompliancePage() {
                               <AlertGridCard
                                 key={item._id}
                                 alertType={violationLabel}
-                                location={item.zone || item.camera_id}
+                                location={item.zone || item.roomName || item.camera_id}
                                 cameraId={item.camera_id}
-                                time={formatAlertTime(item.logged_at)}
+                                time={formatAlertTime(item.frame_timestamp ?? item.logged_at)}
                                 details={[
                                   { label: 'Employee', value: item.person_id },
                                 ]}

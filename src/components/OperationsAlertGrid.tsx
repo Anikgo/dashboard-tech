@@ -5,8 +5,11 @@ type OperationsAlert = {
   _id: string;
   camera_id?: string;
   zone?: string;
+  roomName?: string;
   box_count?: number;
+  person_count?: number;
   frame_timestamp?: string;
+  logged_at?: string;
   image_id?: string;
   emp_id?: string;
   name?: string;
@@ -34,15 +37,23 @@ export function OperationsAlertGrid({
   return (
     <>
       {items.map((item) => {
+        const location = item.zone || item.roomName || 'Unknown Location';
+        const time = formatAlertTime(item.frame_timestamp ?? item.logged_at);
+
         if (featureId === 'loitering-detection') {
           return (
             <AlertGridCard
               key={item._id}
               alertType='Loitering'
-              location={item.zone || 'Unknown Location'}
+              location={location}
               cameraId={item.camera_id}
-              time={formatAlertTime(item.frame_timestamp)}
-              details={[{ label: 'People detected', value: item.box_count ?? '—' }]}
+              time={time}
+              details={[
+                {
+                  label: 'People detected',
+                  value: item.box_count ?? item.person_count ?? '—',
+                },
+              ]}
               imageId={item.image_id}
               onResolve={() => onResolve(item._id, 'loitering', item)}
             />
@@ -53,9 +64,9 @@ export function OperationsAlertGrid({
             <AlertGridCard
               key={item._id}
               alertType='Idle Machinery'
-              location={item.zone || 'Unknown Location'}
+              location={location}
               cameraId={item.camera_id}
-              time={formatAlertTime(item.frame_timestamp)}
+              time={time}
               durationLabel='30 min idle'
               imageId={item.image_id}
               onResolve={() => onResolve(item._id, 'idle_machinery', item)}

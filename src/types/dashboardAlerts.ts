@@ -10,6 +10,7 @@ export type BaseAlert = {
   roomName?: string;
   zone?: string;
   logged_at: string;
+  frame_timestamp?: string;
   image_id?: string;
   imageUrl?: string;
   status?: 'active' | 'resolved';
@@ -17,11 +18,14 @@ export type BaseAlert = {
 
 export type IdleMachineryAlert = BaseAlert & {
   machine?: string;
+  frame_timestamp?: string;
   idle_duration?: string;
   operator_present?: boolean;
 };
 
 export type LoiteringAlert = BaseAlert & {
+  frame_timestamp?: string;
+  box_count?: number;
   person_count?: number;
   duration?: string;
 };
