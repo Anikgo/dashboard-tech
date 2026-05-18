@@ -24,7 +24,12 @@ import {
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { api, apiUrl } from '@/lib/api';
+import { ViewTypeToggle } from '@/components/ViewTypeToggle';
+import { OperationsAlertGrid } from '@/components/OperationsAlertGrid';
+import { useViewType } from '@/hooks/useViewType';
+import { useDashboardAlerts } from '@/contexts/DashboardAlertsContext';
+import { mapIdleFromApi, mapLoiteringFromApi } from '@/lib/mapApiAlerts';
 
 export default function OperationsPage() {
   const containerVariants = {
@@ -40,19 +45,28 @@ export default function OperationsPage() {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
-  const [loiteringData, setLoiteringData] = useState([]);
-  const [idleMachineryData, setIdleMachineryData] = useState([]);
+  const {
+    alerts: dashboardAlerts,
+    setOperationsIdle,
+    setOperationsLoitering,
+    removeAlert,
+  } = useDashboardAlerts();
+  const [loiteringData, setLoiteringData] = useState(dashboardAlerts.operations.loitering);
+  const [idleMachineryData, setIdleMachineryData] = useState(
+    dashboardAlerts.operations.idleMachinery
+  );
   const [attendanceData, setAttendanceData] = useState([]);
   const [sleepData, setSleepData] = useState([]);
   const [phoneData, setPhoneData] = useState([]);
   const [restrictedData, setRestrictedData] = useState([]);
   const [resolvedAlerts, setResolvedAlerts] = useState([]);
   const [activeTab, setActiveTab] = useState('active');
+  const { viewType, handleViewChange } = useViewType('operations-view-type');
 
   // Fetch resolved alerts from database
   const fetchResolvedAlerts = async () => {
     try {
-      const response = await axios.get('/api/resolved-alerts/operations');
+      const response = await api.get('/resolved-alerts/operations');
       setResolvedAlerts(response.data);
     } catch (error) {
       console.error('Failed to fetch resolved alerts:', error);
@@ -82,12 +96,12 @@ export default function OperationsPage() {
       };
 
       console.log('Creating resolved alert:', resolvedAlertData);
-      await axios.post('/api/resolved-alerts', resolvedAlertData);
+      await api.post('/resolved-alerts', resolvedAlertData);
       console.log('Resolved alert created successfully');
 
       // Delete the original alert from the database
       console.log('Deleting original alert:', id);
-      await axios.delete(`/api/alerts/${id}`);
+      await api.delete(`/alerts/${id}`);
       console.log('Original alert deleted successfully');
 
       // Refresh resolved alerts from database
@@ -97,11 +111,13 @@ export default function OperationsPage() {
       switch (dataType) {
         case 'loitering':
           setLoiteringData((prev) => prev.filter((item) => item._id !== id));
+          removeAlert('operations', 'loitering', id);
           break;
         case 'idle_machinery':
           setIdleMachineryData((prev) =>
             prev.filter((item) => item._id !== id)
           );
+          removeAlert('operations', 'idleMachinery', id);
           break;
         case 'attendance':
           setAttendanceData((prev) => prev.filter((item) => item._id !== id));
@@ -127,8 +143,12 @@ export default function OperationsPage() {
   useEffect(() => {
     const fetchLoiteringData = async () => {
       try {
-        const res = await axios.get('/api/alerts/loitering');
-        setLoiteringData(res.data);
+        const res = await api.get('/alerts/loitering');
+        const mapped = mapLoiteringFromApi(res.data);
+        if (mapped.length > 0) {
+          setLoiteringData(mapped);
+          setOperationsLoitering(mapped);
+        }
       } catch (err) {
         console.error('Failed to fetch loitering data:', err);
       }
@@ -136,8 +156,12 @@ export default function OperationsPage() {
 
     const fetchIdleData = async () => {
       try {
-        const res = await axios.get('/api/alerts/idle_machinery');
-        setIdleMachineryData(res.data);
+        const res = await api.get('/alerts/idle_machinery');
+        const mapped = mapIdleFromApi(res.data);
+        if (mapped.length > 0) {
+          setIdleMachineryData(mapped);
+          setOperationsIdle(mapped);
+        }
       } catch (err) {
         console.error('Failed to fetch idle machinery data:', err);
       }
@@ -145,7 +169,7 @@ export default function OperationsPage() {
 
     const fetchAttendanceData = async () => {
       try {
-        const res = await axios.get('/api/alerts/attendance');
+        const res = await api.get('/alerts/attendance');
         setAttendanceData(res.data);
       } catch (err) {
         console.error('Failed to fetch attendance data:', err);
@@ -154,7 +178,7 @@ export default function OperationsPage() {
 
     const fetchRestrictedData = async () => {
       try {
-        const res = await axios.get('/api/alerts/restricted');
+        const res = await api.get('/alerts/restricted');
         setRestrictedData(res.data);
       } catch (err) {
         console.error('Failed to fetch idle machinery data:', err);
@@ -163,7 +187,7 @@ export default function OperationsPage() {
 
     const fetchSleepData = async () => {
       try {
-        const res = await axios.get('/api/alerts/sleeping');
+        const res = await api.get('/alerts/sleeping');
         setSleepData(res.data);
       } catch (err) {
         console.error('Failed to fetch attendance data:', err);
@@ -172,7 +196,7 @@ export default function OperationsPage() {
 
     const fetchPhoneData = async () => {
       try {
-        const res = await axios.get('/api/alerts/phone');
+        const res = await api.get('/alerts/phone');
         setPhoneData(res.data);
       } catch (err) {
         console.error('Failed to fetch attendance data:', err);
@@ -285,7 +309,7 @@ export default function OperationsPage() {
         </motion.p>
 
         {/* Tab Navigation */}
-        <motion.div variants={itemVariants} className='ml-9 mb-4'>
+        <motion.div variants={itemVariants} className='ml-9 mr-6 mb-4 flex items-center gap-3'>
           <div className='flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit'>
             <button
               onClick={() => setActiveTab('active')}
@@ -308,6 +332,10 @@ export default function OperationsPage() {
               Resolved Alerts
             </button>
           </div>
+          <div className='flex-1' />
+          {activeTab === 'active' && (
+            <ViewTypeToggle viewType={viewType} onViewChange={handleViewChange} />
+          )}
         </motion.div>
       </motion.div>
 
@@ -413,7 +441,7 @@ export default function OperationsPage() {
                             <TableCell className='text-xs'>
                               <a
                                 className='text-blue-600 underline flex items-center gap-1'
-                                href={`/api/alerts/image/${alert.originalData.image_id}`}
+                                href={apiUrl(`/alerts/image/${alert.originalData.image_id}`)}
                                 target='_blank'
                                 rel='noreferrer'
                               >
@@ -486,6 +514,7 @@ export default function OperationsPage() {
                           </div>
                         ))}
                       </div>
+                      {viewType === 'list' ? (
                       <div className='border rounded-lg overflow-hidden'>
                         <Table>
                           <TableHeader>
@@ -647,7 +676,7 @@ export default function OperationsPage() {
                                     <TableCell className='text-xs'>
                                       <a
                                         className='text-blue-600 underline flex items-center gap-1'
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noreferrer'
                                       >
@@ -684,7 +713,7 @@ export default function OperationsPage() {
                                     <TableCell className='text-xs'>
                                       <a
                                         className='text-blue-600 underline flex items-center gap-1'
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noreferrer'
                                       >
@@ -724,7 +753,7 @@ export default function OperationsPage() {
                                     <TableCell className='text-xs'>
                                       <a
                                         className='text-blue-600 underline flex items-center gap-1'
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noreferrer'
                                       >
@@ -747,7 +776,7 @@ export default function OperationsPage() {
                                     <TableCell className='text-xs'>
                                       <a
                                         className='text-blue-600 underline flex items-center gap-1'
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noreferrer'
                                       >
@@ -787,7 +816,7 @@ export default function OperationsPage() {
                                     <TableCell className='text-xs'>
                                       <a
                                         className='text-blue-600 underline flex items-center gap-1'
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noreferrer'
                                       >
@@ -827,7 +856,7 @@ export default function OperationsPage() {
                                     <TableCell className='text-xs'>
                                       <a
                                         className='text-blue-600 underline flex items-center gap-1'
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noreferrer'
                                       >
@@ -851,13 +880,27 @@ export default function OperationsPage() {
                           </TableBody>
                         </Table>
                       </div>
+                      ) : (
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                          <OperationsAlertGrid
+                            featureId={feature.id}
+                            items={
+                              feature.data.alerts ||
+                              feature.data.machines ||
+                              feature.data.employees ||
+                              []
+                            }
+                            onResolve={handleResolve}
+                          />
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
               ))}
 
               {/* Loading & Unloading Operations Table */}
-              <motion.div variants={itemVariants}>
+              {/* <motion.div variants={itemVariants}>
                 <Card className='border border-gray-200 shadow-lg w-full bg-white'>
                   <CardHeader className='p-4 pb-2'>
                     <div className='flex items-center justify-between mb-2'>
@@ -990,7 +1033,7 @@ export default function OperationsPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </motion.div> */}
             </>
           )}
         </motion.div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiUrl } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -191,7 +192,7 @@ export default function AIAssistantPage() {
     setTimeout(() => {
       const photoUrl =
         question.id === '6'
-          ? '/api/alerts/image/688df366c4729f04f9e094be'
+          ? apiUrl('/alerts/image/688df366c4729f04f9e094be')
           : undefined;
       console.log('Adding photo URL:', photoUrl); // Debug log
 

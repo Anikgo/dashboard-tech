@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import { api } from '@/lib/api';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import {
@@ -378,18 +378,18 @@ export default function AlertsPage() {
     try {
       console.log('Fetching alerts from all endpoints...');
       const endpoints = [
-        '/api/alerts/loitering',
-        '/api/alerts/ppe-compliance',
-        '/api/alerts/restricted',
-        '/api/alerts/sleeping',
-        '/api/alerts/phone',
-        '/api/alerts/idle_machinery',
-        '/api/alerts/attendance',
-        '/api/alerts/fire-smoke',
+        '/alerts/loitering',
+        '/alerts/ppe-compliance',
+        '/alerts/restricted',
+        '/alerts/sleeping',
+        '/alerts/phone',
+        '/alerts/idle_machinery',
+        '/alerts/attendance',
+        '/alerts/fire-smoke',
       ];
 
       const responses = await Promise.all(
-        endpoints.map((endpoint) => axios.get(`${endpoint}`))
+        endpoints.map((endpoint) => api.get(endpoint))
       );
 
       const allAlerts = responses.flatMap((response) => response.data);
@@ -514,13 +514,13 @@ export default function AlertsPage() {
       console.log('Resolved alert data:', resolvedAlertData);
 
       // Create resolved alert entry
-      const createResponse = await axios.post(
-        '/api/resolved-alerts',
+      const createResponse = await api.post(
+        '/resolved-alerts',
         resolvedAlertData
       );
 
       // Delete the original alert from MongoDB
-      const deleteResponse = await axios.delete(`/api/alerts/${id}`);
+      const deleteResponse = await api.delete(`/alerts/${id}`);
 
       // Remove from local state
       setAlerts((prev) => prev.filter((alert) => alert._id !== id));

@@ -1,5 +1,6 @@
 import { Sidebar } from './Sidebar';
 import { Outlet, useLocation, Navigate } from 'react-router-dom';
+import { DashboardAlertsProvider } from '@/contexts/DashboardAlertsContext';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
@@ -44,7 +45,9 @@ export function Layout() {
     <div className='flex min-h-screen bg-gray-50'>
       {!isLoginPage && <Sidebar />}
       <main className='flex-1 overflow-auto pt-0 md:pt-0 relative'>
-        <Outlet />
+        <DashboardAlertsProvider>
+          <Outlet />
+        </DashboardAlertsProvider>
         
         {/* Demo Notice Dialog */}
         {showDemoDialog && (

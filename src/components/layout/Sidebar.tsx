@@ -238,6 +238,9 @@ import {
   HardHat,
   Eye,
   Bot,
+  Box,
+  Brush,
+  MonitorPlay,
   LogOut,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -266,6 +269,16 @@ const sidebarItems: SidebarItem[] = [
     route: '/security',
   },
   {
+    name: 'Stock Management',
+    icon: Box,
+    route: '/stock',
+  },
+  {
+    name: 'Cleanliness',
+    icon: Brush,
+    route: '/cleanliness',
+  },
+  {
     name: 'Reports & Analytics',
     icon: FileText,
     route: '/reports',
@@ -280,6 +293,11 @@ const sidebarItems: SidebarItem[] = [
     icon: Bot,
     route: '/ai-assistant',
   },
+  {
+    name: 'Video Management',
+    icon: MonitorPlay,
+    route: '/vms',
+  },
 ];
 
 export function Sidebar() {
@@ -293,9 +311,12 @@ export function Sidebar() {
     if (path === '/operations') return 'Operations Dashboard';
     if (path === '/compliance') return 'Compliance Dashboard';
     if (path === '/security') return 'Security Dashboard';
+    if (path === '/stock') return 'Stock Management';
+    if (path === '/cleanliness') return 'Cleanliness';
     if (path === '/reports') return 'Reports & Analytics';
     if (path === '/alerts') return 'Live Alert Console';
     if (path === '/ai-assistant') return 'AI Video Assistant';
+    if (path === '/vms') return 'Video Management';
     return 'Operations Dashboard';
   };
   const [activeItem, setActiveItem] = useState(

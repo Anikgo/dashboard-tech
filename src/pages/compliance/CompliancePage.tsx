@@ -13,7 +13,13 @@ import { HardHat, Trash, Activity, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { api, apiUrl } from '@/lib/api';
+import { ViewTypeToggle } from '@/components/ViewTypeToggle';
+import { AlertGridCard } from '@/components/AlertGridCard';
+import { useViewType } from '@/hooks/useViewType';
+import { formatAlertTime } from '@/lib/formatTime';
+import { useDashboardAlerts } from '@/contexts/DashboardAlertsContext';
+import { mapPpeFromApi, mapPhoneFromApi, mapSleepFromApi } from '@/lib/mapApiAlerts';
 
 export default function CompliancePage() {
   const containerVariants = {
@@ -31,16 +37,26 @@ export default function CompliancePage() {
     logged_at: string;
   };
 
-  const [ppeViolations, setPpeViolations] = useState<PPEViolation[]>([]);
-  const [phoneViolations, setPhoneViolations] = useState<any[]>([]);
-  const [sleepViolations, setSleepViolations] = useState<any[]>([]);
+  const {
+    alerts: dashboardAlerts,
+    setCompliancePpe,
+    setCompliancePhone,
+    setComplianceSleep,
+    removeAlert,
+  } = useDashboardAlerts();
+  const [ppeViolations, setPpeViolations] = useState<PPEViolation[]>(
+    dashboardAlerts.compliance.ppe as PPEViolation[]
+  );
+  const [phoneViolations, setPhoneViolations] = useState(dashboardAlerts.compliance.phone);
+  const [sleepViolations, setSleepViolations] = useState(dashboardAlerts.compliance.sleep);
   const [resolvedAlerts, setResolvedAlerts] = useState([]);
   const [activeTab, setActiveTab] = useState('active');
+  const { viewType, handleViewChange } = useViewType('compliance-view-type');
 
   // Fetch resolved alerts from database
   const fetchResolvedAlerts = async () => {
     try {
-      const response = await axios.get('/api/resolved-alerts/compliance');
+      const response = await api.get('/resolved-alerts/compliance');
       setResolvedAlerts(response.data);
     } catch (error) {
       console.error('Failed to fetch resolved alerts:', error);
@@ -54,8 +70,12 @@ export default function CompliancePage() {
 
   const fetchPPEAlerts = async () => {
     try {
-      const res = await axios.get('/api/alerts/ppe-compliance');
-      setPpeViolations(res.data);
+      const res = await api.get('/alerts/ppe-compliance');
+      const mapped = mapPpeFromApi(res.data);
+      if (mapped.length > 0) {
+        setPpeViolations(mapped as PPEViolation[]);
+        setCompliancePpe(mapped);
+      }
     } catch (err) {
       console.error('Failed to fetch PPE alerts:', err);
     }
@@ -63,8 +83,12 @@ export default function CompliancePage() {
 
   const fetchPhoneAlerts = async () => {
     try {
-      const res = await axios.get('/api/alerts/phone');
-      setPhoneViolations(res.data);
+      const res = await api.get('/alerts/phone');
+      const mapped = mapPhoneFromApi(res.data);
+      if (mapped.length > 0) {
+        setPhoneViolations(mapped);
+        setCompliancePhone(mapped);
+      }
     } catch (err) {
       console.error('Failed to fetch phone alerts:', err);
     }
@@ -72,8 +96,12 @@ export default function CompliancePage() {
 
   const fetchSleepAlerts = async () => {
     try {
-      const res = await axios.get('/api/alerts/sleeping');
-      setSleepViolations(res.data);
+      const res = await api.get('/alerts/sleeping');
+      const mapped = mapSleepFromApi(res.data);
+      if (mapped.length > 0) {
+        setSleepViolations(mapped);
+        setComplianceSleep(mapped);
+      }
     } catch (err) {
       console.error('Failed to fetch sleep alerts:', err);
     }
@@ -113,11 +141,11 @@ export default function CompliancePage() {
 
       console.log('Resolved alert data:', resolvedAlertData);
 
-      await axios.post('/api/resolved-alerts', resolvedAlertData);
+      await api.post('/resolved-alerts', resolvedAlertData);
       console.log('Resolved alert created successfully');
 
       // Delete the original alert from the database
-      await axios.delete(`/api/alerts/${id}`);
+      await api.delete(`/alerts/${id}`);
       console.log('Original alert deleted successfully');
 
       // Refresh resolved alerts from database
@@ -126,10 +154,13 @@ export default function CompliancePage() {
       // Update the appropriate state based on alert type
       if (alertType === 'ppe_compliance') {
         setPpeViolations((prev) => prev.filter((item) => item._id !== id));
+        removeAlert('compliance', 'ppe', id);
       } else if (alertType === 'phone') {
         setPhoneViolations((prev) => prev.filter((item) => item._id !== id));
+        removeAlert('compliance', 'phone', id);
       } else if (alertType === 'sleeping') {
         setSleepViolations((prev) => prev.filter((item) => item._id !== id));
+        removeAlert('compliance', 'sleep', id);
       }
 
       console.log('Alert resolved successfully');
@@ -244,7 +275,7 @@ export default function CompliancePage() {
         </motion.p>
 
         {/* Tab Navigation */}
-        <motion.div variants={itemVariants} className='ml-9 mb-4'>
+        <motion.div variants={itemVariants} className='ml-9 mr-6 mb-4 flex items-center gap-3'>
           <div className='flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit'>
             <button
               onClick={() => setActiveTab('active')}
@@ -267,6 +298,10 @@ export default function CompliancePage() {
               Resolved Alerts
             </button>
           </div>
+          <div className='flex-1' />
+          {activeTab === 'active' && (
+            <ViewTypeToggle viewType={viewType} onViewChange={handleViewChange} />
+          )}
         </motion.div>
       </motion.div>
 
@@ -376,7 +411,7 @@ export default function CompliancePage() {
                             <TableCell className='text-xs'>
                               <a
                                 className='text-blue-600 underline flex items-center gap-1'
-                                href={`/api/alerts/image/${alert.originalData.image_id}`}
+                                href={apiUrl(`/alerts/image/${alert.originalData.image_id}`)}
                                 target='_blank'
                                 rel='noreferrer'
                               >
@@ -444,87 +479,122 @@ export default function CompliancePage() {
                       )}
                     </div>
 
-                    <div className='border rounded'>
-                      <Table>
-                        <TableHeader>
-                          <TableRow className='bg-gray-50'>
-                            <TableHead className='text-xs font-semibold'>
-                              Employee
-                            </TableHead>
-                            <TableHead className='text-xs font-semibold'>
-                              Violation
-                            </TableHead>
-                            <TableHead className='text-xs font-semibold'>
-                              Time
-                            </TableHead>
-                            <TableHead className='text-xs font-semibold'>
-                              Zone
-                            </TableHead>
-                            <TableHead className='text-xs font-semibold'>
-                              Image
-                            </TableHead>
-                            <TableHead className='text-xs font-semibold'>
-                              Resolve
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {feature.data.violations.map((item, index) => (
-                            <TableRow key={index} className='hover:bg-gray-50'>
-                              <TableCell className='text-xs'>
-                                {item.person_id}
-                              </TableCell>
-                              <TableCell className='text-xs'>
-                                {feature.id === 'ppe-compliance' &&
-                                  'Hairnet Missing'}
-                                {feature.id === 'phone-compliance' &&
-                                  'Phone Usage'}
-                                {feature.id === 'sleep-compliance' &&
-                                  'Sleeping on Duty'}
-                              </TableCell>
-                              <TableCell className='text-xs'>
-                                {new Date(item.logged_at).toLocaleTimeString(
-                                  'en-IN',
-                                  {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  }
-                                )}
-                              </TableCell>
-                              <TableCell className='text-xs'>
-                                {item.zone || item.camera_id}
-                              </TableCell>
-                              <TableCell className='text-xs'>
-                                <a
-                                  href={`/api/alerts/image/${item.image_id}`}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  className='text-guardai-red underline text-xs'
-                                >
-                                  View
-                                </a>
-                              </TableCell>
-                              <TableCell className='text-xs'>
-                                <button
-                                  onClick={() => {
-                                    const alertType =
-                                      feature.id === 'ppe-compliance'
-                                        ? 'ppe_compliance'
-                                        : feature.id === 'phone-compliance'
-                                        ? 'phone'
-                                        : 'sleeping';
-                                    handleResolve(item._id, item, alertType);
-                                  }}
-                                  className='text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600'
-                                >
-                                  Resolve
-                                </button>
-                              </TableCell>
+                    {viewType === 'list' ? (
+                      <div className='border rounded'>
+                        <Table>
+                          <TableHeader>
+                            <TableRow className='bg-gray-50'>
+                              <TableHead className='text-xs font-semibold'>
+                                Employee
+                              </TableHead>
+                              <TableHead className='text-xs font-semibold'>
+                                Violation
+                              </TableHead>
+                              <TableHead className='text-xs font-semibold'>
+                                Time
+                              </TableHead>
+                              <TableHead className='text-xs font-semibold'>
+                                Zone
+                              </TableHead>
+                              <TableHead className='text-xs font-semibold'>
+                                Image
+                              </TableHead>
+                              <TableHead className='text-xs font-semibold'>
+                                Resolve
+                              </TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
+                          </TableHeader>
+                          <TableBody>
+                            {feature.data.violations.map((item, index) => (
+                              <TableRow key={index} className='hover:bg-gray-50'>
+                                <TableCell className='text-xs'>
+                                  {item.person_id}
+                                </TableCell>
+                                <TableCell className='text-xs'>
+                                  {feature.id === 'ppe-compliance' &&
+                                    'Hairnet Missing'}
+                                  {feature.id === 'phone-compliance' &&
+                                    'Phone Usage'}
+                                  {feature.id === 'sleep-compliance' &&
+                                    'Sleeping on Duty'}
+                                </TableCell>
+                                <TableCell className='text-xs'>
+                                  {formatAlertTime(item.logged_at)}
+                                </TableCell>
+                                <TableCell className='text-xs'>
+                                  {item.zone || item.camera_id}
+                                </TableCell>
+                                <TableCell className='text-xs'>
+                                  <a
+                                    href={apiUrl(`/alerts/image/${item.image_id}`)}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='text-guardai-red underline text-xs'
+                                  >
+                                    View
+                                  </a>
+                                </TableCell>
+                                <TableCell className='text-xs'>
+                                  <button
+                                    onClick={() => {
+                                      const alertType =
+                                        feature.id === 'ppe-compliance'
+                                          ? 'ppe_compliance'
+                                          : feature.id === 'phone-compliance'
+                                          ? 'phone'
+                                          : 'sleeping';
+                                      handleResolve(item._id, item, alertType);
+                                    }}
+                                    className='text-xs bg-guardai-red text-white px-2 py-1 rounded hover:bg-red-600'
+                                  >
+                                    Resolve
+                                  </button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        {feature.data.violations.length === 0 ? (
+                          <p className='col-span-full text-center text-sm text-guardai-gray py-6'>
+                            No active alerts
+                          </p>
+                        ) : (
+                          feature.data.violations.map((item) => {
+                            const violationLabel =
+                              feature.id === 'ppe-compliance'
+                                ? 'Hairnet Missing'
+                                : feature.id === 'phone-compliance'
+                                ? 'Phone Usage'
+                                : 'Sleeping on Duty';
+                            const alertType =
+                              feature.id === 'ppe-compliance'
+                                ? 'ppe_compliance'
+                                : feature.id === 'phone-compliance'
+                                ? 'phone'
+                                : 'sleeping';
+                            return (
+                              <AlertGridCard
+                                key={item._id}
+                                alertType={violationLabel}
+                                location={item.zone || item.camera_id}
+                                cameraId={item.camera_id}
+                                time={formatAlertTime(item.logged_at)}
+                                details={[
+                                  { label: 'Employee', value: item.person_id },
+                                ]}
+                                imageId={item.image_id}
+                                onResolve={() =>
+                                  handleResolve(item._id, item, alertType)
+                                }
+                              />
+                            );
+                          })
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>

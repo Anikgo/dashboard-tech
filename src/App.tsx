@@ -13,6 +13,9 @@ import AlertsPage from './pages/alerts/AlertsPage';
 import AIAssistantPage from './pages/ai-assistant/AIAssistantPage';
 import CamerasPage from './pages/cameras/CamerasPage';
 import SettingsPage from './pages/settings/SettingsPage';
+import StockPage from './pages/stock/StockPage';
+import CleanlinessPage from './pages/cleanliness/CleanlinessPage';
+import VmsPage from './pages/vms/VmsPage';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -29,9 +32,12 @@ const App = () => (
             <Route path='/operations' element={<OperationsPage />} />
             <Route path='/compliance' element={<CompliancePage />} />
             <Route path='/security' element={<SecurityPage />} />
+            <Route path='/stock' element={<StockPage />} />
+            <Route path='/cleanliness' element={<CleanlinessPage />} />
             <Route path='/reports' element={<ReportsPage />} />
             <Route path='/alerts' element={<AlertsPage />} />
             <Route path='/ai-assistant' element={<AIAssistantPage />} />
+            <Route path='/vms' element={<VmsPage />} />
             <Route path='/cameras' element={<CamerasPage />} />
             <Route path='/settings' element={<SettingsPage />} />
           </Route>

@@ -13,7 +13,13 @@ import { Shield, Eye, Flame, Activity, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { api, apiUrl } from '@/lib/api';
+import { ViewTypeToggle } from '@/components/ViewTypeToggle';
+import { AlertGridCard } from '@/components/AlertGridCard';
+import { useViewType } from '@/hooks/useViewType';
+import { SecurityAlertGrid } from '@/components/SecurityAlertGrid';
+import { useDashboardAlerts } from '@/contexts/DashboardAlertsContext';
+import { mapSecurityFromApi } from '@/lib/mapApiAlerts';
 
 type FireSmokeAlert = {
   id: string;
@@ -27,18 +33,30 @@ type FireSmokeAlert = {
 };
 
 export default function SecurityPage() {
-  const [fireSmokeAlerts, setFireSmokeAlerts] = useState<FireSmokeAlert[]>([]);
-  const [restrictedAccessAlerts, setRestrictedAccessAlerts] = useState<any[]>(
-    []
+  const {
+    alerts: dashboardAlerts,
+    setSecurityPerimeter,
+    setSecurityRestricted,
+    setSecurityFireSmoke,
+    removeAlert,
+  } = useDashboardAlerts();
+  const [fireSmokeAlerts, setFireSmokeAlerts] = useState<FireSmokeAlert[]>(
+    dashboardAlerts.security.fireSmoke as FireSmokeAlert[]
   );
-  const [perimeterAlerts, setPerimeterAlerts] = useState<any[]>([]);
+  const [restrictedAccessAlerts, setRestrictedAccessAlerts] = useState(
+    dashboardAlerts.security.restricted
+  );
+  const [perimeterAlerts, setPerimeterAlerts] = useState(
+    dashboardAlerts.security.perimeter
+  );
   const [resolvedAlerts, setResolvedAlerts] = useState([]);
   const [activeTab, setActiveTab] = useState('active');
+  const { viewType, handleViewChange } = useViewType('security-view-type');
 
   // Fetch resolved alerts from database
   const fetchResolvedAlerts = async () => {
     try {
-      const response = await axios.get('/api/resolved-alerts/security');
+      const response = await api.get('/resolved-alerts/security');
       setResolvedAlerts(response.data);
     } catch (error) {
       console.error('Failed to fetch resolved alerts:', error);
@@ -66,10 +84,10 @@ export default function SecurityPage() {
         resolvedBy: 'Admin',
       };
 
-      await axios.post('/api/resolved-alerts', resolvedAlertData);
+      await api.post('/resolved-alerts', resolvedAlertData);
 
       // Delete the original alert from the database
-      await axios.delete(`/api/alerts/${id}`);
+      await api.delete(`/alerts/${id}`);
 
       // Refresh resolved alerts from database
       await fetchResolvedAlerts();
@@ -77,12 +95,15 @@ export default function SecurityPage() {
       // Update the appropriate state based on alert type
       if (alertType === 'fire_smoke') {
         setFireSmokeAlerts((prev) => prev.filter((item) => item._id !== id));
+        removeAlert('security', 'fireSmoke', id);
       } else if (alertType === 'restricted') {
         setRestrictedAccessAlerts((prev) =>
           prev.filter((item) => item._id !== id)
         );
+        removeAlert('security', 'restricted', id);
       } else if (alertType === 'unauthorized_entry') {
         setPerimeterAlerts((prev) => prev.filter((item) => item._id !== id));
+        removeAlert('security', 'perimeter', id);
       }
     } catch (err) {
       console.error('Failed to resolve alert:', err);
@@ -91,24 +112,31 @@ export default function SecurityPage() {
 
   const fetchRestrictedAccessAlerts = async () => {
     try {
-      const res = await axios.get('/api/alerts/restricted');
-      setRestrictedAccessAlerts(res.data);
+      const res = await api.get('/alerts/restricted');
+      const mapped = mapSecurityFromApi(res.data);
+      if (mapped.length > 0) {
+        setRestrictedAccessAlerts(mapped);
+        setSecurityRestricted(mapped);
+      }
     } catch (err) {
       console.error('Failed to fetch restricted access alerts', err);
     }
   };
 
   const fetchPerimeterAlerts = async () => {
-    // Perimeter alerts will be added later
-    setPerimeterAlerts([]);
+    setPerimeterAlerts(dashboardAlerts.security.perimeter);
+    setSecurityPerimeter(dashboardAlerts.security.perimeter);
   };
 
   useEffect(() => {
     const fetchFireSmokeAlerts = async () => {
       try {
-        const res = await fetch('/api/alerts/fire-smoke');
-        const data = await res.json();
-        setFireSmokeAlerts(data);
+        const res = await api.get('/alerts/fire-smoke');
+        const mapped = mapSecurityFromApi(res.data);
+        if (mapped.length > 0) {
+          setFireSmokeAlerts(mapped as FireSmokeAlert[]);
+          setSecurityFireSmoke(mapped);
+        }
       } catch (err) {
         console.error('Failed to fetch fire/smoke alerts', err);
       }
@@ -116,7 +144,7 @@ export default function SecurityPage() {
 
     fetchFireSmokeAlerts();
     fetchRestrictedAccessAlerts();
-    // fetchPerimeterAlerts(); // Disabled until perimeter alerts are added
+    fetchPerimeterAlerts();
 
     const interval = setInterval(() => {
       fetchFireSmokeAlerts();
@@ -169,7 +197,7 @@ export default function SecurityPage() {
       description: 'Monitor unauthorized entry and perimeter breaches',
       icon: Shield,
       status: 'active',
-      count: 0,
+      count: perimeterAlerts.length,
       details: {
         unauthorizedEntries: 0,
         camerasCovered: '100%',
@@ -241,7 +269,7 @@ export default function SecurityPage() {
         </motion.p>
 
         {/* Tab Navigation */}
-        <motion.div variants={itemVariants} className='ml-9 mb-4'>
+        <motion.div variants={itemVariants} className='ml-9 mr-6 mb-4 flex items-center gap-3'>
           <div className='flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit'>
             <button
               onClick={() => setActiveTab('active')}
@@ -264,6 +292,10 @@ export default function SecurityPage() {
               Resolved Alerts
             </button>
           </div>
+          <div className='flex-1' />
+          {activeTab === 'active' && (
+            <ViewTypeToggle viewType={viewType} onViewChange={handleViewChange} />
+          )}
         </motion.div>
       </motion.div>
 
@@ -367,7 +399,7 @@ export default function SecurityPage() {
                             <TableCell className='text-xs'>
                               <a
                                 className='text-blue-600 underline flex items-center gap-1'
-                                href={`/api/alerts/image/${alert.originalData.image_id}`}
+                                href={apiUrl(`/alerts/image/${alert.originalData.image_id}`)}
                                 target='_blank'
                                 rel='noreferrer'
                               >
@@ -433,6 +465,7 @@ export default function SecurityPage() {
                       ))}
                     </div>
 
+                    {viewType === 'list' ? (
                     <div className='border rounded'>
                       <Table>
                         <TableHeader>
@@ -533,7 +566,7 @@ export default function SecurityPage() {
                                     </TableCell>
                                     <TableCell className='text-xs'>
                                       <a
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-guardai-red underline text-xs'
@@ -578,7 +611,7 @@ export default function SecurityPage() {
                                     </TableCell>
                                     <TableCell className='text-xs'>
                                       <a
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-guardai-red underline text-xs'
@@ -623,7 +656,7 @@ export default function SecurityPage() {
                                     </TableCell>
                                     <TableCell className='text-xs'>
                                       <a
-                                        href={`/api/alerts/image/${item.image_id}`}
+                                        href={apiUrl(`/alerts/image/${item.image_id}`)}
                                         target='_blank'
                                         rel='noopener noreferrer'
                                         className='text-guardai-red underline text-xs'
@@ -653,6 +686,15 @@ export default function SecurityPage() {
                         </TableBody>
                       </Table>
                     </div>
+                    ) : (
+                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        <SecurityAlertGrid
+                          featureId={feature.id}
+                          alerts={feature.data.alerts || []}
+                          onResolve={handleResolve}
+                        />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
