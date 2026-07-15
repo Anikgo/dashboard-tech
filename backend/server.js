@@ -6,6 +6,7 @@ import resolvedAlertRoutes from './routes/resolvedAlerts.js';
 
 const app = express();
 const PORT = process.env.PORT || 8001;
+const HOST = process.env.HOST || "127.0.0.1";
 
 connectDB()
   .then((db) => {
@@ -23,6 +24,6 @@ app.use(express.json());
 app.use('/alerts', alertRoutes);
 app.use('/resolved-alerts', resolvedAlertRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
 });
